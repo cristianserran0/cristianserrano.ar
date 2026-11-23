@@ -17,6 +17,10 @@
      content  736px                the content column (--content-max)
      wide     1200px               full-bleed images stop bleeding
      shell    760px                below it the guide floats over the page
+     side     1100px               the page panel is wide enough for the menu's panel on
+                                   the left (240) and the controls' strip on the right
+                                   (72), leaving a content area of 788px: wide figures
+                                   are then still about 15% wider than the text (672)
 
    Inside the page, layout responds to the PANEL's width, not the
    window's, because opening the assistant narrows the panel while
@@ -29,6 +33,7 @@
 
 :root {
   /* ---- scale ---- */
+  --space-half: 0.125rem;   /* 2px: inside the smallest things (a track, a code chip) */
   --space-1:  0.25rem;
   --space-2:  0.5rem;
   --space-3:  0.75rem;
@@ -47,7 +52,16 @@
 
   /* ---- app shell ---- */
   --frame-gap:       var(--space-2);   /* canvas showing around the panels */
-  --assistant-width: 25rem;           /* 400px default; the visitor can drag it (assistant.js) */
+  /* The guide's DEFAULT width (before the visitor drags its border, and
+     after a double-click on it): as wide as 400px, but leaving the page
+     its "side" width, so opening the guide keeps the vertical menu where
+     the window allows it; never under the guide's minimum. A width the
+     visitor drags to replaces this (assistant.js) and is remembered.
+     --side-fit is the "side" breakpoint above plus 16px to spare: landing
+     exactly ON the breakpoint let a rounding error or a scrollbar tip a
+     page under it. Set on :root, so it holds from the page's first moment. */
+  --side-fit: 1116px;
+  --assistant-width: clamp(var(--assistant-min), 100vw - var(--side-fit) - 3 * var(--frame-gap), 25rem);
   --assistant-min:   20rem;           /* 320px: the narrowest phones, which the guide already fits */
   --panel-min:       22.5rem;         /* 360px: the page behind always stays usable */
   /* The width actually used: the chosen one, held between the guide's
@@ -56,8 +70,24 @@
   --assistant-size:  clamp(var(--assistant-min), var(--assistant-width),
                            100vw - var(--panel-min) - 3 * var(--frame-gap));
   --panel-width:     calc(100% - var(--assistant-size) - 3 * var(--frame-gap));
-  --icon-size:       1rem;
-  --icon-button:     2rem;
+
+  /* ---- controls ----
+     Four heights; sm (32px) is the default for every control. A control's
+     size is its height, its inline padding and its icon; the label adds
+     its own side padding, which is also the distance from icon to text. */
+  --control-xs: 1.75rem;              /* 28px: dense places, e.g. under an answer */
+  --control-sm: 2rem;                 /* 32px: the default */
+  --control-md: 2.25rem;              /* 36px */
+  --control-lg: 2.5rem;               /* 40px */
+  --control-pad-xs: var(--space-2);   /*  8px */
+  --control-pad-sm: 0.625rem;         /* 10px */
+  --control-pad-md: 0.625rem;         /* 10px */
+  --control-pad-lg: var(--space-3);   /* 12px */
+  --control-label-pad:       var(--space-1);   /* 4px, xs and sm */
+  --control-label-pad-large: 0.375rem;         /* 6px, md and lg */
+  --icon-size:       1rem;            /* 16px, xs and sm */
+  --icon-size-large: 1.25rem;         /* 20px, md and lg; a message's icon */
+  --icon-button:     var(--control-sm);
 
   /* ---- gallery ---- */
   --piece-max:          1120px;        /* widest a piece's image gets */
@@ -69,15 +99,17 @@
   --paragraph-gap:  1em;               /* between paragraphs; scales with them */
 
   /* ---- shape ---- */
+  --radius-sm:   0.25rem;
   --radius-md:   0.5rem;
   --radius-lg:   1rem;
   --radius-full: 50%;
+  --radius-pill: 62.5rem;              /* a fully rounded end on something wider than tall */
   --radius-panel: 1.5rem;              /* the two floating panels */
   --border-hairline: 1px;              /* frames and separators */
   --border-rule:   3px;                /* dividers and quote bars */
   --border-accent: 2px;                /* link underlines, focus rings */
   --underline-offset: 0.1em;
-  --focus-offset:   3px;
+  --focus-offset:   2px;               /* the focus ring: 2px line, 2px clear of the element */
 }
 
 /* Phones: the page gutter halves (32 -> 16 px), so a 390 px screen keeps

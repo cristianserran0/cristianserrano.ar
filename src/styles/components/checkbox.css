@@ -1,0 +1,81 @@
+/* Checkbox: turns one option on or off, or selects items in a list.
+
+   <label class="checkbox">
+     <input type="checkbox">
+     <span>Text</span>
+   </label>
+
+   The native input, redrawn: Space toggles it, clicking the text toggles
+   it too, and a form reads it as usual.
+
+     checked           the native state
+     mixed             the native indeterminate state (script sets it), or
+                       aria-checked="mixed": only for a parent whose items
+                       are partly selected
+     data-background   on the input: subtle (default) | opaque
+     aria-invalid      "true": the edge turns to the danger colour. Say the
+                       error in words nearby.
+     disabled          the native attribute: box and text at 40%
+
+   An 18px box in a 20px space, 6px corners, a 14px mark; the text is 8px
+   from the box and wraps beside it, the box staying on the first line.
+   The focus ring goes around the box only. Without text it still needs a
+   name: aria-label on the input.
+
+   Radio (radio.css) and Switch (switch.css) share the rules marked
+   "shared" below: the label, the box's size and edge, the states.
+
+   Not built: a tooltip giving the reason a checkbox is disabled. */
+
+@layer components {
+  /* ---- shared: a control with its text beside it ---- */
+  .checkbox,
+  .radio,
+  .switch {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font: var(--type-ui);
+    letter-spacing: var(--type-ui-tracking);
+    cursor: pointer;
+  }
+  :is(.checkbox, .radio, .switch) input {
+    appearance: none;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+    margin: var(--border-hairline);
+    border: var(--border-hairline) solid var(--border-default);
+    border-radius: var(--checkbox-radius);
+    background-color: var(--fill-input);
+    cursor: pointer;
+  }
+  :is(.checkbox, .radio, .switch) input[data-background="opaque"] { background-color: var(--bg-surface); }
+  /* (:indeterminate is the checkbox's alone: a radio group with nothing
+     chosen yet matches it too, and must stay empty) */
+  :is(.checkbox, .radio, .switch) input:checked,
+  .checkbox input:is(:indeterminate, [aria-checked="mixed"]) { background-color: var(--bg-action); }
+  :is(.checkbox, .radio, .switch) input[aria-invalid="true"] { border-color: var(--status-danger); }
+
+  @media (hover: hover) {
+    :is(.checkbox, .radio, .switch):hover input:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+  :is(.checkbox, .radio, .switch):active input:not(:disabled) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)); }
+
+  /* disabled: the box is faded by base.css; the text follows it */
+  :is(.checkbox, .radio, .switch):has(:disabled) { cursor: default; }
+  :is(.checkbox, .radio, .switch):has(:disabled) span { opacity: var(--opacity-disabled); }
+
+  /* ---- the checkbox's own: its marks ---- */
+  .checkbox input:is(:checked, :indeterminate, [aria-checked="mixed"])::before {
+    content: "";
+    width: var(--checkbox-mark-size);
+    height: var(--checkbox-mark-size);
+    background: var(--text-on-accent);
+    mask: var(--checkbox-mark) center / contain no-repeat;
+  }
+  .checkbox input:is(:indeterminate, [aria-checked="mixed"])::before { mask-image: var(--checkbox-mark-mixed); }
+}

@@ -1,24 +1,25 @@
 ---
-/* The featured pieces as tiles: image, title, then the label beneath it.
-   Used by the wall (/work/) and Home, from src/data/pieces.ts. `heading`
-   is the tiles' heading level, so they sit right under the page's own
-   headings (h2 on the wall, under its h1; h3 on Home, under an h2). */
+/* Pieces as tiles: an image and a title. Home lists the pieces of each
+   position this way, from src/data/pieces.ts. `heading` is the tiles'
+   heading level, so they sit right under the page's own headings.
+   `titleOnly` leaves out the client · years line and the label: under a
+   position both would repeat what the position already says. */
 import PieceImage from './PieceImage.astro';
-import { featured, href } from '../data/pieces';
+import { featured, href, type Piece } from '../data/pieces';
 
-interface Props { heading?: 'h2' | 'h3'; eager?: boolean; }
-const { heading = 'h2', eager = false } = Astro.props;
+interface Props { heading?: 'h2' | 'h3' | 'h4'; eager?: boolean; pieces?: Piece[]; titleOnly?: boolean; }
+const { heading = 'h2', eager = false, pieces = featured, titleOnly = false } = Astro.props;
 const H = heading;
 ---
 <section class="projects">
-  {featured.map((p, i) => (
-    <article class="work-tile">
+  {pieces.map((p, i) => (
+    <article class="work-tile" data-detail={titleOnly ? 'title' : undefined}>
       <a href={href(p)}>
         <PieceImage src={p.cover} alt="" eager={eager && i < 2} />
-        <H>{p.title}</H>
+        <H>{titleOnly && p.cardTitle ? p.cardTitle : p.title}</H>
       </a>
-      <p>{p.client} · {p.years}</p>
-      <p>{p.label}</p>
+      {!titleOnly && <p>{p.client} · {p.years}</p>}
+      {!titleOnly && <p>{p.label}</p>}
     </article>
   ))}
 </section>

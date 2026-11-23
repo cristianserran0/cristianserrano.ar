@@ -1,0 +1,29 @@
+/* Radio: one option out of a few, when only one can be picked.
+
+   <div role="radiogroup" aria-labelledby="…">
+     <label class="radio"><input type="radio" name="visibility" checked><span>Private</span></label>
+     <label class="radio"><input type="radio" name="visibility"><span>Public</span></label>
+   </div>
+
+   The checkbox's edge, fills, states, focus ring and text (checkbox.css,
+   "shared"), as a circle with an 8px dot. It is drawn at 20px, not the
+   checkbox's 18px: a round shape looks smaller than a square one of the
+   same size. It fills the same 20px space, so the two line up.
+
+   Native radios: the arrow keys move the choice inside one `name`. */
+
+@layer components {
+  .radio input {
+    width: var(--radio-size);
+    height: var(--radio-size);
+    margin: 0;
+    border-radius: var(--radius-full);
+  }
+  .radio input:checked::before {
+    content: "";
+    width: var(--radio-dot-size);
+    height: var(--radio-dot-size);
+    border-radius: var(--radius-full);
+    background: var(--text-on-accent);
+  }
+}

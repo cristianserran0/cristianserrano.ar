@@ -2,7 +2,7 @@
 import '../styles/index.css';
 import PieceHeader from '../components/PieceHeader.astro';
 import NextPiece from '../components/NextPiece.astro';
-import { piece as getPiece, nextPiece, featured, href } from '../data/pieces';
+import { piece as getPiece, nextPiece, featured, href, aboutCristian } from '../data/pieces';
 import { getImage } from 'astro:assets';
 import ogDefault from '../assets/og/default.png';
 
@@ -16,35 +16,49 @@ interface Props {
   piece?: string;
 }
 
-const { title, description, readingTime = false, noindex = false, piece } = Astro.props;
 const pathname = Astro.url.pathname;
+const { title, description, readingTime = false, noindex = false, piece } = Astro.props;
 const current = piece ? getPiece(piece) : undefined;
 const next = piece ? nextPiece(piece) : undefined;
 
 // accent modes offered to visitors; must match [accent="..."] in styles/tokens/color.css
 const accents = ['blue', 'purple', 'magenta', 'red', 'orange', 'green', 'emerald', 'sky'];
 
+/* The pages of the site besides Home. The work has no page of its own:
+   it is the home page. */
 const nav = [
-  { href: '/work/', label: 'Work', current: pathname.startsWith('/work') },
   { href: '/cv/',   label: 'CV',   current: pathname.startsWith('/cv') },
   { href: '/about/', label: 'About', current: pathname.startsWith('/about') },
   { href: '/contact/', label: 'Contact', current: pathname.startsWith('/contact') },
+];
+
+/* The menu: the pages of the site, each with a 16px icon
+   in two drawings: `icon` in outline, and `filled` for the chosen page
+   (where a plain fill of the outline would swallow its inner lines). */
+const menu = [
+  { href: '/', label: 'Home', current: pathname === '/', icon: 'M2.5 7.5 8 3l5.5 4.5V13h-4V9.5h-3V13h-4z',
+    filled: 'M2.5 7.5 8 3l5.5 4.5V13h-4V9.5h-3V13h-4z' },
+  { href: '/cv/', label: 'CV', current: pathname.startsWith('/cv'), icon: 'M4 2h5.5l3 3v9H4zM9.5 2v3h3M6.25 8.25h3.5M6.25 10.75h3.5',
+    filled: 'M4 2h5.5l3 3v9H4zM5.6 7.1h4.8v2H5.6zM5.6 10.1h4.8v2H5.6z' },
+  { href: '/about/', label: 'About', current: pathname.startsWith('/about'), icon: 'M8 7.25a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 14c.4-2.8 2.4-4.25 5-4.25s4.6 1.45 5 4.25',
+    filled: 'M8 7.25a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 14c.4-2.8 2.4-4.25 5-4.25s4.6 1.45 5 4.25z' },
+  { href: '/contact/', label: 'Contact', current: pathname.startsWith('/contact'), icon: 'M2 4h12v8.5H2zM2.25 4.5 8 9l5.75-4.5',
+    filled: 'M2.5 3.75h11L8 7.9zM2 6.1 8 10.6l6-4.5v6.4H2z' },
 ];
 
 /* What the guide needs to know about the room the visitor is in, and the
    featured pieces for its tours. Data, not code: a JSON block the CSP allows. */
 const room = current
   ? { kind: 'piece', slug: current.slug, title: current.title, client: current.client, years: current.years,
-      label: current.label, facts: current.facts,
+      label: aboutCristian(current.label), facts: current.facts,
       next: next && { title: next.title, href: href(next) } }
-  : pathname.startsWith('/work') ? { kind: 'wall' }
   : pathname.startsWith('/cv') ? { kind: 'cv' }
   : pathname.startsWith('/contact') ? { kind: 'contact' }
   : pathname === '/' ? { kind: 'home' }
   : { kind: 'other' };
 const guide = {
   room,
-  pieces: featured.map((p) => ({ slug: p.slug, title: p.title, client: p.client, years: p.years, label: p.label, role: p.facts.role, category: p.facts.category, href: href(p) })),
+  pieces: featured.map((p) => ({ slug: p.slug, title: p.title, client: p.client, years: p.years, label: aboutCristian(p.label), role: p.facts.role, category: p.facts.category, href: href(p) })),
 };
 
 /* ---- search and sharing ----
@@ -71,7 +85,6 @@ const temporal = current
   ? (/present/i.test(current.years) ? `${years[0]}/..` : years.length > 1 ? `${years[0]}/${years[years.length - 1]}` : years[0])
   : undefined;
 const crumbs = [{ name: 'Home', path: '/' }]
-  .concat(pathname.startsWith('/work/') && pathname !== '/work/' ? [{ name: 'Work', path: '/work/' }] : [])
   .concat(pathname !== '/' ? [{
     name: current ? current.title
       : (nav.find((n) => n.href === pathname) || { label: title.split(' - ')[0] }).label,
@@ -113,12 +126,12 @@ const jsonLd = {
       '@type': 'CreativeWork',
       '@id': url + '#work',
       name: current.title,
-      abstract: current.label,
+      abstract: aboutCristian(current.label),
       creator: { '@id': PERSON },
       about: current.client.split(' + ').map((name) => ({ '@type': 'Organization', name })),
       ...(temporal ? { temporalCoverage: temporal } : {}),
       keywords: current.facts.category.replace(/\.$/, ''),
-      description: `${current.label} Role: ${current.facts.role}. Platforms: ${current.facts.platforms}. Time: ${current.facts.time}.`,
+      description: `${aboutCristian(current.label)} Role: ${current.facts.role}. Platforms: ${current.facts.platforms}. Time: ${current.facts.time}.`,
       image: ogImage,
       url,
       inLanguage: 'en',
@@ -188,6 +201,8 @@ const jsonLd = {
     {readingTime && <script defer is:inline src="/js/reading-time-estimation.js"></script>}
     <script defer is:inline src="/js/current-year.js"></script>
     <script defer is:inline src="/js/appearance.js"></script>
+    <script defer is:inline src="/js/tooltip.js"></script>
+    <script defer is:inline src="/js/side-nav.js"></script>
   </head>
 
   <body>
@@ -200,32 +215,61 @@ const jsonLd = {
 
       <header class="site-header nav-visible">
         <nav class="site-nav" aria-label="Site">
-          <a class="site-name" href="/" aria-current={pathname === '/' ? 'page' : undefined}><span>Cristian Serrano</span></a>
-          <ul>
-            {nav.map((item) => (
-              <li><a href={item.href} aria-current={item.current ? 'page' : undefined}>{item.label}</a></li>
-            ))}
-          </ul>
+          {/* The top bar (when the menu has no space of its own): a mark,
+              then the menu. Home: the diamond, the pages inline where
+              they fit, a drop-down on phones. A case study: Back, and
+              a drop-down of its sections, labelled with the one in view. */}
+          {current
+            ? <a class="button" data-type="ghost" data-has-text="false" data-tooltip="start" href="/" aria-label="Back">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4"/></svg>
+              </a>
+            : <a class="site-mark" href="/" aria-label="Cristian Serrano, home"></a>}
+          {!current && (
+            <ul class="site-links">
+              {nav.map((item) => (
+                <li><a href={item.href} aria-current={item.current ? 'page' : undefined}>{item.label}</a></li>
+              ))}
+            </ul>
+          )}
+          <button type="button" class="menu-trigger" popovertarget="page-menu" data-kind={current ? 'index' : 'pages'}>
+            <span data-menu-current>{current ? current.title : (menu.find((item) => item.current) || menu[0]).label}</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+          </button>
 
           <div class="site-actions">
-            <button type="button" class="display-toggle" popovertarget="display" aria-label="Display: mode, temperature and accent" title="Display">
+            <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" popovertarget="display" aria-label="Display">
               <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/></svg>
             </button>
-            <button type="button" class="guide-toggle" data-assistant-toggle aria-controls="assistant" aria-expanded="false" aria-label="Guide" title="Guide">
-              <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M7 1.75c.4 2.9 1.85 4.35 4.75 4.75-2.9.4-4.35 1.85-4.75 4.75C6.6 8.35 5.15 6.9 2.25 6.5 5.15 6.1 6.6 4.65 7 1.75z"/><path d="M12.25 9.5c.2 1.35.9 2.05 2.25 2.25-1.35.2-2.05.9-2.25 2.25-.2-1.35-.9-2.05-2.25-2.25 1.35-.2 2.05-.9 2.25-2.25z"/></svg>
+            <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" data-assistant-toggle aria-controls="assistant" aria-expanded="false" aria-label="Guide">
+              <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M8 2.25Q9.5 6.5 13.75 8 9.5 9.5 8 13.75 6.5 9.5 2.25 8 6.5 6.5 8 2.25Z"/></svg>
             </button>
           </div>
         </nav>
 
+        <div class="page-menu" id="page-menu" popover>
+          {current
+            ? <ul class="menu" data-page-index></ul>
+            : <ul class="menu">
+                {menu.map((item) => (
+                  <li>
+                    <a class="menu-item" href={item.href} aria-current={item.current ? 'page' : undefined}>
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="icon-outline" d={item.icon}/><path class="icon-filled" fill-rule="evenodd" d={item.filled}/></svg>
+                      <span>{item.label}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>}
+        </div>
+
         <div class="display" id="display" popover>
           <p id="display-scheme">Mode</p>
-          <div role="group" aria-labelledby="display-scheme">
+          <div class="segmented" role="group" aria-labelledby="display-scheme">
             <button type="button" data-scheme="system">System</button>
             <button type="button" data-scheme="light">Light</button>
             <button type="button" data-scheme="dark">Dark</button>
           </div>
           <p id="display-temperature">Temperature</p>
-          <div role="group" aria-labelledby="display-temperature">
+          <div class="segmented" role="group" aria-labelledby="display-temperature">
             <button type="button" data-temperature="warm">Warm</button>
             <button type="button" data-temperature="neutral">Neutral</button>
             <button type="button" data-temperature="cold">Cold</button>
@@ -246,6 +290,33 @@ const jsonLd = {
         </div>
       </header>
 
+      <div class="page-frame">
+        <nav class="side-nav" aria-label={current ? 'On this page' : 'Menu'}>
+          <div>
+            {current ? (
+              <>
+                <a class="button" data-type="ghost" data-has-text="false" data-tooltip="start" href="/" aria-label="Back">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4"/></svg>
+                </a>
+                <ul class="menu" data-page-index></ul>
+              </>
+            ) : (
+              <>
+                <a class="site-mark" href="/" aria-label="Cristian Serrano, home"></a>
+                <ul class="menu">
+                  {menu.map((item) => (
+                    <li>
+                      <a class="menu-item" href={item.href} aria-current={item.current ? 'page' : undefined}>
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="icon-outline" d={item.icon}/><path class="icon-filled" fill-rule="evenodd" d={item.filled}/></svg>
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </nav>
       <div class="page-body">
         <main class="prose" id="content" tabindex="-1">
           {piece && <PieceHeader slug={piece} readingTime={readingTime} />}
@@ -258,6 +329,7 @@ const jsonLd = {
           <p>&copy;<span class="current-year"></span> Cristian Serrano</p>
         </footer>
       </div>
+      </div>
 
     </div>
 
@@ -265,7 +337,7 @@ const jsonLd = {
       <header class="assistant-header">
         <h2>Guide</h2>
         <div class="assistant-actions">
-          <button type="button" class="icon-button" popovertarget="guide-menu" aria-label="More options" title="More options">
+          <button type="button" class="button" data-type="ghost" data-has-text="false" popovertarget="guide-menu" aria-label="More options">
             <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="8" r="1.25"/><circle cx="8" cy="8" r="1.25"/><circle cx="12.5" cy="8" r="1.25"/></svg>
           </button>
           <!-- More options: the guide's text style and column, to compare
@@ -284,7 +356,7 @@ const jsonLd = {
             <button type="button" data-guide-keep><span>Keep this chat</span><small>for your next visit</small></button>
             <button type="button" data-assistant-clear disabled><span>Clear chat</span></button>
           </div>
-          <button type="button" class="icon-button" data-assistant-close aria-label="Close guide" title="Close">
+          <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" data-assistant-close aria-label="Close guide">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
           </button>
         </div>
@@ -294,14 +366,12 @@ const jsonLd = {
         <!-- The blank state: until the first question, what the guide can do
              here, with suggestions that fit the page. Filled by assistant.js. -->
         <section class="assistant-empty" aria-labelledby="guide-empty-title" hidden>
-          <span class="assistant-mark" aria-hidden="true">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M7 1.75c.4 2.9 1.85 4.35 4.75 4.75-2.9.4-4.35 1.85-4.75 4.75C6.6 8.35 5.15 6.9 2.25 6.5 5.15 6.1 6.6 4.65 7 1.75z"/><path d="M12.25 9.5c.2 1.35.9 2.05 2.25 2.25-1.35.2-2.05.9-2.25 2.25-.2-1.35-.9-2.05-2.25-2.25 1.35-.2 2.05-.9 2.25-2.25z"/></svg>
-          </span>
+          <span class="assistant-mark" aria-hidden="true"></span>
           <h3 id="guide-empty-title" data-empty-title></h3>
           <ul class="assistant-options" data-empty-options></ul>
         </section>
         <ol class="assistant-log" aria-live="polite"></ol>
-        <button type="button" class="assistant-jump" aria-label="Jump to latest" title="Jump to latest" hidden>
+        <button type="button" class="assistant-jump" data-tooltip="top" aria-label="Jump to latest" hidden>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4"/></svg>
         </button>
       </div>
@@ -310,7 +380,7 @@ const jsonLd = {
         <textarea rows="2" aria-label="Message" placeholder="Ask about Cristian’s work, CV or this site…"></textarea>
         <div>
           <!-- Send; while an answer streams it becomes Stop, in the same place. -->
-          <button type="submit" class="icon-button" aria-label="Send" disabled>
+          <button type="submit" class="button" data-has-text="false" data-tooltip="end" aria-label="Send" disabled>
             <svg data-icon="send" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
             <svg data-icon="stop" viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="1.5" fill="currentColor"/></svg>
           </button>
@@ -324,12 +394,15 @@ const jsonLd = {
         <dialog open aria-modal="true" aria-labelledby="feedback-title">
           <form>
             <h3 id="feedback-title" data-feedback-title>What went wrong?</h3>
-            <ul class="feedback-reasons" data-feedback-reasons aria-label="Reasons"></ul>
-            <textarea rows="3" aria-label="Anything to add? (optional)" placeholder="Anything to add? (optional)"></textarea>
-            <p>Prototype: feedback stays in your browser for now.</p>
+            <ul class="chips feedback-reasons" data-feedback-reasons aria-label="Reasons"></ul>
+            <textarea class="field" rows="3" aria-label="Anything to add? (optional)" placeholder="Anything to add? (optional)"></textarea>
+            <div class="message" data-type="information" role="status">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M10 1.75a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5zM10 5a1.1 1.1 0 1 1 0 2.2A1.1 1.1 0 0 1 10 5zm-1 4h2v6H9z"/></svg>
+              <div><p>Prototype: feedback stays in your browser for now.</p></div>
+            </div>
             <div>
-              <button type="button" data-feedback-cancel>Cancel</button>
-              <button type="submit">Send</button>
+              <button type="button" class="button" data-type="outlined" data-feedback-cancel><span>Cancel</span></button>
+              <button type="submit" class="button"><span>Send</span></button>
             </div>
           </form>
         </dialog>

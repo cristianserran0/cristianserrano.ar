@@ -57,7 +57,7 @@
       overflow: hidden auto;
       background: var(--bg-surface);
       scrollbar-width: thin;
-      scrollbar-color: var(--border-subtle) transparent;
+      scrollbar-color: var(--scrollbar-thumb) transparent;
     }
     .page:focus { outline: none; }   /* focused only to take keyboard scrolling */
 

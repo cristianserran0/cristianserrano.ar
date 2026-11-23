@@ -1,0 +1,42 @@
+---
+/* One of the cases inside the JustRelate Home case study
+   (/work/justrelate-head-of-design/), on a page of its own. The text is
+   that page's section of the same name, word for word; only its headings
+   moved up a level. That page still holds the shared Context and Wrap up.
+   Not indexed and not in the sitemap while it is this short and repeats
+   the page it came from. */
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout
+  piece="justrelate/design-team-designops"
+  title="Design team &amp; DesignOps - Cristian Serrano"
+  description="Cristian Serrano turned designers working in silos into one team, and built DesignOps from scratch."
+  readingTime={true}
+  noindex={true}
+>
+
+  <section id="design-team-designops">
+
+    <article>
+      <h2>Building a team, not just managing designers</h2>
+      <p>When I arrived, JustRelate had designers — but not really a design team. People were doing good work, but without a shared practice: no common processes, no shared tools philosophy, no regular design critique or cross-pollination. Building the team meant creating the conditions for that to change.</p>
+      <p>The goal was to foster a culture of ownership, shared standards, and mutual feedback — where designers felt part of a coherent practice, not just embedded in their respective product areas. This is an ongoing effort, but the shift has been noticeable.</p>
+    </article>
+
+    <article>
+      <h2>DesignOps from zero</h2>
+      <p>There was essentially no design operations infrastructure when I joined. No defined handoff process, no component libraries, no documented design principles, no onboarding for new designers. Everything was in people's heads or scattered across files.</p>
+      <p>Building DesignOps from scratch is both daunting and hugely satisfying. I started by identifying the highest-friction points — the places where the lack of process was costing the most time and quality — and worked outward from there:</p>
+      <ul>
+        <li><b>Design principles</b> — giving the team a shared language for design decisions and critique.</li>
+        <li><b>Component library foundations</b> — establishing the groundwork for a design system that can grow with the platform.</li>
+        <li><b>Processes and rituals</b> — introducing regular design reviews, design critiques, and clearer handoff workflows with engineering.</li>
+        <li><b>Tooling alignment</b> — standardising the tools the team uses so collaboration doesn't require constant context switching.</li>
+      </ul>
+    </article>
+
+  </section>
+
+  <p class="end-mark" aria-hidden="true">◼︎</p>
+</Layout>

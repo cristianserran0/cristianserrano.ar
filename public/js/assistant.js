@@ -133,9 +133,9 @@
     { match: /\b(justrelate|coworker|head of design|current|now)\b/i, read: '/work/justrelate-head-of-design/',
       text: ['Cristian is Head of Design at JustRelate in Munich since December 2024. He defined the platform vision around JustRelate Home and conceptualised JR Coworker, the AI layer that calls each product’s skills to turn intent into execution.'],
       links: [['See the piece', '/work/justrelate-head-of-design/']] },
-    { match: /\b(work|project|projects|case|portfolio|design system|design systems|kaia|openbank|google)\b/i, read: '/work/',
+    { match: /\b(work|project|projects|case|portfolio|design system|design systems|kaia|openbank|google)\b/i, read: '/',
       text: ['There are four featured pieces: JustRelate Home, Kaia Health’s Kinetic Design System, Small Business Advisors for Google, and the Openbank Design System.'],
-      links: [['See the wall', '/work/']] },
+      links: [['See the work', '/']] },
     { match: /\b(contact|email|mail|hire|linkedin|reach|talk)\b/i, read: '/contact/',
       text: ['The quickest way is LinkedIn; email works too.'],
       links: [['How to get in touch', '/contact/']] },
@@ -185,7 +185,7 @@
     };
   }
   var ICONS = {
-    sparkle: 'M7 1.75c.4 2.9 1.85 4.35 4.75 4.75-2.9.4-4.35 1.85-4.75 4.75C6.6 8.35 5.15 6.9 2.25 6.5 5.15 6.1 6.6 4.65 7 1.75zM12.25 9.5c.2 1.35.9 2.05 2.25 2.25-1.35.2-2.05.9-2.25 2.25-.2-1.35-.9-2.05-2.25-2.25 1.35-.2 2.05-.9 2.25-2.25z',
+    sparkle: 'M8 2.25Q9.5 6.5 13.75 8 9.5 9.5 8 13.75 6.5 9.5 2.25 8 6.5 6.5 8 2.25Z',
     person:  'M8 7.25a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 14c.4-2.8 2.4-4.25 5-4.25s4.6 1.45 5 4.25',
     arrow:   'M3 8h10M9 4l4 4-4 4',
     compass: 'M8 1.75a6.25 6.25 0 1 0 0 12.5 6.25 6.25 0 0 0 0-12.5zM10.5 5.5l-1.4 3.6-3.6 1.4 1.4-3.6z',
@@ -315,7 +315,9 @@
     var g = el('div', 'assistant-rating');
     g.setAttribute('role', 'group'); g.setAttribute('aria-label', 'Rate this answer');
     [['up', 'Helpful'], ['down', 'Not helpful']].forEach(function (r) {
-      var b = el('button', 'icon-button'); b.type = 'button';
+      var b = el('button', 'button'); b.type = 'button';
+      b.setAttribute('data-type', 'ghost'); b.setAttribute('data-size', 'xs');
+      b.setAttribute('data-has-text', 'false'); b.setAttribute('data-tooltip', 'start');
       b.setAttribute('data-rate', r[0]); b.setAttribute('aria-label', r[1]);
       b.setAttribute('aria-pressed', String(m.rating === r[0]));
       b.appendChild(thumb());
@@ -343,7 +345,7 @@
     var list = feedback.querySelector('[data-feedback-reasons]');
     list.textContent = '';
     r.reasons.forEach(function (label) {
-      var b = el('button', null, label); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+      var b = el('button', 'chip', label); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
       b.addEventListener('click', function () { b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')); });
       var li = el('li'); li.appendChild(b); list.appendChild(li);
     });
@@ -724,21 +726,32 @@
       return { min: min, max: Math.max(min, max) };
     };
     var width = function () { return panel.getBoundingClientRect().width; };
+    var describe = function (w) {
+      var l = limits();
+      resizer.setAttribute('aria-valuemin', String(Math.round(l.min)));
+      resizer.setAttribute('aria-valuemax', String(Math.round(l.max)));
+      resizer.setAttribute('aria-valuenow', String(Math.round(w)));
+    };
     var setWidth = function (w, save) {
       var l = limits();
       w = Math.round(Math.min(l.max, Math.max(l.min, w)));
       d.style.setProperty('--assistant-width', w + 'px');
-      resizer.setAttribute('aria-valuemin', String(Math.round(l.min)));
-      resizer.setAttribute('aria-valuemax', String(Math.round(l.max)));
-      resizer.setAttribute('aria-valuenow', String(w));
+      describe(w);
       if (save) store(local, 'assistant-width', String(w));
     };
+    // Has the visitor chosen a width? Only then is there a value of ours
+    // on <html> to keep within the limits. Otherwise the width is the
+    // stylesheet's default, which may follow the window: it must be left
+    // alone, not measured and pinned (measuring it at load also raced
+    // the stylesheet and pinned whatever width it had at that instant).
+    var chosen = function () { return d.style.getPropertyValue('--assistant-width') !== ''; };
+    var fit = function () { if (chosen()) setWidth(width(), false); else describe(width()); };
     var reset = function () {
       var a = readingAnchor();
       d.style.removeProperty('--assistant-width');
       store(local, 'assistant-width', null);
       keepPlace(a);
-      setWidth(width(), false);
+      describe(width());
     };
 
     var drag = null;
@@ -752,6 +765,7 @@
     resizer.addEventListener('pointermove', function (e) {
       if (!drag) return;
       var x = e.clientX;
+      if (x !== drag.x) drag.moved = true;
       cancelAnimationFrame(drag.frame);
       drag.frame = requestAnimationFrame(function () {
         setWidth(drag.w + (drag.x - x), false);   // the guide is on the right: left = wider
@@ -761,9 +775,12 @@
     var stop = function () {
       if (!drag) return;
       cancelAnimationFrame(drag.frame);
+      var moved = drag.moved;
       drag = null;
       d.removeAttribute('resizing');
-      setWidth(width(), true);
+      // only a real drag is a choice: a click on the border (or the two of
+      // a double-click) must not pin the default width as the visitor's own
+      if (moved) setWidth(width(), true);
     };
     resizer.addEventListener('pointerup', stop);
     resizer.addEventListener('pointercancel', stop);
@@ -782,7 +799,7 @@
     });
 
     // A smaller window may no longer fit a saved width: re-fit it (unsaved).
-    window.addEventListener('resize', function () { if (isOpen()) setWidth(width(), false); });
-    if (isOpen()) setWidth(width(), false);
+    window.addEventListener('resize', function () { if (isOpen()) fit(); });
+    if (isOpen()) fit();
   }
 })();

@@ -1,0 +1,87 @@
+/* Tooltip: the name of a control that shows no text.
+
+   Every icon-only button gets one, with nothing to add: the tooltip IS
+   its aria-label, drawn below the button on hover and on keyboard focus.
+   So a button cannot have a tooltip that says something else than its
+   name, and cannot be left without one.
+
+     data-tooltip          on anything else that should show its aria-label
+                           (the element must be positioned)
+     data-tooltip="start"  aligned to the control's left edge
+     data-tooltip="end"    aligned to its right edge -- for controls beside
+                           a panel's edge, where a centred one would be cut
+     data-tooltip="top"    above, where there is no room below
+
+   Below, centred, 4px away (8px while the focus ring shows, to clear it);
+   240px at most, then it wraps. Under the pointer it waits half a second
+   (--delay-hint) and fades in; on keyboard focus it shows at once. It is part of its control, so the pointer
+   can move onto it without it closing; Escape closes it (tooltip.js).
+
+   Limit: it is drawn inside its panel, so a scrolling or clipping
+   ancestor cuts it. That is why the Display swatches keep the browser's
+   own `title`: a popover clips. */
+
+@layer components {
+  .button[data-has-text="false"] { position: relative; }
+
+  :where(.button[data-has-text="false"], [data-tooltip])::after {
+    content: attr(aria-label);
+    position: absolute;
+    top: calc(100% + var(--tooltip-offset));
+    left: 50%;
+    translate: -50% 0;
+    z-index: var(--z-tooltip);
+    width: max-content;
+    max-width: var(--tooltip-max);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--bg-tooltip);
+    color: var(--text-on-tooltip);
+    font: var(--type-control);
+    letter-spacing: var(--type-ui-tracking);
+    text-align: center;
+    white-space: normal;
+    box-shadow: var(--shadow-md);
+    /* leaving: a quick fade, then out of the way */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--duration-interaction) var(--ease-exit),
+                visibility var(--duration-instant) linear var(--duration-interaction);
+  }
+
+  /* (:where keeps the rules above and below at one weight, so their
+     order decides: placement, then shown, then hidden.) */
+  [data-tooltip="start"]::after { left: 0; translate: none; }
+  [data-tooltip="end"]::after   { left: auto; right: 0; translate: none; }
+  [data-tooltip="top"]::after   { top: auto; bottom: calc(100% + var(--tooltip-offset)); }
+
+  /* arriving under the pointer: only after it has rested there for
+     --delay-hint (passing over a button shows nothing), then a fade in */
+  @media (hover: hover) {
+    :where(.button[data-has-text="false"], [data-tooltip]):hover::after {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity var(--duration-fast) var(--ease-enter) var(--delay-hint),
+                  visibility var(--duration-instant) linear var(--delay-hint);
+    }
+  }
+  /* arriving by keyboard: at once -- the focus has already settled */
+  :where(.button[data-has-text="false"], [data-tooltip]):focus-visible::after {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity var(--duration-fast) var(--ease-enter),
+                visibility var(--duration-instant) linear;
+    top: calc(100% + 2 * var(--tooltip-offset));
+  }
+  [data-tooltip="top"]:focus-visible::after {
+    top: auto;
+    bottom: calc(100% + 2 * var(--tooltip-offset));
+  }
+
+  /* never on a disabled control, and not after Escape (tooltip.js marks the control until it is left) */
+  :where(.button[data-has-text="false"], [data-tooltip]):is(:disabled, [data-tooltip-dismissed])::after {
+    visibility: hidden;
+    opacity: 0;
+    transition: none;
+  }
+}

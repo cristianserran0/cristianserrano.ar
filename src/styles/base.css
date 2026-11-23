@@ -29,6 +29,56 @@
 
   b { font-weight: var(--weight-strong); }
 
+  /* One focus ring for everything that takes keyboard focus: a 2px line
+     in the accent, 2px clear of the element, its corners following the
+     element's. Never removed; a component may only move it (onto a tile's
+     image, onto the composer's frame). */
+  :focus-visible {
+    outline: var(--border-accent) solid var(--mark);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* A disabled control looks the same in every state, only fainter. */
+  :disabled {
+    opacity: var(--opacity-disabled);
+    cursor: default;
+  }
+
+  /* Code: literal text -- a name, a value, a short expression. Inline it
+     is a chip inside the sentence; a <pre> is code on its own. Never a
+     sign that something can be clicked. Inline code is accent text on
+     the input fill: checked on a panel only, it is not for overlays
+     (scripts/check-contrast.mjs). */
+  code,
+  pre {
+    font: var(--type-code);
+    letter-spacing: var(--type-code-tracking);
+    font-variant-ligatures: none;
+  }
+  code {
+    padding: var(--space-half) var(--code-pad-inline);
+    border: var(--border-hairline) solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: var(--fill-input);
+    color: var(--link);
+  }
+  pre {
+    margin-block: var(--paragraph-gap);
+    padding: var(--code-block-pad);
+    border: var(--border-hairline) solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--fill-subtle);
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+  }
+  pre code {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    color: var(--text-secondary);
+  }
+
   p, ul, ol { margin-block: var(--paragraph-gap); }
 
   /* An emoji leading or trailing a line of text. */

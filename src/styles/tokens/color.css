@@ -33,6 +33,21 @@
 :root {
   --white: #fff;
   --black: #000;
+
+  /* Status hues: what happened, not who the site is -- so they belong to
+     no collection and stay the same under every accent and temperature.
+     Two tones each, on purpose unlike each other:
+       the base, for light surfaces: vivid. This site's own punchiest
+         steps of each hue (blue 500, green 500, red 500 of the accent
+         ramps below), so a message is as lively as the accent. Amber is
+         orange 400 taken a touch darker (#c97e00 -> #c07800): at 400 the
+         icon reached only 2.85:1 on its own tint.
+       -soft, for dark surfaces: lighter and much less saturated, so a
+         tint does not glow on a dark panel. */
+  --information: #3065ff;  --information-soft: #628cc0;
+  --success:     #008f48;  --success-soft:     #59a57c;
+  --warning:     #c07800;  --warning-soft:     #d4a155;
+  --danger:      #e00024;  --danger-soft:      #dc4d73;
 }
 
 
@@ -251,7 +266,13 @@
   --text-primary:   light-dark( var(--ink-900), var(--ink-50) );
   --text-secondary: light-dark( var(--ink-800), var(--ink-100));
   --text-tertiary:  light-dark( var(--ink-700), var(--ink-200));
-  --border-subtle:  light-dark( var(--neutral-200), var(--neutral-800));
+  /* Hairlines and frames: see-through, like the fills, so one value sits
+     right on any depth and on a tint. Half the strength of a control's
+     own edge (--border-default, below). */
+  --border-subtle:  light-dark( rgb(from var(--neutral-900) r g b / 0.10),
+                                rgb(from var(--white) r g b / 0.08) );
+  /* A scrollbar's thumb: solid, a see-through one would all but vanish. */
+  --scrollbar-thumb: light-dark( var(--neutral-200), var(--neutral-800));
   /* The accent has two jobs. --link is accent-coloured TEXT (a hovered
      link, the current page): it must reach 4.5:1, which pins every hue
      at the same lightness -- vivid for blue, muddy for orange or teal.
@@ -310,14 +331,81 @@
   --backdrop:       light-dark( rgb(from var(--neutral-75) r g b / 0.7),
                                 rgb(from var(--neutral-1000) r g b / 0.7) );
 
-  /* A solid accent mark (the guide's tile): the accent at full strength,
-     with a white symbol on it, in either scheme. */
+  /* The guide's mark: a star in the accent with some volume. Lit from
+     above and a little to the left, like the canvas: a soft highlight
+     where the light lands, the accent's lighter step at the top running
+     to a deeper one at the bottom. Beneath it, the shadows a solid thing
+     casts (tokens/effects.css): a tight dark one where it meets the
+     surface and a short soft one below -- not a glow. Same in either
+     scheme. */
+  --mark-gradient:  radial-gradient(circle at 36% 26%, rgb(from var(--white) r g b / 0.5), transparent 52%),
+                    linear-gradient(to bottom, var(--accent-400), var(--accent-600) 62%, var(--accent-700));
+  --mark-shade:     rgb(from var(--accent-900) r g b / 0.35);
+  --mark-cast:      rgb(from var(--accent-700) r g b / 0.28);
+  /* A solid accent fill with a white symbol on it, in either scheme. */
   --bg-accent:      var(--mark-light);   /* white on it >= 3.1:1 for every accent */
   --text-on-accent: var(--white);
 
   /* On imagery: text sits on a darkening scrim, in either scheme. */
   --text-on-media:  var(--white);
   --scrim:          rgb(0 0 0 / 0.5);
+
+  /* CONTROLS -- buttons, fields, the segmented control, tooltips.
+       --border-default  a control's own edge (an outlined button, a field);
+                         --border-subtle stays for hairlines between things
+       --fill-input      the see-through fill of a field or a track
+       --state-hovered   drawn OVER whatever fill a control has, so one
+       --state-pressed   pair works on a blue button and on a bare one
+       --bg-action       the primary button: the accent at the step that
+                         carries white text at 4.5:1 in every hue (rung
+                         600, the same step as --link in light) */
+  --border-default: light-dark( rgb(from var(--neutral-900) r g b / 0.20),
+                                rgb(from var(--white) r g b / 0.12) );
+  --fill-input:     light-dark( rgb(from var(--neutral-900) r g b / 0.03),
+                                rgb(from var(--white) r g b / 0.05) );
+  --state-hovered:  light-dark( rgb(from var(--neutral-900) r g b / 0.10),
+                                rgb(from var(--white) r g b / 0.07) );
+  --state-pressed:  light-dark( rgb(from var(--neutral-900) r g b / 0.20),
+                                rgb(from var(--white) r g b / 0.12) );
+  --bg-action:      var(--accent-600);
+  /* VOLUME -- a primary or an outlined button is a solid thing, lit from
+     above like the canvas: its face holds its colour for the top third,
+     then deepens toward the bottom; it has a hairline edge and casts a
+     short shadow (--shadow-control, tokens/effects.css).
+       --volume-action   the primary's face: the accent, to one step deeper
+                         (deeper only, so white text never loses contrast)
+       --volume-surface  the outlined button's face: a see-through shade
+                         over whatever it sits on -- darker toward the
+                         bottom in light; in dark, lighter at the top
+       --border-on-fill  the edge of a filled button: a darkening line */
+  --volume-action:  linear-gradient(to bottom, var(--accent-600) 35%, var(--accent-700));
+  --volume-surface: linear-gradient(to bottom,
+                      light-dark( rgb(from var(--neutral-900) r g b / 0.03), rgb(from var(--white) r g b / 0.09) ) 35%,
+                      light-dark( rgb(from var(--neutral-900) r g b / 0.08), rgb(from var(--white) r g b / 0.03) ));
+  --border-on-fill: rgb(from var(--black) r g b / 0.15);
+  /* The chosen item of a menu: a see-through tint of the accent, with
+     its label in a deeper accent that carries 4.5:1 on that tint. */
+  --fill-selected:  light-dark( rgb(from var(--accent-600) r g b / 0.10),
+                                rgb(from var(--accent-400) r g b / 0.16) );
+  --text-selected:  light-dark( var(--accent-700), var(--accent-300) );
+  /* A tooltip stays dark in both schemes, with white text on it. */
+  --bg-tooltip:      light-dark( var(--neutral-950), var(--neutral-700) );
+  --text-on-tooltip: var(--white);
+
+  /* STATUS -- a message's icon and tint, an invalid field's edge.
+     --status-* is the colour as a SHAPE (3:1), never as text: danger
+     reaches only 4.18:1 on the dark overlay. --fill-* is the same hue as
+     a see-through tint behind a message. */
+  --status-information: light-dark( var(--information), var(--information-soft) );
+  --status-success:     light-dark( var(--success),     var(--success-soft) );
+  --status-warning:     light-dark( var(--warning),     var(--warning-soft) );
+  --status-danger:      light-dark( var(--danger),      var(--danger-soft) );
+  /* The tint: the vivid tone at 12% in light; in dark the SOFT tone at
+     14%, not the vivid one -- the same job at far less saturation. */
+  --fill-information:   light-dark( rgb(from var(--information) r g b / 0.12), rgb(from var(--information-soft) r g b / 0.14) );
+  --fill-success:       light-dark( rgb(from var(--success) r g b / 0.12),     rgb(from var(--success-soft) r g b / 0.14) );
+  --fill-warning:       light-dark( rgb(from var(--warning) r g b / 0.12),     rgb(from var(--warning-soft) r g b / 0.14) );
+  --fill-danger:        light-dark( rgb(from var(--danger) r g b / 0.12),      rgb(from var(--danger-soft) r g b / 0.14) );
 
   /* Shadow tint. The original site's navy, kept literal for now; folding it
      into the accent hue is a deliberate visual change, not a refactor. */

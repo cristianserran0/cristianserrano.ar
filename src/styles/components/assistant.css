@@ -62,23 +62,6 @@
     font-weight: var(--weight-semibold);
   }
 
-  .icon-button {
-    display: inline-grid;
-    place-items: center;
-    width: var(--icon-button);
-    height: var(--icon-button);
-    padding: 0;
-    border: none;
-    border-radius: var(--radius-md);
-    background: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-  }
-  .icon-button:hover { background: var(--fill-subtle); color: var(--text-primary); }
-  .icon-button:focus-visible { outline: var(--border-accent) solid var(--mark); }
-  .icon-button svg { width: var(--icon-size); height: var(--icon-size); }
-  .icon-button:disabled { cursor: default; color: var(--text-tertiary); background: none; }
-
   /* ---- log ---- */
   /* The guide scrolls on its own: only the log scrolls, so its scrollbar
      spans just the log, and the panel (overscroll-behavior: contain, above)
@@ -93,7 +76,7 @@
        reply replaces the streaming one -- after the visitor took over. */
     overflow-anchor: none;
     scrollbar-width: thin;
-    scrollbar-color: var(--border-subtle) transparent;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
     list-style-type: none;
     margin: 0;
     /* the conversation keeps a reading measure, centred, however wide the panel */
@@ -141,18 +124,23 @@
     gap: var(--space-2);
   }
 
+  /* Not .buttons: a suggestion is a whole question, and wraps. Same
+     edge and same states as an outlined button. */
   .assistant-suggestions button {
     font: var(--type-chat);
     letter-spacing: var(--type-chat-tracking);
     color: var(--text-primary);
     background: none;
-    border: var(--border-hairline) solid var(--border-subtle);
+    border: var(--border-hairline) solid var(--border-default);
     border-radius: var(--radius-md);
     padding: var(--space-1) var(--space-3);
     cursor: pointer;
     text-align: left;
   }
-  .assistant-suggestions button:hover { border-color: var(--mark); }
+  @media (hover: hover) {
+    .assistant-suggestions button:hover { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+  .assistant-suggestions button:active { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)); }
 
   /* ---- where you are: above the composer, rewritten per page ---- */
   /* ---- composer ---- */
@@ -184,7 +172,6 @@
     }
   }
   .assistant-composer div { display: flex; justify-content: flex-end; }
-  .assistant-composer [type="submit"] { background: var(--fill-subtle); }
 
   .assistant-disclaimer {
     font: var(--type-fineprint);
@@ -206,13 +193,9 @@
     letter-spacing: var(--type-caption-tracking);
     color: var(--text-tertiary);
   }
-  .assistant-rating .icon-button {
-    width: var(--space-6);
-    height: var(--space-6);
-    color: var(--text-tertiary);
-  }
+  /* two xs ghost buttons (button.css), quieter than the answer until pressed */
+  .assistant-rating .button:not([aria-pressed="true"]) { color: var(--text-tertiary); }
   .assistant-rating [data-rate="down"] svg { scale: -1 -1; }   /* the same thumb, pointing down */
-  .assistant-rating [aria-pressed="true"] { color: var(--mark); background: var(--fill-subtle); }
   .assistant-rating span { margin-inline-start: var(--space-1); }
 }
 
@@ -230,13 +213,6 @@
   .assistant-md ol { list-style-type: decimal; }
   .assistant-md li + li { margin-top: var(--space-1); }
   .assistant-md strong { font-weight: var(--weight-semibold); }
-  .assistant-md code {
-    font: var(--type-caption);
-    letter-spacing: var(--type-caption-tracking);
-    padding: 0 var(--space-1);
-    border-radius: var(--radius-md);
-    background: var(--fill-subtle);
-  }
   .assistant-md a { color: var(--text-primary); text-decoration-color: var(--mark); }
   .assistant-md a:hover { color: var(--link); }
 
@@ -266,7 +242,6 @@
   .assistant-composer [data-icon="stop"] { display: none; }
   .assistant-composer[data-busy] [data-icon="send"] { display: none; }
   .assistant-composer[data-busy] [data-icon="stop"] { display: block; }
-  .assistant-composer[data-busy] [type="submit"] { color: var(--text-primary); }
 
   /* one timing for every hover in the panel */
   .assistant button,
@@ -301,19 +276,21 @@
     text-align: center;
   }
   .assistant-empty[hidden] { display: none; }
-  /* the mark: a solid accent tile with the sparkle */
+  /* the mark: a four-point star in an accent gradient, lit from above, casting a short shadow */
   .assistant-mark {
-    display: grid;
-    place-items: center;
     width: var(--guide-mark);
     height: var(--guide-mark);
-    margin-bottom: var(--space-2);
-    border-radius: var(--radius-lg);
-    background: var(--bg-accent);
-    color: var(--text-on-accent);
-    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-3);
+    filter: drop-shadow(var(--shadow-mark-contact)) drop-shadow(var(--shadow-mark-cast));
   }
-  .assistant-mark svg { width: var(--icon-button); height: var(--icon-button); }
+  .assistant-mark::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--mark-gradient);
+    mask: var(--guide-mark-shape) center / contain no-repeat;
+  }
   .assistant-empty h3 {
     font: var(--type-label);
     letter-spacing: var(--type-label-tracking);
@@ -346,8 +323,10 @@
     text-align: left;
     cursor: pointer;
   }
-  .assistant-options button:hover { border-color: var(--mark); background: var(--fill-subtle); }
-  .assistant-options button:focus-visible { outline: var(--border-accent) solid var(--mark); outline-offset: var(--focus-offset); }
+  @media (hover: hover) {
+    .assistant-options button:hover { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+  .assistant-options button:active { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)); }
   .assistant-options button > span:first-child {
     display: grid;
     place-items: center;
@@ -412,8 +391,10 @@
   }
   .assistant-jump[hidden] { display: none; }
   .assistant-jump svg { width: var(--icon-size); height: var(--icon-size); }
-  .assistant-jump:hover { border-color: var(--mark); }
-  .assistant-jump:focus-visible { outline: var(--border-accent) solid var(--mark); outline-offset: var(--focus-offset); }
+  @media (hover: hover) {
+    .assistant-jump:hover { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+  .assistant-jump:active { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)); }
 }
 
 /* ---- More options (the ⋯ menu in the guide's header) ---- */
@@ -470,9 +451,10 @@
     color: var(--mark);
     font: var(--type-label-small);
   }
-  .guide-menu button:hover { background: var(--fill-subtle); }
-  .guide-menu button:focus-visible { outline: var(--border-accent) solid var(--mark); outline-offset: 0; }
-  .guide-menu button:disabled { cursor: default; color: var(--text-tertiary); background: none; }
+  @media (hover: hover) {
+    .guide-menu button:hover:not(:disabled) { background: var(--state-hovered); }
+  }
+  .guide-menu button:active:not(:disabled) { background: var(--state-pressed); }
   .guide-menu hr {
     margin: var(--space-2) 0;
     border: none;

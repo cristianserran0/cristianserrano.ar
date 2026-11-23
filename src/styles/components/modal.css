@@ -46,60 +46,16 @@
     font-weight: var(--weight-semibold);
     margin: 0 0 var(--space-3);
   }
-  .panel-modal p {
-    font: var(--type-caption);
-    letter-spacing: var(--type-caption-tracking);
-    color: var(--text-tertiary);
-    margin: var(--space-2) 0 0;
-  }
-  .panel-modal textarea {
-    display: block;
-    width: 100%;
-    resize: none;
-    padding: var(--space-2) var(--space-3);
-    border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--fill-subtle);
-    color: var(--text-primary);
-    font: var(--type-chat);
-    letter-spacing: var(--type-chat-tracking);
-  }
-  .panel-modal textarea::placeholder { color: var(--text-tertiary); }
-  .panel-modal textarea:focus-visible { outline: var(--border-accent) solid var(--mark); outline-offset: 0; }
+  /* its field is a .field, its actions are .buttons, its note a .message */
+  .panel-modal .message { margin-top: var(--space-3); }
 
-  .panel-modal form > div {
+  .panel-modal form > div:last-child {
     display: flex;
     justify-content: flex-end;
     gap: var(--space-2);
     margin-top: var(--space-4);
   }
-  .panel-modal button {
-    font: var(--type-chat);
-    letter-spacing: var(--type-chat-tracking);
-    font-weight: var(--weight-medium);
-    color: var(--text-primary);
-    background: none;
-    border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: var(--space-1) var(--space-3);
-    cursor: pointer;
-  }
-  .panel-modal button:hover { border-color: var(--mark); }
-  .panel-modal button:focus-visible { outline: var(--border-accent) solid var(--mark); outline-offset: var(--focus-offset); }
-  .panel-modal [type="submit"] { background: var(--fill-strong); border-color: transparent; }
 
-  /* reasons: toggle chips */
-  .feedback-reasons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin: 0 0 var(--space-3);
-    padding: 0;
-    list-style-type: none;
-  }
-  .feedback-reasons button { font-weight: var(--weight-regular); }
-  .feedback-reasons [aria-pressed="true"] {
-    background: var(--fill-strong);
-    border-color: var(--mark);
-  }
+  /* reasons: chips (chip.css) */
+  .feedback-reasons { margin-bottom: var(--space-3); }
 }

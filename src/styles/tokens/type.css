@@ -18,9 +18,13 @@
    display       page title (h1)                       66 / 1.2 / 600
    subtitle      line under the page title             19 / 1.4 / 700
    lead          opening paragraphs, quotes            19 / 1.6 / 300
+   intro-title   the page title of Home (h1)           48 / 1.2 / 600
+   intro         the opening of Home                   18 / 1.6 / 300
    title         section heading (h2)                  32 / 1.4 / 600
+   title-small   heading of a list of entries (Home)   24 / 1.4 / 600
    heading       sub-section heading (h3), tile title  22 / 1.4 / 500
    subheading    h4                                    19 / 1.4 / 500
+   item          a piece's title under a position      16 / 1.4 / 500
    body          paragraphs, list items                16 / 1.6 / 300
    meta          aside inside a heading (dates)        19 / 1.4 / 300
    meta-small    aside inside a subheading (places)    16 / 1.4 / 300
@@ -31,6 +35,13 @@
    label-small   controls on narrow screens            14 / 1.4 / 500
    ornament      the end-of-article mark               22 / 1.4 / 300
    chat          assistant messages                    14 / 1.5 / 400
+
+   Interface text: picked by usage, line height set in px, no tracking.
+   ui            what a control or a message says      14 / 20px / 400
+   ui-small      small labels: segmented control       12 / 16px / 400
+   control       a button's label, a tooltip           14 / 20px / 500
+   control-large a button's label at md and lg         16 / 24px / 500
+   code          inline code and code blocks           13 / 1.35 / 500 mono
 
    Sizes are named by their pixel value at the default 16px root,
    so a new size slots in between without renaming the others.
@@ -69,19 +80,31 @@
                "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue",
                Arial, sans-serif;
 
+  /* No code face is self-hosted yet: the system's own monospace. */
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Source Code Pro", Menlo, Consolas,
+               "Liberation Mono", monospace;
+
   --font-size-12: 0.75rem;
   --font-size-13: 0.8125rem;
   --font-size-14: 0.875rem;
   --font-size-16: 1rem;
+  --font-size-18: 1.125rem;
   --font-size-19: 1.1875rem;
   --font-size-22: 1.375rem;
+  --font-size-24: 1.5rem;
   --font-size-32: 2rem;
+  --font-size-48: 3rem;
   --font-size-66: 4.125rem;
 
   --leading-tight:   1.2;
   --leading-normal:  1.4;
   --leading-medium:  1.5;
   --leading-relaxed: 1.6;
+  --leading-code:    1.35;
+  /* interface text: line height as a length, named by its px value */
+  --leading-16: 1rem;
+  --leading-20: 1.25rem;
+  --leading-24: 1.5rem;
 
   --weight-light:    300;
   --weight-regular:  400;
@@ -96,12 +119,20 @@
   --type-subtitle-tracking:    -0.022rem;
   --type-lead:                 var(--weight-light) var(--font-size-19)/var(--leading-relaxed) var(--font-sans);
   --type-lead-tracking:        -0.015rem;
+  --type-intro-title:          var(--weight-semibold) var(--font-size-48)/var(--leading-tight) var(--font-sans);
+  --type-intro-title-tracking: -0.116rem;   /* the display's tracking, in proportion (-0.16rem at 66px) */
+  --type-intro:                var(--weight-light) var(--font-size-18)/var(--leading-relaxed) var(--font-sans);
+  --type-intro-tracking:       -0.015rem;
   --type-title:                var(--weight-semibold) var(--font-size-32)/var(--leading-normal) var(--font-sans);
   --type-title-tracking:       -0.022rem;
+  --type-title-small:          var(--weight-semibold) var(--font-size-24)/var(--leading-normal) var(--font-sans);
+  --type-title-small-tracking: -0.022rem;
   --type-heading:              var(--weight-medium) var(--font-size-22)/var(--leading-normal) var(--font-sans);
   --type-heading-tracking:     -0.022rem;
   --type-subheading:           var(--weight-medium) var(--font-size-19)/var(--leading-normal) var(--font-sans);
   --type-subheading-tracking:  -0.022rem;
+  --type-item:                 var(--weight-medium) var(--font-size-16)/var(--leading-normal) var(--font-sans);
+  --type-item-tracking:        -0.011rem;
   --type-body:                 var(--weight-light) var(--font-size-16)/var(--leading-relaxed) var(--font-sans);
   --type-body-tracking:        -0.011rem;
   --type-meta:                 var(--weight-light) var(--font-size-19)/var(--leading-normal) var(--font-sans);
@@ -122,6 +153,15 @@
   --type-ornament-tracking:    -0.018rem;
   --type-chat:                 var(--weight-regular) var(--font-size-14)/var(--leading-medium) var(--font-sans);
   --type-chat-tracking:        -0.011rem;
+
+  /* interface text */
+  --type-ui:                   var(--weight-regular) var(--font-size-14)/var(--leading-20) var(--font-sans);
+  --type-ui-small:             var(--weight-regular) var(--font-size-12)/var(--leading-16) var(--font-sans);
+  --type-control:              var(--weight-medium) var(--font-size-14)/var(--leading-20) var(--font-sans);
+  --type-control-large:        var(--weight-medium) var(--font-size-16)/var(--leading-24) var(--font-sans);
+  --type-ui-tracking:          0;   /* one value for the four above */
+  --type-code:                 var(--weight-medium) var(--font-size-13)/var(--leading-code) var(--font-mono);
+  --type-code-tracking:        0;
 
   /* Inline emphasis inside any text style. */
   --weight-strong: var(--weight-semibold);

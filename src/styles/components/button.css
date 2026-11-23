@@ -1,0 +1,123 @@
+/* Button: every action on the site that is not a link.
+
+   <button class="button" data-type="outlined"><span>Cancel</span></button>
+   <button class="button" data-type="ghost" data-has-text="false" aria-label="Close guide"><svg …/></button>
+
+   Its properties:
+
+     data-type            primary (default) | outlined | ghost
+     data-size            xs | sm (default) | md | lg
+     data-has-text        "false" for an icon-only button; it must carry an
+                          aria-label, which is also its tooltip (tooltip.css)
+     disabled             the native attribute (base.css fades it)
+
+   The label goes in a <span>: its side padding is the distance from an
+   icon to the text. An icon is an <svg> before or after the span.
+
+   Primary and outlined buttons have VOLUME: a face that deepens toward
+   the bottom, a hairline edge and a short shadow (tokens/color.css,
+   "VOLUME"). A ghost button is flat.
+
+   States are drawn OVER the face (--state-hovered, --state-pressed). The focus ring is the site-wide
+   one (base.css). A ghost button can also be ON (aria-pressed,
+   aria-expanded): a toggle, or one whose panel is open. An icon-only
+   one then fills its icon. (Options to pick are chips, chip.css.)
+
+   Not built: a destructive variant. Nothing on the site removes
+   anything, and the danger colour is not used for text here
+   (scripts/check-contrast.mjs). */
+
+@layer components {
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    height: var(--control-sm);
+    padding: 0 var(--control-pad-sm);
+    border-radius: var(--radius-md);
+    border: var(--border-hairline) solid var(--border-on-fill);
+    background-color: var(--bg-action);
+    background-image: var(--volume-action);
+    box-shadow: var(--shadow-control);
+    color: var(--text-on-accent);
+    font: var(--type-control);
+    letter-spacing: var(--type-ui-tracking);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: scale var(--duration-interaction) var(--ease-standard),
+                box-shadow var(--duration-interaction) var(--ease-standard),
+                background-color var(--duration-interaction) var(--ease-standard),
+                color var(--duration-interaction) var(--ease-standard);
+  }
+  .button > span { padding-inline: var(--control-label-pad); }
+  .button svg {
+    flex: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+  }
+
+  /* ---- type ---- */
+  .button[data-type="outlined"],
+  .button[data-type="ghost"] {
+    background-color: transparent;
+    color: var(--text-primary);
+    font-weight: var(--weight-medium);
+  }
+  .button[data-type="outlined"] {
+    border-color: var(--border-default);
+    background-image: var(--volume-surface);
+  }
+  /* a ghost button is flat: no face, no edge, no shadow */
+  .button[data-type="ghost"] {
+    border-color: transparent;
+    background-image: none;
+    box-shadow: none;
+  }
+
+  /* ---- size ---- */
+  .button[data-size="xs"] { height: var(--control-xs); padding-inline: var(--control-pad-xs); }
+  .button[data-size="md"] { height: var(--control-md); padding-inline: var(--control-pad-md); }
+  .button[data-size="lg"] { height: var(--control-lg); padding-inline: var(--control-pad-lg); }
+  .button:is([data-size="md"], [data-size="lg"]) {
+    font: var(--type-control-large);
+    letter-spacing: var(--type-ui-tracking);
+    font-weight: var(--weight-semibold);
+  }
+  .button:is([data-size="md"], [data-size="lg"]):is([data-type="outlined"], [data-type="ghost"]) { font-weight: var(--weight-medium); }
+  .button:is([data-size="md"], [data-size="lg"]) > span { padding-inline: var(--control-label-pad-large); }
+  .button:is([data-size="md"], [data-size="lg"]) svg { width: var(--icon-size-large); height: var(--icon-size-large); }
+
+  /* ---- icon-only: a square ---- */
+  .button[data-has-text="false"] {
+    aspect-ratio: 1;
+    padding: 0;
+  }
+
+  /* ---- on: a toggle that is pressed, or whose panel is open ---- */
+  /* (the menu's chosen look: a tint of the accent, the icon in a deeper accent) */
+  .button[data-type="ghost"]:is([aria-pressed="true"], [aria-expanded="true"]) {
+    background-color: var(--fill-selected);
+    color: var(--text-selected);
+  }
+  /* an icon-only button that is ON shows its icon filled, not only tinted */
+  .button[data-has-text="false"]:is([aria-pressed="true"], [aria-expanded="true"]) svg { fill: currentColor; }
+
+  /* ---- states: pressed over hovered ----
+     Drawn over the button's face, so the face is named again under them. */
+  @media (hover: hover) {
+    .button:hover:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)), var(--volume-action); }
+    .button[data-type="outlined"]:hover:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)), var(--volume-surface); }
+    .button[data-type="ghost"]:hover:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+  .button:active:not(:disabled) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)), var(--volume-action); }
+  .button[data-type="outlined"]:active:not(:disabled) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)), var(--volume-surface); }
+  .button[data-type="ghost"]:active:not(:disabled) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)); }
+  /* pressed in: it gives a little, and a button with volume loses its shadow */
+  .button:active:not(:disabled) {
+    scale: var(--press-scale);
+    box-shadow: none;
+  }
+}

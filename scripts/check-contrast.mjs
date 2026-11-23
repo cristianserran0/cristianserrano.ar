@@ -37,14 +37,46 @@ const MARKS = [['--mark', '--bg-surface'], ['--mark', '--bg-raised'], ['--mark',
 // Every depth text sits on, plus the see-through fills over the panel (and
 // over the overlay) they are drawn on: "a+b" paints b over a, as on screen.
 const BG = ['--bg-surface', '--bg-raised', '--bg-overlay',
-            '--bg-surface+--fill-subtle', '--bg-surface+--fill-strong', '--bg-overlay+--fill-strong'];
+            '--bg-surface+--fill-subtle', '--bg-surface+--fill-strong', '--bg-overlay+--fill-strong',
+            // controls: a field or a track, a hovered and a pressed bare control, the four messages
+            '--bg-surface+--fill-input', '--bg-overlay+--fill-input',
+            '--bg-surface+--state-hovered', '--bg-overlay+--state-hovered',
+            '--bg-surface+--state-pressed', '--bg-overlay+--state-pressed',
+            '--bg-surface+--fill-information', '--bg-overlay+--fill-information',
+            '--bg-surface+--fill-success', '--bg-overlay+--fill-success',
+            '--bg-surface+--fill-warning', '--bg-overlay+--fill-warning',
+            '--bg-surface+--fill-danger', '--bg-overlay+--fill-danger'];
+// Text pairs that are not "every text role on every background": a
+// button's label on its fill in each state, a tooltip, the danger colour
+// as text, inline code (accent text on the subtle fill).
+const TEXT = [
+  ['--text-on-accent', '--bg-action'], ['--text-on-accent', '--bg-action+--state-hovered'],
+  ['--text-on-accent', '--bg-action+--state-pressed'],
+  // the primary's face deepens to rung 700 at the bottom
+  ['--text-on-accent', '--accent-700'], ['--text-on-accent', '--accent-700+--state-hovered'],
+  ['--text-on-tooltip', '--bg-tooltip'],
+  // the chosen menu item: its label on its tint, at rest and hovered
+  ['--text-selected', '--bg-surface+--fill-selected'], ['--text-selected', '--bg-overlay+--fill-selected'],   // and a picked chip, in a dialog
+  ['--text-selected', '--bg-surface+--fill-selected+--state-hovered'],
+  // a switch's thumb while off: ink on the input fill (a shape; passes as text too)
+  ['--text-secondary', '--bg-surface+--fill-input'],
+  // Inline code, on a panel. NOT on an overlay: there the accent text on
+  // the input fill drops to 3.97:1 (dark, magenta), so code inside a
+  // modal or a pop-up would need another colour first.
+  ['--link', '--bg-surface+--fill-input'],
+];
+// A message's icon on its tint: a graphic, 3:1. The danger colour is
+// checked as a shape only: as TEXT it does not reach 4.5:1 on the dark
+// overlay, which is why no rule uses it for text.
+const ICONS = ['information', 'success', 'warning', 'danger'].flatMap(s =>
+  ['--bg-surface', '--bg-overlay'].map(b => [`--status-${s}`, `${b}+--fill-${s}`]));
 
 const page = `<!DOCTYPE html><html><head><style>${css}</style></head><body><pre id="o"></pre>
 <script>
 var cv=document.createElement('canvas'); cv.width=cv.height=1;
 var cx=cv.getContext('2d',{willReadFrequently:true});
 var S=${JSON.stringify(SCHEMES)},T=${JSON.stringify(TEMPS)},A=${JSON.stringify(ACCENTS)},
-    R=${JSON.stringify([...new Set([...FG, ...BG, '--mark', '--text-on-accent', '--bg-accent'])])}, out=[];
+    R=${JSON.stringify([...new Set([...FG, ...BG, '--mark', '--text-on-accent', '--bg-accent', ...TEXT.flat(), ...ICONS.flat()])])}, out=[];
 S.forEach(function(s){T.forEach(function(t){A.forEach(function(a){
   var d=document.createElement('div');
   d.setAttribute('scheme',s); d.setAttribute('temperature',t); d.setAttribute('accent',a);
@@ -94,7 +126,7 @@ if (rows.length !== want) {
 }
 const rgb = v => Array.isArray(v) && v.length === 3 && v.every(x => Number.isInteger(x) && x >= 0 && x <= 255) ? v : [];
 const unresolved = [];
-const ALL = [...new Set([...FG, ...BG, ...MARKS.flat()])];
+const ALL = [...new Set([...FG, ...BG, ...MARKS.flat(), ...TEXT.flat(), ...ICONS.flat()])];
 for (const r of rows)
   for (const k of ALL)
     if (rgb(r.roles[k]).length !== 3)
@@ -116,17 +148,32 @@ for (const r of rows)
     // Fills (hovers, chat bubbles, inputs, the chosen option, image
     // placeholders) never carry link TEXT. The one accent-coloured thing on
     // a fill is the pressed rating icon, a graphic: 3:1, met with room.
-    if (f.startsWith('--link') && b.includes('--fill-')) continue;
+    // Nor does a hovered or pressed control: its label is ink, or white
+    // on the accent (TEXT below). Inline code IS accent text on a fill;
+    // that one pair is in TEXT.
+    if (f.startsWith('--link') && (b.includes('--fill-') || b.includes('--state-'))) continue;
     const v = ratio(rgb(r.roles[f]), rgb(r.roles[b])); n++;
     if (v < 4.5) fails.push(`  ${r.scheme}/${r.temp}/${r.accent}  ${f.slice(2)} on ${b.slice(2)}` +
                             `  rgb(${r.roles[f]}) / rgb(${r.roles[b]})  ${v.toFixed(2)}:1`);
   }
 for (const r of rows)
-  for (const [f, b] of MARKS) {
+  for (const [f, b] of TEXT) {
+    const v = ratio(rgb(r.roles[f]), rgb(r.roles[b])); n++;
+    if (v < 4.5) fails.push(`  ${r.scheme}/${r.temp}/${r.accent}  ${f.slice(2)} on ${b.slice(2)}  ${v.toFixed(2)}:1`);
+  }
+for (const r of rows)
+  for (const [f, b] of [...MARKS, ...ICONS]) {
     const v = ratio(rgb(r.roles[f]), rgb(r.roles[b])); n++;
     if (v < 3) fails.push(`  ${r.scheme}/${r.temp}/${r.accent}  ${f.slice(2)} on ${b.slice(2)}  ${v.toFixed(2)}:1 (shapes need 3:1)`);
   }
 console.log(`${SCHEMES.length}×${TEMPS.length}×${ACCENTS.length} = ${rows.length} appearances, ${n} pairs (text 4.5:1, shapes 3:1)\n`);
+if (process.env.CONTRAST_SUMMARY) {
+  // one line per failing pair, with its worst ratio and how often it fails
+  const by = {};
+  for (const f of fails) { const [, where, pair, ratio] = f.match(/^\s+(\S+)\s+(.+? on \S+).*?([\d.]+):1/) || [];
+    const e = by[pair] ||= { n: 0, worst: 99, where: '' }; e.n++; if (+ratio < e.worst) { e.worst = +ratio; e.where = where; } }
+  for (const [pair, e] of Object.entries(by)) console.log(`  ${pair}: fails in ${e.n}/${rows.length}, worst ${e.worst}:1 (${e.where})`);
+}
 console.log(fails.length ? `FAILURES (${fails.length}):\n` + fails.slice(0, 20).join('\n') +
   (fails.length > 20 ? `\n  ... +${fails.length - 20} more` : '') : '✓ every pair passes');
 process.exit(fails.length ? 1 : 0);

@@ -1,0 +1,62 @@
+/* Message: an inline note about the result of an action, or something
+   that needs attention, placed in the section or dialog it is about.
+   Not a toast and not a chat message.
+
+   <div class="message" data-type="information" role="status">
+     <svg aria-hidden="true">…</svg>
+     <div>
+       <strong>Optional title</strong>
+       <p>What happened, then the next step.</p>
+     </div>
+   </div>
+
+     data-type  information (default) | success | important | danger
+     role       "status" for information and success,
+                "alert" for important and danger
+
+   The icon and the words carry the meaning; the colour only reinforces
+   it. The icon is decorative (aria-hidden).
+
+   Not built, because nothing here needs them: an action button and a
+   dismiss button inside the message. */
+
+@layer components {
+  .message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--fill-information);
+    color: var(--text-secondary);
+    font: var(--type-ui);
+    letter-spacing: var(--type-ui-tracking);
+  }
+  .message > svg {
+    flex: none;
+    width: var(--icon-size-large);
+    height: var(--icon-size-large);
+    color: var(--status-information);
+  }
+  .message > div {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .message strong {
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+  }
+  .message p {
+    margin: 0;
+    font: var(--type-ui);
+    letter-spacing: var(--type-ui-tracking);
+    color: var(--text-secondary);
+  }
+
+  .message[data-type="success"]         { background: var(--fill-success); }
+  .message[data-type="success"] > svg   { color: var(--status-success); }
+  .message[data-type="important"]       { background: var(--fill-warning); }
+  .message[data-type="important"] > svg { color: var(--status-warning); }
+  .message[data-type="danger"]          { background: var(--fill-danger); }
+  .message[data-type="danger"] > svg    { color: var(--status-danger); }
+}

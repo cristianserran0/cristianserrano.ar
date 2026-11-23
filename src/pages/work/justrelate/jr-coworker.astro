@@ -1,0 +1,38 @@
+---
+/* One of the cases inside the JustRelate Home case study
+   (/work/justrelate-head-of-design/), on a page of its own. The text is
+   that page's section of the same name, word for word; only its headings
+   moved up a level. That page still holds the shared Context and Wrap up.
+   Not indexed and not in the sitemap while it is this short and repeats
+   the page it came from. */
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout
+  piece="justrelate/jr-coworker"
+  title="JR Coworker - Cristian Serrano"
+  description="Cristian Serrano conceptualised JR Coworker, the AI layer on top of the JustRelate platform."
+  readingTime={true}
+  noindex={true}
+>
+
+  <section id="jr-coworker">
+
+    <article>
+      <h2>The agentic marketing OS strategy</h2>
+      <p>The bigger strategic bet — and the one that shaped how I approached both the platform vision and the AI work — is positioning JustRelate as the best agentic marketing OS in the market.</p>
+      <p>The platform has two distinct layers. Home is the management layer: CRM, DAM, Brands, Campaigns, and other tools for managing data, assets, and marketing strategy. The Builders are the creation layer: Web Builder for websites and apps, Email Builder, Workflow Builder for mailing automations — specialised tools for producing and deploying deliverables. Home is where you manage and plan; Builders are where you make and ship.</p>
+      <p>The agentic leap happens when AI can move fluidly between those layers: reading context from Home — customer data, brand assets, campaign goals — and instructing the Builders to produce and deploy the right deliverables autonomously. That is what turns a suite of tools into an OS.</p>
+    </article>
+
+    <article>
+      <h2>JR Coworker as the AI layer</h2>
+      <p>The technical approach behind Coworker is a skill-based architecture: each product surface — whether a Home management tool or a Builder — exposes a set of skills describing what can be done there. Coworker has a corresponding tool for each of those skills. When a user expresses a goal, Coworker reasons over the available tools and calls the right skills in the right sequence, across whichever surfaces it needs.</p>
+      <p>This makes Coworker inherently extensible: new product surfaces just expose new skills, and Coworker gains new capabilities automatically. It also means the AI is grounded in real platform actions — not generating text about what could happen, but actually doing it: pulling CRM data, drafting in Email Builder, publishing through Workflow Builder, updating a Campaign — all in one go.</p>
+      <p>Designing this required treating Coworker not as a chatbot bolted onto existing products, but as a first-class platform primitive with its own architecture. The unified platform vision was the prerequisite — you can't build a coherent skill registry if the underlying products don't share a coherent model.</p>
+    </article>
+
+  </section>
+
+  <p class="end-mark" aria-hidden="true">◼︎</p>
+</Layout>

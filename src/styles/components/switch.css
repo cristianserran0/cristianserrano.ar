@@ -1,0 +1,38 @@
+/* Switch: a setting that takes effect at once, without a Save.
+
+   <label class="switch">
+     <input type="checkbox" role="switch">
+     <span>Keep this chat</span>
+   </label>
+
+   The checkbox's edge, fills, states, focus ring and text (checkbox.css,
+   "shared"), in the same 20px-tall space:
+     - the track: 30 x 18px (32 x 20 with its margin), fully rounded
+     - the thumb: 14px (the checkbox's mark size), 1px from the edge,
+       travelling 12px; ink when off, white on the accent when on
+     - the move takes --duration-interaction
+
+   A native checkbox with role="switch": Space toggles it, and assistive
+   technology says "on" and "off". */
+
+@layer components {
+  .switch input {
+    place-items: center start;
+    width: var(--switch-width);
+    border-radius: var(--radius-pill);
+  }
+  .switch input::before {
+    content: "";
+    width: var(--checkbox-mark-size);
+    height: var(--checkbox-mark-size);
+    margin-inline-start: var(--switch-thumb-inset);
+    border-radius: var(--radius-full);
+    background: var(--text-secondary);
+    transition: translate var(--duration-interaction) var(--ease-standard),
+                background-color var(--duration-interaction) var(--ease-standard);
+  }
+  .switch input:checked::before {
+    translate: var(--switch-travel) 0;
+    background: var(--text-on-accent);
+  }
+}

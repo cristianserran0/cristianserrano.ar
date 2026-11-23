@@ -1,14 +1,14 @@
 ---
 /* Distance 2, "standing in front of it": the first screen of a case study.
-   The piece, its label (title, client, years, one sentence, key facts) and
-   the way on to the next piece. Everything comes from src/data/pieces.ts. */
+   The piece and its label (title, client, years, one sentence, key facts).
+   The way back and around is the menu's; the way on is at the end of the
+   story (NextPiece). Everything comes from src/data/pieces.ts. */
 import PieceImage from './PieceImage.astro';
-import { piece, nextPiece, href } from '../data/pieces';
+import { piece } from '../data/pieces';
 
 interface Props { slug: string; readingTime?: boolean; }
 const { slug, readingTime = false } = Astro.props;
 const p = piece(slug);
-const next = nextPiece(slug);
 ---
 <header class="piece">
   <figure>
@@ -28,9 +28,4 @@ const next = nextPiece(slug);
     <div><dt>Platforms</dt><dd>{p.facts.platforms}</dd></div>
     <div><dt>Category</dt><dd>{p.facts.category}</dd></div>
   </dl>
-
-  <nav class="piece-nav" aria-label="Pieces">
-    <a href="/work/" rel="up">All work</a>
-    {next && <a href={href(next)} rel="next">Next piece: {next.title}</a>}
-  </nav>
 </header>

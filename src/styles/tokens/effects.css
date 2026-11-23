@@ -15,15 +15,24 @@
   --shadow-sm: 0 3px 9px  rgb(from var(--shadow-tint) r g b / 0.10);
   --shadow-md: 0 4px 12px rgb(from var(--shadow-tint) r g b / 0.15);
   --shadow-lg: 0 4px 12px rgb(from var(--shadow-tint) r g b / 0.25);
+  /* a button with volume: the short shadow it casts on its surface */
+  --shadow-control: 0 0.25rem 0.25rem rgb(from var(--shadow-tint) r g b / 0.06);
   /* depth: a card inside a panel, and what floats above a panel */
   --shadow-raised: 0 1px 3px rgb(from var(--shadow-tint) r g b / 0.10),
                    0 8px 24px rgb(from var(--shadow-tint) r g b / 0.15);
   --shadow-overlay: 0 2px 6px rgb(from var(--shadow-tint) r g b / 0.12),
                     0 16px 48px rgb(from var(--shadow-tint) r g b / 0.22);
   --backdrop-blur: 3px;   /* how much a modal blurs its panel */
+  /* under the guide's star, as drop-shadows so they follow its shape:
+     where it touches the surface, and what it casts below */
+  --shadow-mark-contact: 0 1px 1.5px var(--mark-shade);
+  --shadow-mark-cast:    0 0.375rem 0.5rem var(--mark-cast);
 
   /* Darkens the lower part of an image so text on it stays legible. */
   --scrim-bottom: linear-gradient(to bottom, transparent 50%, var(--scrim) 90%);
+
+  /* A disabled control: the same look in every state, only fainter. */
+  --opacity-disabled: 0.4;
 
   /* ---- motion ---- */
   --duration-instant:  0ms;
@@ -43,11 +52,28 @@
   --duration-word: 280ms;    /* a revealed word fading in (guide-ai.js: FADE_MS) */
   --duration-pulse: 1200ms;  /* the thinking dots */   /* hover this long before a hint (the resize line) shows */
   --ease-enter: cubic-bezier(0.2, 0, 0, 1);
+  /* Travelling: a jump to another section of the page, and the menu's
+     marker going there with it. Slow out, slow in; the time grows with
+     the distance, between these two (side-nav.js reads all three and
+     scrolls on the same curve). */
+  --ease-travel: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-travel-min: 350ms;
+  --duration-travel-max: 900ms;
+  /* The playful one: arrives a touch past its place and settles back.
+     For small things that move to a new spot (a menu's marker). */
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1);
   --ease-exit:  cubic-bezier(0.4, 0, 1, 1);
+
+  /* small moves: how far a pop-up rises into place, how much a button
+     gives when pressed */
+  --rise: 0.375rem;
+  --press-scale: 0.97;
 
   /* ---- stacking ---- */
   --z-header:    100;
+  --z-side-nav:  110;   /* the vertical menu, over the top bar */
   --z-lift:      1;     /* one step above a sibling inside the same component */
+  --z-tooltip:   20;    /* a control's tooltip, above its neighbours and a panel's modal */
   --z-modal:     10;    /* a panel's modal, above that panel's content (inside the panel) */
   --z-panel-shadow: 190;   /* both panels' shadows, drawn beneath both panels */
   --z-assistant: 200;      /* the panels: the page (guide open) and the guide, one plane */
@@ -63,6 +89,8 @@
     --duration-panel:    0ms;
     --duration-interaction: 0ms;
     --duration-word:     0ms;
+    --duration-travel-min: 0ms;
+    --duration-travel-max: 0ms;
   }
 }
 

@@ -1,0 +1,103 @@
+/* Menu item: one destination in a vertical list -- a page of the site,
+   or a section of the page you are on.
+
+   <ul class="menu">
+     <li><a class="menu-item" href="/cv/" aria-current="page"> <svg …/> <span>CV</span> </a></li>
+   </ul>
+   <p class="menu-label">A group's name</p>
+
+   A row the full width of its list, 32px tall like every control, with
+   an optional 16px icon before the label. Hover and pressed are the
+   controls' own (--state-hovered, --state-pressed).
+
+   An icon may carry two drawings (.icon-outline, .icon-filled); the
+   chosen item shows the filled one.
+
+   aria-current marks the chosen one ("page" for the page you are on,
+   "location" for the section in view): a tint of the accent, its label
+   in a deeper accent and a step bolder.
+
+   Motion: hovering fades the row's tint in and out. In a list whose
+   chosen item changes while you watch -- a case study's index -- the
+   tint is ONE marker that slides from the old item to the new one and
+   settles with a small spring (.menu-indicator, placed by side-nav.js). */
+
+@layer components {
+  .menu {
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--control-sm);
+    padding: var(--space-1) var(--control-pad-sm);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font: var(--type-control);
+    letter-spacing: var(--type-ui-tracking);
+    text-decoration: none;
+    transition: background-color var(--duration-interaction) var(--ease-standard),
+                color var(--duration-interaction) var(--ease-standard);
+  }
+  .menu-item > span { padding-inline: var(--space-half); }
+  .menu-item svg {
+    flex: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+  }
+  /* an icon has two drawings; the chosen item shows the filled one */
+  .menu-item .icon-filled { display: none; }
+  .menu-item[aria-current] .icon-outline { display: none; }
+  .menu-item[aria-current] .icon-filled {
+    display: inline;
+    fill: currentColor;
+    stroke-width: var(--icon-filled-stroke);
+  }
+  .menu-item[aria-current] {
+    background-color: var(--fill-selected);
+    color: var(--text-selected);
+    font-weight: var(--weight-semibold);
+  }
+  /* hover and pressed: a colour, so it can fade (the chosen item keeps its tint) */
+  @media (hover: hover) {
+    .menu-item:hover:not([aria-current]) { background-color: var(--state-hovered); }
+  }
+  .menu-item:active:not([aria-current]) { background-color: var(--state-pressed); }
+
+  /* the sliding marker: the chosen item's tint, as one shape that moves */
+  .menu-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-radius: var(--radius-md);
+    background: var(--fill-selected);
+    pointer-events: none;
+    opacity: 0;
+    transition: translate var(--duration-moderate) var(--ease-spring),
+                height var(--duration-moderate) var(--ease-spring),
+                opacity var(--duration-fast) var(--ease-standard);
+  }
+  .menu-indicator[data-on] { opacity: 1; }
+  .menu:has(.menu-indicator) .menu-item {
+    position: relative;
+    z-index: var(--z-lift);
+  }
+  .menu:has(.menu-indicator) .menu-item[aria-current] { background-color: transparent; }
+
+  .menu-label {
+    margin: var(--space-3) 0 var(--space-1);
+    padding-inline: var(--control-pad-sm);
+    color: var(--text-secondary);
+    font: var(--type-ui-small);
+    letter-spacing: var(--type-ui-tracking);
+    font-weight: var(--weight-medium);
+  }
+}

@@ -1,9 +1,13 @@
-/* A piece on the wall: its image, title, then the label beneath it, like
+/* A piece as a tile: its image, title, then the label beneath it, like
    the sign next to a picture.
    <article class="work-tile">
      <a href> <img> <h2>Title</h2> </a>
      <p>Client · years</p>  <p>One-sentence label</p>
-   </article> */
+   </article>
+
+   data-detail="title": only the image and the title, for a piece listed
+   under something that already says where and when (a position). Its
+   title is then an item of that list, not a heading of its own. */
 
 @layer components {
   .work-tile a {
@@ -30,13 +34,18 @@
     box-shadow: var(--shadow-lg);
   }
 
-  .work-tile :is(h2, h3) {
+  .work-tile :is(h2, h3, h4) {
     font: var(--type-heading);
     letter-spacing: var(--type-heading-tracking);
     color: var(--text-primary);
     margin: var(--space-4) 0 0;
   }
-  .work-tile a:hover h2 { color: var(--link); }
+  .work-tile a:hover :is(h2, h3, h4) { color: var(--link); }
+  .work-tile[data-detail="title"] :is(h2, h3, h4) {
+    font: var(--type-item);
+    letter-spacing: var(--type-item-tracking);
+    margin-top: var(--space-3);
+  }
   .work-tile a:focus-visible { outline: none; }
   .work-tile a:focus-visible img {
     outline: var(--border-accent) solid var(--mark);
@@ -44,7 +53,7 @@
   }
 
   /* client · years */
-  .work-tile :is(h2, h3) + p,
+  .work-tile :is(h2, h3, h4) + p,
   .work-tile a + p {
     font: var(--type-overline);
     letter-spacing: var(--type-overline-tracking);

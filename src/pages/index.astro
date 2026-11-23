@@ -1,33 +1,55 @@
 ---
-/* Home: the entrance, for a two-minute visit. Who and how senior, the
-   work as proof, and where to go next. The sentences come from the site
-   (the About letter and the CV); the section titles and link texts are
-   drafts. The letter itself lives on /about/. */
+/* Home: the experience itself. One entry per employer -- role, employer,
+   a line of context -- with that employer's pieces under it, then the
+   side projects. The detail of each position is on /cv/.
+
+   Positions and their pieces: src/data/positions.ts. The opening
+   sentences are the earlier home page's; the position lines are drafts. */
 import Layout from '../layouts/Layout.astro';
 import WorkTiles from '../components/WorkTiles.astro';
+import { positions, sideProjects, piecesOf } from '../data/positions';
+import { href } from '../data/pieces';
 ---
 
 <Layout
   title="Cristian Serrano - Digital Product Designer"
   description="Cristian Serrano is a Senior Product Designer and Design Systems specialist with 17+ years of experience, based in Munich. Focused on making the complex simple."
 >
-  <header>
+  <header class="intro">
     <h1>Hi! I'm Cristian :) </h1>
     <p>I'm a digital product designer with <span id="experienceYears"></span> of experience who enjoys the challenge of making the complex simple.</p>
     <p>Currently Head of Design at JustRelate, defining platform vision and building DesignOps from the ground up.</p>
   </header>
 
-  <section id="work">
-    <h2>Featured work</h2>
-    <WorkTiles heading="h3" eager />
+  <section id="experience" class="entries">
+    <h2>Experience</h2>
+    {positions.map((p, i) => (
+      <article class="entry">
+        <span class="entry-logo" aria-hidden="true">
+          {p.logo
+            ? <img src={typeof p.logo === 'string' ? p.logo : p.logo.src} alt="" />
+            : p.employer[0]}
+        </span>
+        <div>
+          <h3>{p.role} <small>{p.years}</small></h3>
+          <h4>{p.employer} <small>{p.place}</small></h4>
+          {p.line && <p>{p.line}</p>}
+          {p.pieces.length > 0 && <WorkTiles heading="h4" pieces={piecesOf(p.pieces)} eager={i === 0} titleOnly />}
+        </div>
+      </article>
+    ))}
   </section>
 
-  <section id="next">
-    <h2>What now?</h2>
-    <ul>
-      <li><a href="/about/">More about me</a>: how I work, what I look for in a team, and what I bring to it.</li>
-      <li><a href="/cv/">My CV</a>: the career behind the work.</li>
-      <li><a href="/contact/">Get in touch</a>, on LinkedIn or by email.</li>
-    </ul>
+  <section id="side-projects" class="entries">
+    <h2>Side projects</h2>
+    {piecesOf(sideProjects).map((p) => (
+      <article class="entry">
+        <span class="entry-logo" aria-hidden="true">{p.title[0]}</span>
+        <div>
+          <h3><a href={href(p)}>{p.title}</a></h3>
+          <p>{p.label}</p>
+        </div>
+      </article>
+    ))}
   </section>
 </Layout>

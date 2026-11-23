@@ -1,0 +1,85 @@
+/* Field: where the visitor types.
+
+   <textarea class="field" rows="3" aria-label="…"></textarea>
+   <input class="field" type="text">
+
+     data-background  subtle (default): the see-through input fill, takes
+                      on the surface behind it
+                      opaque: the panel's own colour, on grey or imagery
+                      transparent: no fill
+     aria-invalid     "true": the edge turns to the danger colour. Say the
+                      error in words nearby; the edge alone is not enough.
+
+   With a label and a hint, the field sits in a .form-item:
+
+   <div class="form-item">
+     <label for="name">Name <small>- Optional</small></label>
+     <input class="field" id="name" aria-describedby="name-hint">
+     <p id="name-hint">Shown under the field.</p>
+   </div>
+
+   The hint is where an error is said in words. It stays ink when the
+   field is invalid: the danger colour is not used for text on this site
+   (4.18:1 on the dark overlay).
+
+   32px tall for one line, like every control. The focus ring is the
+   site-wide one (base.css). Its corners are the 8px every control has. */
+
+@layer components {
+  .field {
+    display: block;
+    width: 100%;
+    min-height: var(--control-sm);
+    padding: var(--field-pad-block) var(--space-2);
+    border: var(--border-hairline) solid var(--border-default);
+    border-radius: var(--radius-md);
+    background-color: var(--fill-input);
+    color: var(--text-primary);
+    font: var(--type-ui);
+    letter-spacing: var(--type-ui-tracking);
+    resize: none;
+  }
+  .field::placeholder { color: var(--text-tertiary); }
+
+  .field[data-background="opaque"]      { background-color: var(--bg-surface); }
+  .field[data-background="transparent"] { background-color: transparent; }
+
+  .field[aria-invalid="true"] { border-color: var(--status-danger); }
+
+  @media (hover: hover) {
+    .field:hover:not(:disabled, :focus) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+
+  /* iOS zooms the page into an input whose text is under 16px. */
+  @media (pointer: coarse) {
+    .field {
+      font: var(--type-meta-small);
+      letter-spacing: var(--type-meta-small-tracking);
+      font-weight: var(--weight-regular);
+    }
+  }
+
+  /* ---- a field with its label and hint ---- */
+  .form-item {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .form-item label {
+    color: var(--text-secondary);
+    font: var(--type-ui-small);
+    letter-spacing: var(--type-ui-tracking);
+    font-weight: var(--weight-medium);
+  }
+  .form-item label small {
+    color: var(--text-tertiary);
+    font: var(--type-ui-small);
+    letter-spacing: var(--type-ui-tracking);
+  }
+  .form-item p {
+    margin: 0;
+    color: var(--text-tertiary);
+    font: var(--type-ui-small);
+    letter-spacing: var(--type-ui-tracking);
+  }
+  .form-item:has([aria-invalid="true"]) p { color: var(--text-secondary); }
+}

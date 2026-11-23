@@ -1,0 +1,221 @@
+/* The site's navigation: ONE menu, in one of two places.
+
+   <div class="page">
+     <header class="site-header">
+       <nav class="site-nav"> mark · links · .menu-trigger · .site-actions </nav>
+       <div class="page-menu" popover> the drop-down </div>
+     </header>
+     <div class="page-frame">
+       <nav class="side-nav"> <div> mark or Back · the menu </div> </nav>
+       <div class="page-body"> <main> … </main> </div>
+     </div>
+   </div>
+
+   WIDE (the "side" width of the page panel, tokens/space.css): three
+   parts. A panel on the left holds the menu; a strip on the right, one
+   button wide, holds the two controls stacked (Guide, then Display); the
+   content area lies between them. The content column is centred in the
+   content area, and a wide figure bleeds to its edges, never into the
+   panel or the strip. No lines between the three. The menu and the
+   controls stay in place while the page scrolls. (The content area is
+   the `page` container, so every rule that asks the page's width gets
+   the area's.)
+
+   NARROWER -- a laptop, the guide open, a phone: the panels would leave
+   wide figures too little room, so the menu moves to a bar along the
+   top. There it collapses: the mark, then a drop-down. On a page of the
+   site the pages stay inline while they fit and become the drop-down on
+   phones; on a case study it is always a drop-down of the page's
+   sections, labelled with the section in view.
+
+   The mark is the blue diamond on a page of the site, and Back on a case
+   study -- in both places. The menu's contents are the same in both:
+   the pages of the site, or the index of the case study (side-nav.js).
+   Never both menus at once. */
+
+@layer layout {
+  .page-frame { container: frame / inline-size; }
+}
+
+@layer components {
+  /* ---- the mark: the diamond, home ---- */
+  .site-mark {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: var(--control-sm);
+    height: var(--control-sm);
+    border-radius: var(--radius-md);
+  }
+  .site-mark::before {
+    content: "";
+    width: var(--brand-mark);
+    height: var(--brand-mark);
+    background: var(--mark);
+    rotate: var(--end-mark-rotation);
+  }
+
+  /* ---- WIDE: the menu's panel, its twin, the content area between ---- */
+  .side-nav { display: none; }
+
+  @container frame (min-width: 1100px) {
+    /* a zero-height sticky line; the menu hangs from it, so it stays put
+       as the page scrolls */
+    .side-nav {
+      display: block;
+      position: sticky;
+      top: var(--space-6);
+      z-index: var(--z-side-nav);
+      height: 0;
+    }
+    .side-nav > div {
+      position: absolute;
+      top: 0;
+      /* its labels start one gutter from the panel's edge */
+      left: calc(var(--gutter) - var(--control-pad-sm));
+      width: var(--side-nav-width);
+    }
+    .side-nav .site-mark,
+    .side-nav .button { margin-bottom: var(--space-3); }
+    /* the mark (diamond or Back) on the axis of what is under it: its
+       box is centred 16px in; an icon, or the start of a label, 18px in */
+    .side-nav .site-mark,
+    .side-nav .button { margin-inline-start: var(--space-half); }
+    .page-body { margin-inline: var(--side-nav-space) var(--side-controls-space); }
+  }
+
+  /* ---- the top bar ----
+     Its backing sits on the row inside it, so the wide rule can take it
+     away (a container cannot restyle itself). It never slides out of
+     view on scroll: when wide it carries the two floating controls.
+     (.site-header keeps its nav-hidden class from header-behaviour.js;
+     the class no longer moves it.) */
+  .site-header {
+    background: none;
+    pointer-events: none;   /* the page beneath stays clickable; the row and the pop-ups opt back in */
+  }
+  .site-header.nav-hidden { top: 0; }
+  .site-nav {
+    gap: var(--space-2);
+    background: var(--bg-header);
+    pointer-events: auto;
+  }
+  :is(.display, .page-menu) { pointer-events: auto; }
+  .site-links { margin-inline-start: var(--space-2); }
+
+  /* the drop-down's button: the chosen item, with a chevron */
+  .menu-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    height: var(--control-sm);
+    padding: 0 var(--control-pad-xs) 0 var(--control-pad-sm);
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--fill-selected);
+    color: var(--text-selected);
+    font: var(--type-control);
+    letter-spacing: var(--type-ui-tracking);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+  }
+  .menu-trigger span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .menu-trigger svg {
+    flex: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    transition: scale var(--duration-fast) var(--ease-standard);
+  }
+  /* the chevron turns over while the drop-down is open */
+  .site-header:has(.page-menu:popover-open) .menu-trigger svg { scale: 1 -1; }
+  @media (hover: hover) {
+    .menu-trigger:hover { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+  .menu-trigger:active { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)); }
+
+  /* the pages: inline while they fit; the drop-down takes over on phones */
+  .menu-trigger[data-kind="pages"] { display: none; }
+  @container header (max-width: 560px) {
+    .site-links { display: none; }
+    .menu-trigger[data-kind="pages"] { display: inline-flex; }
+  }
+
+  /* the drop-down itself: an overlay under the bar */
+  .page-menu {
+    position: fixed;
+    inset: auto;
+    top: calc(var(--header-height) - var(--space-2));
+    left: var(--gutter);
+    width: var(--display-width);
+    max-width: calc(100vw - 2 * var(--space-4));
+    margin: 0;
+    padding: var(--space-2);
+    border: var(--border-hairline) solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--bg-overlay);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-overlay);
+  }
+  @media (max-width: 760px) {
+    .page-menu { left: var(--space-4); }
+  }
+  /* Where the browser can tie a pop-up to its button: its left edge on
+     the button's left edge, just under it. (Elsewhere it keeps the place
+     above: under the bar, at the gutter.) */
+  @supports (anchor-name: --a) {
+    .menu-trigger { anchor-name: --menu-trigger; }
+    .page-menu {
+      position-anchor: --menu-trigger;
+      top: calc(anchor(bottom) + var(--space-1));
+      left: anchor(left);
+    }
+  }
+
+  /* WIDE: nothing in the bar but the two controls, stacked in the strip
+     on the right: Guide on top, Display under it */
+  @container header (min-width: 1100px) {
+    .site-nav {
+      align-items: flex-start;
+      height: auto;
+      padding: var(--space-4) var(--space-4) 0 0;
+      background: none;
+      pointer-events: none;
+    }
+    .site-nav > :not(.site-actions) { display: none; }
+    .site-actions {
+      flex-direction: column-reverse;   /* the markup has Display first */
+      padding: var(--space-1);
+      border-radius: var(--radius-track);
+      background: var(--bg-header);
+      pointer-events: auto;
+    }
+    /* their tooltips open to the left, beside the button, not over its neighbour */
+    .site-actions .button::after {
+      top: 50%;
+      right: calc(100% + 2 * var(--tooltip-offset));
+      left: auto;
+      translate: 0 -50%;
+    }
+    /* Display's pop-up opens beside the strip */
+    .site-header .display {
+      top: var(--space-4);
+      right: var(--side-controls-space);
+    }
+    [assistant="open"] .site-header .display {
+      right: calc(var(--assistant-size) + 2 * var(--frame-gap) + var(--side-controls-space));
+    }
+  }
+
+  /* A case study's own "All work / Next piece" links repeat what the
+     menu's Back already does. */
+  .piece-nav { display: none; }
+
+  /* A section reached from the index lands clear of the top bar (the
+     scrolling itself is side-nav.js: smooth, unless motion is reduced). */
+  main h2 { scroll-margin-top: var(--header-height); }
+}

@@ -1,0 +1,51 @@
+/* Chip: one of a few options to pick, any number of them.
+
+   <ul class="chips">
+     <li><button type="button" class="chip" aria-pressed="true">Accurate</button></li>
+     <li><button type="button" class="chip" aria-pressed="false">Clear</button></li>
+   </ul>
+
+   A selector, not an action: it does nothing but turn on or off, so it
+   has none of a button's volume. Unpicked it is a quiet fill; picked
+   (aria-pressed="true") it takes the menu's chosen look -- a tint of the
+   accent, its label in a deeper accent and a step bolder. */
+
+@layer components {
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: var(--control-sm);
+    padding: 0 var(--space-3);
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--fill-subtle);
+    color: var(--text-primary);
+    font: var(--type-control);
+    letter-spacing: var(--type-ui-tracking);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: scale var(--duration-interaction) var(--ease-standard),
+                background-color var(--duration-interaction) var(--ease-standard),
+                color var(--duration-interaction) var(--ease-standard);
+  }
+  .chip[aria-pressed="true"] {
+    background-color: var(--fill-selected);
+    color: var(--text-selected);
+    font-weight: var(--weight-semibold);
+  }
+  @media (hover: hover) {
+    .chip:hover:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+  }
+  .chip:active:not(:disabled) {
+    background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
+    scale: var(--press-scale);
+  }
+}

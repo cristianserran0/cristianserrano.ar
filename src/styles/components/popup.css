@@ -1,0 +1,33 @@
+/* Pop-ups (native `popover`): the Display panel, the guide's More
+   options, the drop-down of the top bar. They rise a few pixels into
+   place and fade in, and fade out when dismissed. Their look stays in
+   their own files; this is only how they arrive and leave.
+
+   (display and overlay are in the transition so the pop-up stays in the
+   top layer until its fade is over. Browsers without @starting-style
+   simply show and hide it at once.) */
+
+@layer components {
+  :is(.display, .guide-menu, .page-menu) {
+    opacity: 0;
+    translate: 0 calc(-1 * var(--rise));
+    transition: opacity var(--duration-interaction) var(--ease-exit),
+                translate var(--duration-interaction) var(--ease-exit),
+                display var(--duration-interaction) allow-discrete,
+                overlay var(--duration-interaction) allow-discrete;
+  }
+  :is(.display, .guide-menu, .page-menu):popover-open {
+    opacity: 1;
+    translate: none;
+    transition: opacity var(--duration-fast) var(--ease-enter),
+                translate var(--duration-fast) var(--ease-spring),
+                display var(--duration-fast) allow-discrete,
+                overlay var(--duration-fast) allow-discrete;
+  }
+  @starting-style {
+    :is(.display, .guide-menu, .page-menu):popover-open {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--rise));
+    }
+  }
+}

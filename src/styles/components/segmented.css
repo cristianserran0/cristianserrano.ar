@@ -1,0 +1,42 @@
+/* Segmented control: one choice out of two to four, all visible.
+
+   <div class="segmented" role="group" aria-labelledby="…">
+     <button type="button" aria-pressed="true">Light</button>
+     <button type="button" aria-pressed="false">Dark</button>
+   </div>
+
+   A track 32px tall, like every control, holding items 28px tall. The
+   chosen item is --fill-strong, not the panel's own colour: this control
+   sits on an overlay, where the panel's colour is the DARKER one in dark
+   mode and the chosen item would read as a hole. */
+
+@layer components {
+  .segmented {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: var(--space-half);
+    padding: var(--space-half);
+    border-radius: var(--radius-track);
+    background: var(--fill-input);
+  }
+  .segmented button {
+    height: var(--control-xs);
+    padding: 0 var(--space-2);
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--text-secondary);
+    font: var(--type-ui-small);
+    letter-spacing: var(--type-ui-tracking);
+    cursor: pointer;
+  }
+  .segmented [aria-pressed="true"] {
+    background-color: var(--fill-strong);
+    color: var(--text-primary);
+    font-weight: var(--weight-medium);
+  }
+  @media (hover: hover) {
+    .segmented button:hover:not([aria-pressed="true"]) { background-color: var(--state-hovered); }
+  }
+}
