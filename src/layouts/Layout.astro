@@ -2,9 +2,12 @@
 import '../styles/index.css';
 import PieceHeader from '../components/PieceHeader.astro';
 import NextPiece from '../components/NextPiece.astro';
+import Icon from '../components/Icon.astro';
+import { icons } from '../data/icons';
 import { piece as getPiece, nextPiece, featured, href, aboutCristian } from '../data/pieces';
 import { getImage } from 'astro:assets';
 import ogDefault from '../assets/og/default.png';
+import { experiments } from '../data/experiments';
 
 interface Props {
   title: string;
@@ -21,9 +24,6 @@ const { title, description, readingTime = false, noindex = false, piece } = Astr
 const current = piece ? getPiece(piece) : undefined;
 const next = piece ? nextPiece(piece) : undefined;
 
-// accent modes offered to visitors; must match [accent="..."] in styles/tokens/color.css
-const accents = ['blue', 'purple', 'magenta', 'red', 'orange', 'green', 'emerald', 'sky'];
-
 /* The pages of the site besides Home. The work has no page of its own:
    it is the home page. */
 const nav = [
@@ -32,19 +32,15 @@ const nav = [
   { href: '/contact/', label: 'Contact', current: pathname.startsWith('/contact') },
 ];
 
-/* The menu: the pages of the site, each with a 16px icon
-   in two drawings: `icon` in outline, and `filled` for the chosen page
-   (where a plain fill of the outline would swallow its inner lines). */
+/* The menu: the pages of the site, each with its icon (src/data/icons.ts). */
 const menu = [
-  { href: '/', label: 'Home', current: pathname === '/', icon: 'M2.5 7.5 8 3l5.5 4.5V13h-4V9.5h-3V13h-4z',
-    filled: 'M2.5 7.5 8 3l5.5 4.5V13h-4V9.5h-3V13h-4z' },
-  { href: '/cv/', label: 'CV', current: pathname.startsWith('/cv'), icon: 'M4 2h5.5l3 3v9H4zM9.5 2v3h3M6.25 8.25h3.5M6.25 10.75h3.5',
-    filled: 'M4 2h5.5l3 3v9H4zM5.6 7.1h4.8v2H5.6zM5.6 10.1h4.8v2H5.6z' },
-  { href: '/about/', label: 'About', current: pathname.startsWith('/about'), icon: 'M8 7.25a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 14c.4-2.8 2.4-4.25 5-4.25s4.6 1.45 5 4.25',
-    filled: 'M8 7.25a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 14c.4-2.8 2.4-4.25 5-4.25s4.6 1.45 5 4.25z' },
-  { href: '/contact/', label: 'Contact', current: pathname.startsWith('/contact'), icon: 'M2 4h12v8.5H2zM2.25 4.5 8 9l5.75-4.5',
-    filled: 'M2.5 3.75h11L8 7.9zM2 6.1 8 10.6l6-4.5v6.4H2z' },
+  { href: '/', label: 'Cristian Serrano', current: pathname === '/', icon: 'home' },
+  { href: '/cv/', label: 'CV', current: pathname.startsWith('/cv'), icon: 'cv' },
+  { href: '/about/', label: 'About', current: pathname.startsWith('/about'), icon: 'about' },
+  { href: '/contact/', label: 'Contact', current: pathname.startsWith('/contact'), icon: 'contact' },
 ];
+/* The page you are on, as a menu item (Home when on none of them, e.g. the styleguide). */
+const here = menu.find((item) => item.current) || menu[0];
 
 /* What the guide needs to know about the room the visitor is in, and the
    featured pieces for its tours. Data, not code: a JSON block the CSP allows. */
@@ -56,7 +52,11 @@ const room = current
   : pathname.startsWith('/contact') ? { kind: 'contact' }
   : pathname === '/' ? { kind: 'home' }
   : { kind: 'other' };
+/* The icons the guide's script draws itself (its options, the rating
+   thumbs), handed over as data with the rest. */
+const guideIcons = Object.fromEntries(['about', 'arrow-right', 'compass', 'layers', 'people', 'like', 'dislike'].map((n) => [n, icons[n]]));
 const guide = {
+  icons: guideIcons,
   room,
   pieces: featured.map((p) => ({ slug: p.slug, title: p.title, client: p.client, years: p.years, label: aboutCristian(p.label), role: p.facts.role, category: p.facts.category, href: href(p) })),
 };
@@ -131,7 +131,7 @@ const jsonLd = {
       about: current.client.split(' + ').map((name) => ({ '@type': 'Organization', name })),
       ...(temporal ? { temporalCoverage: temporal } : {}),
       keywords: current.facts.category.replace(/\.$/, ''),
-      description: `${aboutCristian(current.label)} Role: ${current.facts.role}. Platforms: ${current.facts.platforms}. Time: ${current.facts.time}.`,
+      description: `${aboutCristian(current.label)} Role: ${current.facts.role}. Platforms: ${current.facts.platforms}.${current.facts.time ? ` Time: ${current.facts.time}.` : ''}`,
       image: ogImage,
       url,
       inLanguage: 'en',
@@ -185,12 +185,10 @@ const jsonLd = {
          color-scheme: light dark, so the OS is followed natively and live. -->
     <script is:inline src="/js/appearance-init.js"></script>
 
-    <!-- The upright Inter faces, asked for at once rather than after the
-         styles are read, so they are usually in place for the first paint
+    <!-- The upright Inter file, asked for at once rather than after the
+         styles are read, so it is usually in place for the first paint
          (see styles/tokens/type.css). -->
-    {['Light', 'Regular', 'Medium', 'SemiBold', 'Bold'].map((face) => (
-      <link rel="preload" href={`/fonts/inter/Inter-${face}.woff2`} as="font" type="font/woff2" crossorigin />
-    ))}
+    <link rel="preload" href="/fonts/inter/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16 32x32">
     <script type="application/json" id="guide-data" set:html={JSON.stringify(guide)} />
     <!-- Hold the first paint until the guide is rebuilt (see the end of the
@@ -203,6 +201,8 @@ const jsonLd = {
     <script defer is:inline src="/js/appearance.js"></script>
     <script defer is:inline src="/js/tooltip.js"></script>
     <script defer is:inline src="/js/side-nav.js"></script>
+    <script defer is:inline src="/js/scrollbar.js"></script>
+    <script defer is:inline src="/js/piece-card.js"></script>
   </head>
 
   <body>
@@ -216,35 +216,65 @@ const jsonLd = {
       <header class="site-header nav-visible">
         <nav class="site-nav" aria-label="Site">
           {/* The top bar (when the menu has no space of its own): a mark,
-              then the menu. Home: the diamond, the pages inline where
+              then the menu. Home: the pages inline (the first one carries the diamond) where
               they fit, a drop-down on phones. A case study: Back, and
               a drop-down of its sections, labelled with the one in view. */}
           {current
             ? <a class="button" data-type="ghost" data-has-text="false" data-tooltip="start" href="/" aria-label="Back">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4"/></svg>
+                <Icon name="arrow-left" />
               </a>
-            : <a class="site-mark" href="/" aria-label="Cristian Serrano, home"></a>}
+            : null}
           {!current && (
-            <ul class="site-links">
-              {nav.map((item) => (
-                <li><a href={item.href} aria-current={item.current ? 'page' : undefined}>{item.label}</a></li>
+            <ul class="menu site-links">
+              {menu.map((item) => (
+                <li>
+                  <a class="menu-item" href={item.href} aria-current={item.current ? 'page' : undefined}>
+                    {item.href === '/' ? <span class="menu-diamond" aria-hidden="true"></span> : <Icon name={item.icon} twin />}
+                    <span>{item.label}</span>
+                  </a>
+                </li>
               ))}
             </ul>
           )}
           <button type="button" class="menu-trigger" popovertarget="page-menu" data-kind={current ? 'index' : 'pages'}>
-            <span data-menu-current>{current ? current.title : (menu.find((item) => item.current) || menu[0]).label}</span>
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+            {!current && here.href === '/' && <span class="menu-diamond" aria-hidden="true"></span>}
+            {!current && here.href !== '/' && <Icon name={here.icon} filled class="menu-trigger-icon" />}
+            <span data-menu-current>{current ? current.title : here.label}</span>
+            <Icon name="chevron-down" />
           </button>
 
           <div class="site-actions">
-            <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" popovertarget="display" aria-label="Display">
-              <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/></svg>
+            {/* Versions on trial (data/experiments.ts). Not on the live site: shown only where <html experiments> is set (appearance-init.js). */}
+            {experiments.length
+              ? <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" data-experiments-toggle popovertarget="experiments" aria-label="Experiments">
+                  <Icon name="flask" twin />
+                </button>
+              : <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" data-experiments-toggle aria-disabled="true" aria-label="No ongoing experiments">
+                  <Icon name="flask" />
+                </button>}
+            <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" data-scheme-cycle aria-label="Mode: system">
+              <Icon name="system" data-mode="system" />
+              <Icon name="dark" data-mode="dark" />
+              <Icon name="light" data-mode="light" />
             </button>
             <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" data-assistant-toggle aria-controls="assistant" aria-expanded="false" aria-label="Guide">
               <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M8 2.25Q9.5 6.5 13.75 8 9.5 9.5 8 13.75 6.5 9.5 2.25 8 6.5 6.5 8 2.25Z"/></svg>
             </button>
           </div>
         </nav>
+
+        {experiments.length > 0 && <div class="experiments" id="experiments" popover>
+          {experiments.map((x) => (
+            <>
+              <p class="menu-label">{x.label}</p>
+              <ul class="menu">
+                {x.options.map((o, i) => (
+                  <li><a class="menu-item" href={`?experiment=${x.key}:${o.value}`} data-experiment={x.key} data-value={o.value} data-base={i === 0 ? '' : undefined}><span>{o.label}</span></a></li>
+                ))}
+              </ul>
+            </>
+          ))}
+        </div>}
 
         <div class="page-menu" id="page-menu" popover>
           {current
@@ -253,7 +283,7 @@ const jsonLd = {
                 {menu.map((item) => (
                   <li>
                     <a class="menu-item" href={item.href} aria-current={item.current ? 'page' : undefined}>
-                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="icon-outline" d={item.icon}/><path class="icon-filled" fill-rule="evenodd" d={item.filled}/></svg>
+                      {item.href === '/' ? <span class="menu-diamond" aria-hidden="true"></span> : <Icon name={item.icon} twin />}
                       <span>{item.label}</span>
                     </a>
                   </li>
@@ -261,34 +291,7 @@ const jsonLd = {
               </ul>}
         </div>
 
-        <div class="display" id="display" popover>
-          <p id="display-scheme">Mode</p>
-          <div class="segmented" role="group" aria-labelledby="display-scheme">
-            <button type="button" data-scheme="system">System</button>
-            <button type="button" data-scheme="light">Light</button>
-            <button type="button" data-scheme="dark">Dark</button>
-          </div>
-          <p id="display-temperature">Temperature</p>
-          <div class="segmented" role="group" aria-labelledby="display-temperature">
-            <button type="button" data-temperature="warm">Warm</button>
-            <button type="button" data-temperature="neutral">Neutral</button>
-            <button type="button" data-temperature="cold">Cold</button>
-          </div>
-          <p id="display-accent">Accent</p>
-          <div class="accents" role="group" aria-labelledby="display-accent">
-            {accents.map((name) => (
-              <button
-                type="button"
-                class="accent-swatch"
-                data-accent={name}
-                accent={name}
-                aria-label={name}
-                title={name}
-              />
-            ))}
-          </div>
-        </div>
-      </header>
+</header>
 
       <div class="page-frame">
         <nav class="side-nav" aria-label={current ? 'On this page' : 'Menu'}>
@@ -296,18 +299,17 @@ const jsonLd = {
             {current ? (
               <>
                 <a class="button" data-type="ghost" data-has-text="false" data-tooltip="start" href="/" aria-label="Back">
-                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4"/></svg>
+                  <Icon name="arrow-left" />
                 </a>
                 <ul class="menu" data-page-index></ul>
               </>
             ) : (
               <>
-                <a class="site-mark" href="/" aria-label="Cristian Serrano, home"></a>
                 <ul class="menu">
                   {menu.map((item) => (
                     <li>
                       <a class="menu-item" href={item.href} aria-current={item.current ? 'page' : undefined}>
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="icon-outline" d={item.icon}/><path class="icon-filled" fill-rule="evenodd" d={item.filled}/></svg>
+                        {item.href === '/' ? <span class="menu-diamond" aria-hidden="true"></span> : <Icon name={item.icon} twin />}
                         <span>{item.label}</span>
                       </a>
                     </li>
@@ -325,7 +327,7 @@ const jsonLd = {
         </main>
 
         <footer class="site-footer">
-          <p>Handcrafted with <span class="love">♥</span> en La Plata <span class="emoji" role="img" aria-label="argentina">🇦🇷</span> und München <span class="emoji" role="img" aria-label="deutschland">🇩🇪</span>.</p>
+          <p>Made with <span class="love">♥</span> en La Plata <span class="emoji" role="img" aria-label="argentina">🇦🇷</span> und München <span class="emoji" role="img" aria-label="deutschland">🇩🇪</span>.</p>
           <p>&copy;<span class="current-year"></span> Cristian Serrano</p>
         </footer>
       </div>
@@ -333,31 +335,31 @@ const jsonLd = {
 
     </div>
 
+    <!-- A piece's card: the summary a tile on Home opens. A modal of the
+         page panel, so it is the page's sibling, not inside it (the page
+         scrolls). Filled from the tile's own template by piece-card.js. -->
+    <div class="panel-modal page-modal" data-piece-modal hidden>
+      <dialog class="piece-card" open aria-modal="true" aria-labelledby="piece-card-title">
+        <div data-piece-slot></div>
+      </dialog>
+    </div>
+
     <aside class="assistant" id="assistant" aria-label="Assistant">
       <header class="assistant-header">
         <h2>Guide</h2>
         <div class="assistant-actions">
           <button type="button" class="button" data-type="ghost" data-has-text="false" popovertarget="guide-menu" aria-label="More options">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="8" r="1.25"/><circle cx="8" cy="8" r="1.25"/><circle cx="12.5" cy="8" r="1.25"/></svg>
+            <Icon name="more" filled />
           </button>
-          <!-- More options: the guide's text style and column, to compare
-               them live (remembered; set on <html>, read by the tokens),
-               and Clear chat. A native popover: no script to open,
-               close or dismiss it. -->
+          <!-- More options: keep the chat for the next visit, and Clear
+               chat. A native popover: no script to open, close or
+               dismiss it. -->
           <div class="guide-menu" id="guide-menu" popover>
-            <p id="guide-menu-type">Text style</p>
-            <div role="group" aria-labelledby="guide-menu-type">
-              <button type="button" data-guide-type="coworker"><span>Coworker</span><small>14 / 1.5 · regular</small></button>
-              <button type="button" data-guide-type="light"><span>Light</span><small>14 / 1.5 · light</small></button>
-              <button type="button" data-guide-type="page"><span>Like the page</span><small>16 / 1.6 · light</small></button>
-            </div>
-            <button type="button" data-guide-measure><span>Narrow column</span><small>600px instead of 720px</small></button>
-            <hr>
             <button type="button" data-guide-keep><span>Keep this chat</span><small>for your next visit</small></button>
             <button type="button" data-assistant-clear disabled><span>Clear chat</span></button>
           </div>
           <button type="button" class="button" data-type="ghost" data-has-text="false" data-tooltip="end" data-assistant-close aria-label="Close guide">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            <Icon name="close" />
           </button>
         </div>
       </header>
@@ -372,7 +374,7 @@ const jsonLd = {
         </section>
         <ol class="assistant-log" aria-live="polite"></ol>
         <button type="button" class="assistant-jump" data-tooltip="top" aria-label="Jump to latest" hidden>
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4"/></svg>
+          <Icon name="arrow-down" />
         </button>
       </div>
 
@@ -381,8 +383,8 @@ const jsonLd = {
         <div>
           <!-- Send; while an answer streams it becomes Stop, in the same place. -->
           <button type="submit" class="button" data-has-text="false" data-tooltip="end" aria-label="Send" disabled>
-            <svg data-icon="send" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
-            <svg data-icon="stop" viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="1.5" fill="currentColor"/></svg>
+            <Icon name="arrow-up" data-icon="send" />
+            <Icon name="stop" filled data-icon="stop" />
           </button>
         </div>
       </form>
@@ -397,7 +399,7 @@ const jsonLd = {
             <ul class="chips feedback-reasons" data-feedback-reasons aria-label="Reasons"></ul>
             <textarea class="field" rows="3" aria-label="Anything to add? (optional)" placeholder="Anything to add? (optional)"></textarea>
             <div class="message" data-type="information" role="status">
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M10 1.75a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5zM10 5a1.1 1.1 0 1 1 0 2.2A1.1 1.1 0 0 1 10 5zm-1 4h2v6H9z"/></svg>
+              <Icon name="info" filled />
               <div><p>Prototype: feedback stays in your browser for now.</p></div>
             </div>
             <div>

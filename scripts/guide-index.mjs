@@ -53,7 +53,9 @@ for (const file of pages(DIST)) {
   const route = '/' + path.relative(DIST, path.dirname(file)).split(path.sep).filter(Boolean).join('/') + (file === path.join(DIST, 'index.html') ? '' : '/');
   const html = fs.readFileSync(file, 'utf8');
   if (/<meta name="robots" content="noindex"/.test(html)) continue;   // the styleguide, 404
-  const main = (html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i) || [])[1];
+  // (a <template> is not on the page until a script puts it there: a
+  //  piece's card on Home repeats what that piece's own page says)
+  const main = ((html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i) || [])[1] || '').replace(/<template\b[\s\S]*?<\/template>/gi, '');
   if (!main) continue;
   const title = decode((html.match(/<title>([^<]*)<\/title>/i) || [])[1] || route).trim();
   const parts = main.split(/<h2\b[^>]*>/i);

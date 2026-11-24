@@ -33,6 +33,7 @@
 @import "./prose.css";
 @import "./layout.css";
 @import "./shell.css";
+@import "./components/icon.css";
 @import "./components/button.css";
 @import "./components/chip.css";
 @import "./components/tooltip.css";
@@ -51,5 +52,7 @@
 @import "./components/appearance.css";
 @import "./components/assistant.css";
 @import "./components/popup.css";
+@import "./components/experiments.css";
 @import "./components/modal.css";
+@import "./components/piece-card.css";
 @import "./components/styleguide.css";

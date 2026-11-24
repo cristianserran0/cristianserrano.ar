@@ -3,7 +3,14 @@
    position this way, from src/data/pieces.ts. `heading` is the tiles'
    heading level, so they sit right under the page's own headings.
    `titleOnly` leaves out the client · years line and the label: under a
-   position both would repeat what the position already says. */
+   position both would repeat what the position already says.
+
+   Each tile also carries its CARD, in a <template>: the piece's summary
+   (image, client and years, the one-sentence label, the facts) and the
+   link to the full case study. A click on the tile opens it as a dialog
+   over the page (public/js/piece-card.js, styles/components/piece-card.css).
+   The tile stays a plain link: without the script, or opened in a new
+   tab, it goes straight to the case study. */
 import PieceImage from './PieceImage.astro';
 import { featured, href, type Piece } from '../data/pieces';
 
@@ -20,6 +27,23 @@ const H = heading;
       </a>
       {!titleOnly && <p>{p.client} · {p.years}</p>}
       {!titleOnly && <p>{p.label}</p>}
+      <template data-piece-card>
+        <figure><PieceImage src={p.hero} alt="" /></figure>
+        <hgroup>
+          <h2 id="piece-card-title">{p.title}</h2>
+          <p>{p.client} · {p.years}</p>
+        </hgroup>
+        <p>{p.label}</p>
+        <dl class="facts">
+          {p.facts.time && <div><dt>Time</dt><dd>{p.facts.time}</dd></div>}
+          <div><dt>Platforms</dt><dd>{p.facts.platforms}</dd></div>
+          <div><dt>Category</dt><dd>{p.facts.category}</dd></div>
+        </dl>
+        <div>
+          <button type="button" class="button" data-type="outlined" data-piece-close><span>Close</span></button>
+          <a class="button" href={href(p)}><span>Read the full case study</span></a>
+        </div>
+      </template>
     </article>
   ))}
 </section>

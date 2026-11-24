@@ -95,16 +95,22 @@
     background: var(--fill-subtle);
   }
 
+  /* the visitor's own line breaks are kept, as typed */
+  .assistant-log [data-from="user"] p { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .assistant-log [data-from="user"] strong { font-weight: var(--weight-semibold); }
+
   .assistant-log p + p { margin-top: var(--space-2); }
   .assistant-log p { margin-block: 0; }
 
-  /* "Read /cv/ for context" -- the step the assistant took */
+  /* "Read /cv/ for context" -- the step the assistant took. A little
+     air around it: it is neither the question above nor the answer
+     below. (Named through the log, to outrank its paragraph reset.) */
   .assistant-step {
     font: var(--type-caption);
     letter-spacing: var(--type-caption-tracking);
     color: var(--text-tertiary);
-    margin-bottom: var(--space-2);
   }
+  .assistant-log .assistant-step { margin-block: var(--space-1) var(--space-3); }
   .assistant-step::after { content: " ›"; }
 
   .assistant-stop {
@@ -148,7 +154,7 @@
     margin-inline: max(var(--space-3), (100% - var(--chat-measure)) / 2);
     padding: var(--space-3);
     border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-around-3);
   }
   .assistant-composer:focus-within { border-color: var(--mark); }
   .assistant-composer textarea {
@@ -174,8 +180,8 @@
   .assistant-composer div { display: flex; justify-content: flex-end; }
 
   .assistant-disclaimer {
-    font: var(--type-fineprint);
-    letter-spacing: var(--type-fineprint-tracking);
+    font: var(--type-caption);
+    letter-spacing: var(--type-caption-tracking);
     color: var(--text-tertiary);
     text-align: center;
     margin-block: var(--space-2) var(--space-3);
@@ -195,7 +201,6 @@
   }
   /* two xs ghost buttons (button.css), quieter than the answer until pressed */
   .assistant-rating .button:not([aria-pressed="true"]) { color: var(--text-tertiary); }
-  .assistant-rating [data-rate="down"] svg { scale: -1 -1; }   /* the same thumb, pointing down */
   .assistant-rating span { margin-inline-start: var(--space-1); }
 }
 
@@ -203,6 +208,11 @@
 @layer components {
   /* Assistant replies have no bubble: long-form text on the panel itself.
      The visitor's messages are bubbles. The asymmetry is the point. */
+  /* An answer is reading text, so it has the colour a paragraph has on
+     the page (prose.css): secondary, with bold and links in primary.
+     On the message, not on .assistant-md: a scripted answer (the
+     greeting, a reply without the model) is plain paragraphs. */
+  .assistant-log [data-from="assistant"] { color: var(--text-secondary); }
   .assistant-md p,
   .assistant-md ul,
   .assistant-md ol { margin-block: 0; }
@@ -212,7 +222,7 @@
   .assistant-md ul { list-style-type: disc; }
   .assistant-md ol { list-style-type: decimal; }
   .assistant-md li + li { margin-top: var(--space-1); }
-  .assistant-md strong { font-weight: var(--weight-semibold); }
+  .assistant-md strong { font-weight: var(--weight-semibold); color: var(--text-primary); }
   .assistant-md a { color: var(--text-primary); text-decoration-color: var(--mark); }
   .assistant-md a:hover { color: var(--link); }
 
@@ -317,7 +327,7 @@
     width: 100%;
     padding: var(--space-3);
     border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-around-3);
     background: var(--bg-surface);
     color: var(--text-primary);
     text-align: left;
@@ -365,8 +375,10 @@
     opacity: 0;
     transition: opacity var(--duration-interaction) var(--ease-standard);
   }
-  .assistant-thread::before { top: 0;    background: linear-gradient(var(--bg-surface), transparent); }
-  .assistant-thread::after  { bottom: 0; background: linear-gradient(transparent, var(--bg-surface)); }
+  .assistant-thread::before,
+  .assistant-thread::after { background: var(--bg-surface); }
+  .assistant-thread::before { top: 0;    -webkit-mask-image: var(--fade-down); mask-image: var(--fade-down); }
+  .assistant-thread::after  { bottom: 0; -webkit-mask-image: var(--fade-up);   mask-image: var(--fade-up); }
   .assistant-thread[data-above]::before,
   .assistant-thread[data-below]::after { opacity: 1; }
   .assistant-log > .assistant-spacer { margin-top: calc(-1 * var(--space-4)); }   /* no extra list gap before it */
@@ -406,19 +418,11 @@
     margin: 0;
     padding: var(--space-2);
     border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-around-2);
     background: var(--bg-overlay);
     color: var(--text-primary);
     box-shadow: var(--shadow-overlay);
   }
-  .guide-menu p {
-    font: var(--type-overline);
-    letter-spacing: var(--type-overline-tracking);
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin: var(--space-1) var(--space-2) var(--space-1);
-  }
-  .guide-menu [role="group"] { display: grid; }
   .guide-menu button {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -452,12 +456,7 @@
     font: var(--type-label-small);
   }
   @media (hover: hover) {
-    .guide-menu button:hover:not(:disabled) { background: var(--state-hovered); }
+    .guide-menu button:hover:not(:disabled) { background: var(--state-hovered-tint); }
   }
-  .guide-menu button:active:not(:disabled) { background: var(--state-pressed); }
-  .guide-menu hr {
-    margin: var(--space-2) 0;
-    border: none;
-    border-top: var(--border-hairline) solid var(--border-subtle);
-  }
+  .guide-menu button:active:not(:disabled) { background: var(--state-pressed-tint); }
 }

@@ -1,8 +1,10 @@
 ---
-/* Distance 2, "standing in front of it": the first screen of a case study.
-   The piece and its label (title, client, years, one sentence, key facts).
-   The way back and around is the menu's; the way on is at the end of the
-   story (NextPiece). Everything comes from src/data/pieces.ts. */
+/* The first screen of a case study: its image, its title, and where and
+   when. Nothing else -- the image is the opening. The summary (the
+   one-sentence label and the facts) is on the piece's card, which Home
+   opens (WorkTiles.astro). The way back and around is the menu's; the
+   way on is at the end of the story (NextPiece). Everything comes from
+   src/data/pieces.ts. */
 import PieceImage from './PieceImage.astro';
 import { piece } from '../data/pieces';
 
@@ -19,13 +21,4 @@ const p = piece(slug);
     <h1>{p.title}</h1>
     <p>{p.client} · {p.years}{readingTime && <small><span id="reading-time"></span> min read</small>}</p>
   </hgroup>
-
-  <p>{p.label}</p>
-
-  <dl class="facts">
-    <div><dt>Role</dt><dd>{p.facts.role}</dd></div>
-    <div><dt>Time</dt><dd>{p.facts.time}</dd></div>
-    <div><dt>Platforms</dt><dd>{p.facts.platforms}</dd></div>
-    <div><dt>Category</dt><dd>{p.facts.category}</dd></div>
-  </dl>
 </header>

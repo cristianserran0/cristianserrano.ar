@@ -108,6 +108,26 @@
      must stay fixed to the window. */
   .page-body { container: page / inline-size; }
 
+  /* The footer rests at the bottom of the panel when a page is shorter
+     than it: the page is a column at least one screen tall, its body
+     takes what is left, and the footer is pushed to the body's end.
+     (main and the footer keep their centred column: an auto margin stops
+     a column's item from stretching, so their width is said outright.) */
+  .page {
+    display: flex;
+    flex-direction: column;
+    min-height: var(--page-min-height);
+  }
+  .page-frame,
+  .page-body {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+  }
+  .page-body > main,
+  .page-body > .site-footer { width: 100%; }
+  .page-body > .site-footer { margin-top: auto; }
+
   /* ---- skip link: off screen until it has focus, then top left ---- */
   .skip-link {
     position: fixed;
@@ -142,13 +162,13 @@
   .site-footer {
     max-width: var(--content-max);
     margin-inline: auto;
-    padding: var(--space-8) calc(var(--gutter) + var(--space-4)) calc(var(--space-8) + var(--gutter));
+    padding: var(--space-8) calc(var(--gutter) + var(--space-4)) var(--space-4);
     text-align: center;
   }
   .site-footer p {
     font: var(--type-caption);
     letter-spacing: var(--type-caption-tracking);
-    color: var(--text-primary);
+    color: var(--text-tertiary);
   }
   .site-footer .love { color: var(--mark); }
 

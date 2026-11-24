@@ -25,16 +25,26 @@
 
   --entry-logo:        3rem;     /* 48px, the height of the role and employer lines together: an employer's or a project's logo on the home page's timeline */
 
-  --icon-filled-stroke: 1;      /* a filled icon's outline: just enough to round its corners */
+  --menu-diamond:       0.625rem; /* 10px: the diamond as a menu item's icon (14px across its points, in a 16px box) */
+  --icon-pop:           0.8;      /* a filled icon starts at this size and grows to full as it appears */
+  --icon-filled-stroke: 1;
+  --icon-stroke-24:     2;        /* a 24-unit icon's stroke: at 16px, 2 units is 1.33px, near the 1.4px of the site's own two drawings */      /* a filled icon's outline: just enough to round its corners */
+  --header-fade:        3rem;     /* 48px: how far the top bar's colour fades out below it */
+  /* The shape of every such fade (under the top bar, over the two ends of
+     the guide's conversation), as a mask: not a straight line from solid
+     to nothing (which shows as an edge where it starts and a band in the
+     middle) but a curve that leaves slowly and thins out long. */
+  --fade-stops: rgb(0 0 0 / 1) 0%, rgb(0 0 0 / 0.738) 19%, rgb(0 0 0 / 0.541) 34%, rgb(0 0 0 / 0.382) 47%, rgb(0 0 0 / 0.278) 56.5%, rgb(0 0 0 / 0.194) 65%, rgb(0 0 0 / 0.126) 73%, rgb(0 0 0 / 0.075) 80.2%, rgb(0 0 0 / 0.042) 86.1%, rgb(0 0 0 / 0.021) 91%, rgb(0 0 0 / 0.008) 95.2%, rgb(0 0 0 / 0.002) 98.2%, rgb(0 0 0 / 0) 100%;
+  --fade-down:  linear-gradient(var(--fade-stops));          /* solid at the top */
+  --fade-up:    linear-gradient(to top, var(--fade-stops));  /* solid at the bottom */
   --side-nav-width:    13rem;    /* 208px: the vertical menu */
   --side-nav-space:    15rem;    /* 240px: the panel the menu has to itself, on the left */
-  --side-controls-space: 4.5rem; /* 72px: the strip on the right, one button wide, for Guide and Display */
+  --side-controls-space: 3.5rem; /* 56px: the strip on the right, one button and its 12px each side, for Guide and Display */
 
   /* controls */
   --tooltip-max:        15rem;     /* 240px, then it wraps */
   --tooltip-offset:     var(--space-1);   /* 4px below its control */
   --field-pad-block:    0.3125rem; /* 5px: a 20px line in a 32px field with a 1px border */
-  --radius-track:       calc(var(--radius-md) + var(--space-half));   /* a segmented control: its items' radius plus its padding */
   --checkbox-size:      1.125rem;  /* 18px box; its 1px margin makes the 20px space it takes */
   --checkbox-radius:    0.375rem;  /* 6px */
   --checkbox-mark-size: 0.875rem;  /* 14px */
@@ -51,8 +61,8 @@
   --code-pad-inline:    0.1875rem; /* 3px */
   --code-block-pad:     0.375rem;  /* 6px */
 
-  /* the guide's conversation (from the Coworker prototype's measures) */
-  --chat-measure:        45rem;    /* 720px: the conversation and the input never get wider */
+  /* the guide's conversation */
+  --chat-measure:        37.5rem;  /* 600px: the conversation and the input never get wider */
   --chat-padding-block:  1.125rem; /* 18px */
   --chat-padding-inline: 1.25rem;  /* 20px */
   --chat-bubble-max:     85%;      /* the visitor's own messages */
@@ -65,9 +75,5 @@
   --chat-fade:           2.5rem;   /* the gradients over the conversation's top and bottom edges */
   --chat-rest-space:     5.5rem;   /* 88px of breathing room below a long reply (assistant.js reads it) */
 }
-
-/* The guide's narrower reading column, also switchable from its menu:
-   <html guide-measure="narrow">. */
-[guide-measure="narrow"] { --chat-measure: 37.5rem; }   /* 600px */
 
 } /* @layer tokens */

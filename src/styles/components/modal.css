@@ -9,8 +9,10 @@
    of THAT panel inert, so focus and clicks stay in the modal; the other
    panel keeps working.
 
-   The dialog itself sits one level up from its panel: --bg-overlay with
-   --shadow-overlay. (Not the browser's showModal(): that puts the dialog in
+   The dialog itself sits one level up from its panel: --bg-raised with
+   --shadow-overlay. One level, not the highest: a drop-down that opens
+   on a dialog (--bg-overlay) is then a step lighter than it in dark
+   mode, and does not merge with it. (Not the browser's showModal(): that puts the dialog in
    the top layer, over the whole window.) */
 
 @layer components {
@@ -26,6 +28,27 @@
     transition: opacity var(--duration-panel) var(--ease-enter);
   }
   .panel-modal[hidden] { display: none; }
+
+  /* The page's modal. The page is the scroller, so its modal cannot sit
+     inside it: it is a sibling, fixed, with the page's own edges and
+     corners -- the window while the page is alone (and on a phone), the
+     floating panel's while the guide is open (the same values as
+     shell.css gives the page). The script makes the page inert meanwhile. */
+  .page-modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-page-modal);
+    align-items: safe center;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+  }
+  @media (min-width: 761px) {
+    [assistant="open"] .page-modal {
+      inset: var(--frame-gap);
+      right: calc(var(--assistant-size) + 2 * var(--frame-gap));
+      border-radius: var(--radius-panel);
+    }
+  }
   @starting-style { .panel-modal { opacity: 0; } }
 
   .panel-modal dialog {
@@ -34,8 +57,8 @@
     margin: 0;
     padding: var(--space-4);
     border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    background: var(--bg-overlay);
+    border-radius: var(--radius-around-4);
+    background: var(--bg-raised);
     color: var(--text-primary);
     box-shadow: var(--shadow-overlay);
   }

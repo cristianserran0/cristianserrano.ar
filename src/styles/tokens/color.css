@@ -94,18 +94,19 @@
   --neutral-400: oklch(64.0% calc(var(--neutral-c) * 0.80) var(--neutral-h));
   --neutral-500: oklch(53.8% calc(var(--neutral-c) * 0.90) var(--neutral-h));
   --neutral-600: oklch(43.5% calc(var(--neutral-c) * 0.97) var(--neutral-h));
-  --neutral-700: oklch(39.0% calc(var(--neutral-c) * 1.00) var(--neutral-h));
+  --neutral-700: oklch(40.0% calc(var(--neutral-c) * 1.00) var(--neutral-h));
   --neutral-800: oklch(32.5% calc(var(--neutral-c) * 0.90) var(--neutral-h));
   --neutral-900: oklch(26.4% calc(var(--neutral-c) * 0.80) var(--neutral-h));
   /* 925 to 1000 are the dark-mode depth levels (see DEPTH below):
-     canvas 8, surface 18, raised 21, overlay 24% lightness. A clear gap
-     between the app and its panels, then small steps toward the viewer,
-     so a modal lifts off its panel without shouting. Nothing else uses
-     them; 950 moved from 20 to 21 for this. */
-  --neutral-925: oklch(24.0% calc(var(--neutral-c) * 0.55) var(--neutral-h));
-  --neutral-950: oklch(21.0% calc(var(--neutral-c) * 0.30) var(--neutral-h));
-  --neutral-975: oklch(18.0% calc(var(--neutral-c) * 0.22) var(--neutral-h));
-  --neutral-1000: oklch(8.0% calc(var(--neutral-c) * 0.15) var(--neutral-h));
+     canvas 10, surface 20, raised 23, overlay 25% lightness; the tooltip
+     is 700, at 40%. A clear gap between the app and its panels, then
+     small steps toward the viewer, so a modal lifts off its panel without
+     shouting. Nothing else uses them, except 950: it is also the
+     tooltip in light mode. */
+  --neutral-925: oklch(25.0% calc(var(--neutral-c) * 0.55) var(--neutral-h));
+  --neutral-950: oklch(23.0% calc(var(--neutral-c) * 0.30) var(--neutral-h));
+  --neutral-975: oklch(20.0% calc(var(--neutral-c) * 0.22) var(--neutral-h));
+  --neutral-1000: oklch(10.0% calc(var(--neutral-c) * 0.15) var(--neutral-h));
 }
 
 /* ------------------------------------------------------------
@@ -152,7 +153,7 @@
   --ink-h: 355;
   --mark-light: var(--accent-400);  --mark-dark: var(--accent-400);
   --accent-50: #faf0f3;   --accent-100: #fbd2e1;  --accent-200: #fab0cc;  --accent-300: #fa84b5;
-  --accent-400: #ff179a;  --accent-500: #d5007e;  --accent-600: #ac0365;  --accent-700: #85084e;
+  --accent-400: #ff249f;  --accent-500: #d5007e;  --accent-600: #ac0365;  --accent-700: #85084e;
   --accent-800: #65083a;  --accent-900: #480729;  --accent-950: #2d0518;
 }
 [accent="red"] {
@@ -210,8 +211,8 @@
    accent states --ink-h, so a subtree with another accent never inherits
    blue's.) Not the accent ramp itself: its steps run at the hue's full
    saturation (blue 900: C 0.165, 800: C 0.215).
-   The light end (50-200) is the same idea for dark mode: a faint tint of
-   the accent on near-white.
+   Light mode only. Dark-mode text is white at three strengths (TEXT
+   below): it carries no hue of its own.
    Out-of-gamut hues are mapped by the browser; the contrast gate checks
    what actually renders, for every accent.
    ------------------------------------------------------------ */
@@ -222,9 +223,6 @@
   --ink-900: oklch(26.1% 0.129 var(--ink-h));
   --ink-800: oklch(33.7% 0.117 var(--ink-h));
   --ink-700: oklch(40.7% 0.154 var(--ink-h));
-  --ink-200: oklch(82.0% 0.045 var(--ink-h));
-  --ink-100: oklch(91.0% 0.030 var(--ink-h));
-  --ink-50:  oklch(97.0% 0.012 var(--ink-h));
 }
 
 
@@ -262,10 +260,12 @@
 [scheme],
 [temperature],
 [accent] {
-  /* text follows the accent (INK RAMP above); backgrounds follow temperature */
-  --text-primary:   light-dark( var(--ink-900), var(--ink-50) );
-  --text-secondary: light-dark( var(--ink-800), var(--ink-100));
-  --text-tertiary:  light-dark( var(--ink-700), var(--ink-200));
+  /* Light: text follows the accent (INK RAMP above). Dark: white, see-
+     through -- 95, 80 and 65% -- so it has no hue of its own and takes a
+     little of whatever it sits on. Backgrounds follow temperature. */
+  --text-primary:   light-dark( var(--ink-900), rgb(from var(--white) r g b / 0.95) );
+  --text-secondary: light-dark( var(--ink-800), rgb(from var(--white) r g b / 0.80) );
+  --text-tertiary:  light-dark( var(--ink-700), rgb(from var(--white) r g b / 0.65) );
   /* Hairlines and frames: see-through, like the fills, so one value sits
      right on any depth and on a tint. Half the strength of a control's
      own edge (--border-default, below). */
@@ -273,6 +273,10 @@
                                 rgb(from var(--white) r g b / 0.08) );
   /* A scrollbar's thumb: solid, a see-through one would all but vanish. */
   --scrollbar-thumb: light-dark( var(--neutral-200), var(--neutral-800));
+  /* The same colour, fully clear: what the thumb fades to and from at
+     rest. NOT the keyword "transparent", which is clear BLACK: fading
+     through it showed the thumb as a black bar on the way. */
+  --scrollbar-thumb-clear: oklch(from var(--scrollbar-thumb) l c h / 0);
   /* The accent has two jobs. --link is accent-coloured TEXT (a hovered
      link, the current page): it must reach 4.5:1, which pins every hue
      at the same lightness -- vivid for blue, muddy for orange or teal.
@@ -286,15 +290,16 @@
   --mark:           light-dark( var(--mark-light),  var(--mark-dark)  );
   --link-hover:     light-dark( var(--accent-700),  var(--accent-300) );
   --selection-bg:   light-dark( var(--accent-100),  var(--accent-800) );
-  --selection-text: light-dark( var(--ink-900), var(--ink-50) );
+  --selection-text: light-dark( var(--ink-900), var(--white) );
 
   /* DEPTH -- back to front. Every background on the site is one of these
      four, so "how close is it to the viewer" has one answer:
 
        canvas    the app itself, behind the panels       (furthest back)
        surface   a panel: the page, the guide
-       raised    a card inside a panel
-       overlay   floats above a panel: modals, the Display pop-up (closest)
+       raised    one level up from a panel: a dialog, a card inside a panel
+       overlay   what opens over anything, a dialog included: drop-downs,
+                 menus (closest; only a tooltip is in front of it)
 
      Light: white panels on a pale canvas; depth reads from the shadows
      (tokens/effects.css: --shadow-raised, --shadow-overlay).
@@ -388,6 +393,13 @@
   --fill-selected:  light-dark( rgb(from var(--accent-600) r g b / 0.10),
                                 rgb(from var(--accent-400) r g b / 0.16) );
   --text-selected:  light-dark( var(--accent-700), var(--accent-300) );
+  /* On the way to chosen: a menu item or a flat (ghost) button under the
+     pointer takes half the chosen tint, and the whole of it while pressed.
+     Hovering reads as "about to be chosen", in the same blue, where the
+     grey --state-hovered is for controls that have a face of their own. */
+  --state-hovered-tint: light-dark( rgb(from var(--accent-600) r g b / 0.05),
+                                    rgb(from var(--accent-400) r g b / 0.08) );
+  --state-pressed-tint: var(--fill-selected);
   /* A tooltip stays dark in both schemes, with white text on it. */
   --bg-tooltip:      light-dark( var(--neutral-950), var(--neutral-700) );
   --text-on-tooltip: var(--white);
@@ -407,9 +419,11 @@
   --fill-warning:       light-dark( rgb(from var(--warning) r g b / 0.12),     rgb(from var(--warning-soft) r g b / 0.14) );
   --fill-danger:        light-dark( rgb(from var(--danger) r g b / 0.12),      rgb(from var(--danger-soft) r g b / 0.14) );
 
-  /* Shadow tint. The original site's navy, kept literal for now; folding it
-     into the accent hue is a deliberate visual change, not a refactor. */
-  --shadow-tint:    rgb(0 25 100);
+  /* Shadow tint. Light: the original site's navy, kept literal for now;
+     folding it into the accent hue is a deliberate visual change, not a
+     refactor. Dark: black -- the navy is LIGHTER than a dark surface, so
+     there it drew a blue glow around a panel, not a shadow under it. */
+  --shadow-tint:    light-dark( rgb(0 25 100), var(--black) );
 }
 
 

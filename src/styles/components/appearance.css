@@ -1,67 +1,31 @@
-/* Header controls and the Display panel.
+/* The mode button, in the header beside the Guide.
 
-   Top right holds the two controls, nothing else: Display, then the
-   Guide. Display opens a native popover (HTML `popover`,
-   no script needed to open, close or dismiss it) holding the colour scheme
-   and the accent swatches. Each swatch carries its own accent="…"
-   attribute, so var(--accent-500) on it resolves to that hue. */
+   <button class="button" data-scheme-cycle aria-label="Mode: system">
+     <svg data-mode="system"/> <svg data-mode="dark"/> <svg data-mode="light"/>
+   </button>
+
+   One icon-only ghost button (button.css) holding three icons; the one
+   for the mode in force shows: a computer while the site follows the
+   system, a moon in dark, a sun in light. appearance.js moves it on.
+
+   The icons are the site's set (icon.css). */
 
 @layer components {
-  /* The two controls are icon-only ghost buttons (button.css); the
-     Guide's stays lit while the guide is open (aria-expanded). */
-
-  /* ---- the Display panel ---- */
-  .display {
-    position: fixed;
-    inset: auto;
-    top: calc(var(--header-height) - var(--space-2));
-    right: var(--gutter);
-    width: var(--display-width);
-    margin: 0;
-    padding: var(--space-4);
-    border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    background: var(--bg-overlay);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-overlay);
-  }
-  @media (min-width: 761px) {
-    [assistant="open"] .display {
-      right: calc(var(--assistant-size) + 2 * var(--frame-gap) + var(--gutter));
-    }
-  }
-  @media (max-width: 760px) {
-    .display { right: var(--space-4); }
-  }
-
-  .display p {
-    font: var(--type-overline);
-    letter-spacing: var(--type-overline-tracking);
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin: 0 0 var(--space-2);
-  }
-  .display div + p { margin-top: var(--space-4); }
-
-  /* mode and temperature are segmented controls (segmented.css) */
-
-  .accents { display: flex; justify-content: space-between; }
-
-  .accent-swatch {
-    width: var(--space-6);
-    height: var(--space-6);
-    padding: 0;
-    border: none;
-    border-radius: var(--radius-full);
-    background: var(--accent-500);
-    cursor: pointer;
-    opacity: var(--swatch-idle);
-    transition: opacity var(--duration-fast);
-  }
-  .accent-swatch:hover { opacity: var(--swatch-hover); }
-  .accent-swatch[aria-pressed="true"] {
-    opacity: 1;
-    outline: var(--border-accent) solid var(--accent-500);
-    outline-offset: var(--border-accent);
-  }
+  [data-scheme-cycle] svg { display: none; }
+  :root:not([scheme]) [data-scheme-cycle] [data-mode="system"],
+  [scheme="dark"]  [data-scheme-cycle] [data-mode="dark"],
+  [scheme="light"] [data-scheme-cycle] [data-mode="light"] { display: block; }
 }
+
+/* Changing the mode: the whole page cross-fades from its old look to its
+   new one (appearance.js starts it; <html mode-changing> while it runs).
+   Only the length and the curve are set here; the fade itself is the
+   browser's. Outside the layers: these are the page's own pseudo-elements,
+   not a component's. */
+[mode-changing]::view-transition-group(root),
+[mode-changing]::view-transition-old(root),
+[mode-changing]::view-transition-new(root) {
+  animation-duration: var(--duration-mode);
+  animation-timing-function: var(--ease-in-out);
+}
+

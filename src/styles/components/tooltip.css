@@ -18,8 +18,7 @@
    can move onto it without it closing; Escape closes it (tooltip.js).
 
    Limit: it is drawn inside its panel, so a scrolling or clipping
-   ancestor cuts it. That is why the Display swatches keep the browser's
-   own `title`: a popover clips. */
+   ancestor cuts it (a popover clips). */
 
 @layer components {
   .button[data-has-text="false"] { position: relative; }

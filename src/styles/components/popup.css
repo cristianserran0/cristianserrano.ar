@@ -1,5 +1,5 @@
-/* Pop-ups (native `popover`): the Display panel, the guide's More
-   options, the drop-down of the top bar. They rise a few pixels into
+/* Pop-ups (native `popover`): the guide's More options, and the
+   drop-down of the top bar. They rise a few pixels into
    place and fade in, and fade out when dismissed. Their look stays in
    their own files; this is only how they arrive and leave.
 
@@ -8,7 +8,7 @@
    simply show and hide it at once.) */
 
 @layer components {
-  :is(.display, .guide-menu, .page-menu) {
+  :is(.guide-menu, .page-menu, .experiments) {
     opacity: 0;
     translate: 0 calc(-1 * var(--rise));
     transition: opacity var(--duration-interaction) var(--ease-exit),
@@ -16,7 +16,7 @@
                 display var(--duration-interaction) allow-discrete,
                 overlay var(--duration-interaction) allow-discrete;
   }
-  :is(.display, .guide-menu, .page-menu):popover-open {
+  :is(.guide-menu, .page-menu, .experiments):popover-open {
     opacity: 1;
     translate: none;
     transition: opacity var(--duration-fast) var(--ease-enter),
@@ -25,7 +25,7 @@
                 overlay var(--duration-fast) allow-discrete;
   }
   @starting-style {
-    :is(.display, .guide-menu, .page-menu):popover-open {
+    :is(.guide-menu, .page-menu, .experiments):popover-open {
       opacity: 0;
       translate: 0 calc(-1 * var(--rise));
     }

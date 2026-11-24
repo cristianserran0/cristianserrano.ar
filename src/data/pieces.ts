@@ -35,7 +35,14 @@ export interface Piece {
   cover: ImageMetadata | string;
   hero: ImageMetadata | string;
   alt: string;
-  facts: { category: string; platforms: string; role: string; time: string };
+  /* The facts of the PROJECT, not of the position it belongs to (that is
+     src/data/positions.ts, and Home shows it).
+       time  how long the project ran -- left out where that is not known
+             yet, never filled with the position's dates
+       role  the part played in it. Not shown in the facts: the label says
+             it better ("as the only designer assigned to it full time").
+             Kept for the guide and for search engines. */
+  facts: { category: string; platforms: string; role: string; time?: string };
   featured: boolean;
 }
 
@@ -139,7 +146,7 @@ export const pieces: Piece[] = [
     cover: '/work/justrelate-head-of-design/cover.png',
     hero: '/work/justrelate-head-of-design/cover.png',
     alt: 'Platform vision',
-    facts: { category: 'B2B, SaaS, Product strategy', platforms: 'Web', role: 'Head of Design', time: 'Dec 2024 – present' },
+    facts: { category: 'B2B, SaaS, Product strategy', platforms: 'Web', role: 'Head of Design' },
     featured: false,
   },
   {
@@ -151,7 +158,7 @@ export const pieces: Piece[] = [
     cover: '/work/justrelate-head-of-design/cover.png',
     hero: '/work/justrelate-head-of-design/cover.png',
     alt: 'JR Coworker',
-    facts: { category: 'B2B, SaaS, AI', platforms: 'Web', role: 'Head of Design', time: 'Dec 2024 – present' },
+    facts: { category: 'B2B, SaaS, AI', platforms: 'Web', role: 'Head of Design' },
     featured: false,
   },
   {
@@ -163,7 +170,7 @@ export const pieces: Piece[] = [
     cover: '/work/justrelate-head-of-design/cover.png',
     hero: '/work/justrelate-head-of-design/cover.png',
     alt: 'Design team & DesignOps',
-    facts: { category: 'Design Leadership, Design Operations', platforms: 'Web', role: 'Head of Design', time: 'Dec 2024 – present' },
+    facts: { category: 'Design Leadership, Design Operations', platforms: 'Web', role: 'Head of Design' },
     featured: false,
   },
   /* To be written. Its page only says so. */
@@ -176,7 +183,7 @@ export const pieces: Piece[] = [
     cover: '/work/justrelate-head-of-design/cover.png',
     hero: '/work/justrelate-head-of-design/cover.png',
     alt: 'Brand refresh',
-    facts: { category: 'Branding', platforms: 'Web', role: 'Head of Design', time: 'Dec 2024 – present' },
+    facts: { category: 'Branding', platforms: 'Web', role: 'Head of Design' },
     featured: false,
   },
 ];

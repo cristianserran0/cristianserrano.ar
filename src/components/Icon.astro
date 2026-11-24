@@ -1,0 +1,24 @@
+---
+/* One of the site's icons (src/data/icons.ts), as an inline SVG that takes
+   the colour of the text around it.
+
+     <Icon name="arrow-left" />        the outline drawing
+     <Icon name="more" filled />       the filled drawing
+     <Icon name="home" twin />         both; the styles show the filled one
+                                       while its control is chosen or on
+                                       (styles/components/icon.css)
+
+   Decorative: hidden from assistive technology. What it means is said by
+   the control it sits in (its text, or its aria-label). Any other
+   attribute (data-*, class) is passed on to the <svg>. */
+import { icons, angular } from '../data/icons';
+
+interface Props { name: string; filled?: boolean; twin?: boolean; class?: string; [key: string]: unknown; }
+const { name, filled = false, twin = false, class: cls, ...rest } = Astro.props;
+const icon = icons[name];
+if (!icon) throw new Error(`No icon "${name}" in src/data/icons.ts`);
+const body = twin && icon.filled
+  ? `<g class="icon-outline">${icon.outline}</g><g class="icon-filled">${icon.filled}</g>`
+  : filled && icon.filled ? icon.filled : icon.outline;
+---
+<svg class:list={['icon', cls]} viewBox="0 0 24 24" aria-hidden="true" data-angular={angular(name) ? '' : undefined} {...rest} set:html={body} />

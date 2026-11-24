@@ -15,26 +15,26 @@
 
    Text style    Used for                              Size/leading/weight
    ───────────   ───────────────────────────────────   ───────────────────
-   display       page title (h1)                       66 / 1.2 / 600
+   display       page title (h1)                       60 / 1.2 / 600
    subtitle      line under the page title             19 / 1.4 / 700
-   lead          opening paragraphs, quotes            19 / 1.6 / 300
+   lead          opening paragraphs (Home's too),
+                 quotes                                19 / 1.6 / 280
    intro-title   the page title of Home (h1)           48 / 1.2 / 600
-   intro         the opening of Home                   18 / 1.6 / 300
    title         section heading (h2)                  32 / 1.4 / 600
    title-small   heading of a list of entries (Home)   24 / 1.4 / 600
    heading       sub-section heading (h3), tile title  22 / 1.4 / 500
    subheading    h4                                    19 / 1.4 / 500
    item          a piece's title under a position      16 / 1.4 / 500
-   body          paragraphs, list items                16 / 1.6 / 300
-   meta          aside inside a heading (dates)        19 / 1.4 / 300
-   meta-small    aside inside a subheading (places)    16 / 1.4 / 300
-   caption       figure captions, notes, footer        13 / 1.4 / 300
-   fineprint     the guide's disclaimer                 12 / 1.4 / 300
+   body          paragraphs, list items                16 / 1.6 / 330
+   meta          aside inside a heading (dates)        19 / 1.4 / 280
+   meta-small    aside inside a subheading (places)    16 / 1.4 / 330
+   caption       figure captions, notes, footer,
+                 the guide's small print               13 / 1.4 / 300
    overline      small uppercase label on imagery      13 / 1.4 / 700
    label         navigation, controls                  16 / 1.4 / 500
    label-small   controls on narrow screens            14 / 1.4 / 500
    ornament      the end-of-article mark               22 / 1.4 / 300
-   chat          assistant messages                    14 / 1.5 / 400
+   chat          assistant messages                    14 / 1.5 / 380
 
    Interface text: picked by usage, line height set in px, no tracking.
    ui            what a control or a message says      14 / 20px / 400
@@ -47,19 +47,18 @@
    so a new size slots in between without renaming the others.
    ============================================================ */
 
-/* Inter 4.1, self-hosted (SIL OFL, see /fonts/inter/LICENSE.txt).
-   Only the faces the site renders; a browser downloads a face only
-   when a page uses it. Subset to Latin + Latin-1 + punctuation, arrows
-   and the shapes the site uses (~31 KB a face, from ~115 KB); emoji
-   come from the system's emoji font anyway. The upright faces are
-   preloaded in Layout.astro so they are usually there for first paint. */
-@font-face { font-family: Inter; font-style: normal; font-weight: 300; font-display: swap; src: url("/fonts/inter/Inter-Light.woff2") format("woff2"); }
-@font-face { font-family: Inter; font-style: italic; font-weight: 300; font-display: swap; src: url("/fonts/inter/Inter-LightItalic.woff2") format("woff2"); }
-@font-face { font-family: Inter; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/inter/Inter-Regular.woff2") format("woff2"); }
-@font-face { font-family: Inter; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/inter/Inter-Italic.woff2") format("woff2"); }
-@font-face { font-family: Inter; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/inter/Inter-Medium.woff2") format("woff2"); }
-@font-face { font-family: Inter; font-style: normal; font-weight: 600; font-display: swap; src: url("/fonts/inter/Inter-SemiBold.woff2") format("woff2"); }
-@font-face { font-family: Inter; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/inter/Inter-Bold.woff2") format("woff2"); }
+/* Inter 4.1, self-hosted (SIL OFL, see /fonts/inter/LICENSE.txt), as a
+   variable font: one upright file and one italic, each holding every
+   weight from 250 to 700, so a weight between two named ones (330) is
+   drawn, not rounded. The optical size is fixed at the text cut the
+   site has always used: large titles are not redrawn. Subset to Latin +
+   Latin-1 + punctuation, arrows and the shapes the site uses (~65 KB
+   the upright, ~69 KB the italic); emoji come from the system's emoji
+   font anyway. The upright file is preloaded in Layout.astro so it is
+   usually there for first paint; the italic is fetched when a page has
+   italics. */
+@font-face { font-family: Inter; font-style: normal; font-weight: 250 700; font-display: swap; src: url("/fonts/inter/InterVariable.woff2") format("woff2"); }
+@font-face { font-family: Inter; font-style: italic; font-weight: 250 700; font-display: swap; src: url("/fonts/inter/InterVariable-Italic.woff2") format("woff2"); }
 
 /* Until Inter arrives, text is drawn in Arial scaled to Inter's measure,
    so the swap changes letter shapes but moves nothing -- no jump on load.
@@ -94,6 +93,7 @@
   --font-size-24: 1.5rem;
   --font-size-32: 2rem;
   --font-size-48: 3rem;
+  --font-size-60: 3.75rem;
   --font-size-66: 4.125rem;
 
   --leading-tight:   1.2;
@@ -106,6 +106,14 @@
   --leading-20: 1.25rem;
   --leading-24: 1.5rem;
 
+  /* Reading text has a weight per size, so its strokes come out the
+     same thickness at every size (about 1.17px; measured on Inter's
+     lowercase l): the bigger the text, the lighter the weight. Named by
+     value, like the sizes. */
+  --weight-280:      280;   /* 19px text */
+  --weight-295:      295;   /* 18px text */
+  --weight-330:      330;   /* 16px text */
+  --weight-380:      380;   /* 14px text */
   --weight-light:    300;
   --weight-regular:  400;
   --weight-medium:   500;
@@ -113,16 +121,14 @@
   --weight-bold:     700;
 
   /* ---- text styles ---- */
-  --type-display:              var(--weight-semibold) var(--font-size-66)/var(--leading-tight) var(--font-sans);
-  --type-display-tracking:     -0.16rem;
+  --type-display:              var(--weight-semibold) var(--font-size-60)/var(--leading-tight) var(--font-sans);
+  --type-display-tracking:     -0.145rem;   /* the same proportion it had at 66px (-0.16rem) */
   --type-subtitle:             var(--weight-bold) var(--font-size-19)/var(--leading-normal) var(--font-sans);
   --type-subtitle-tracking:    -0.022rem;
-  --type-lead:                 var(--weight-light) var(--font-size-19)/var(--leading-relaxed) var(--font-sans);
+  --type-lead:                 var(--weight-280) var(--font-size-19)/var(--leading-relaxed) var(--font-sans);
   --type-lead-tracking:        -0.015rem;
   --type-intro-title:          var(--weight-semibold) var(--font-size-48)/var(--leading-tight) var(--font-sans);
-  --type-intro-title-tracking: -0.116rem;   /* the display's tracking, in proportion (-0.16rem at 66px) */
-  --type-intro:                var(--weight-light) var(--font-size-18)/var(--leading-relaxed) var(--font-sans);
-  --type-intro-tracking:       -0.015rem;
+  --type-intro-title-tracking: -0.116rem;   /* the display's tracking, in proportion */
   --type-title:                var(--weight-semibold) var(--font-size-32)/var(--leading-normal) var(--font-sans);
   --type-title-tracking:       -0.022rem;
   --type-title-small:          var(--weight-semibold) var(--font-size-24)/var(--leading-normal) var(--font-sans);
@@ -133,16 +139,14 @@
   --type-subheading-tracking:  -0.022rem;
   --type-item:                 var(--weight-medium) var(--font-size-16)/var(--leading-normal) var(--font-sans);
   --type-item-tracking:        -0.011rem;
-  --type-body:                 var(--weight-light) var(--font-size-16)/var(--leading-relaxed) var(--font-sans);
+  --type-body:                 var(--weight-330) var(--font-size-16)/var(--leading-relaxed) var(--font-sans);
   --type-body-tracking:        -0.011rem;
-  --type-meta:                 var(--weight-light) var(--font-size-19)/var(--leading-normal) var(--font-sans);
+  --type-meta:                 var(--weight-280) var(--font-size-19)/var(--leading-normal) var(--font-sans);
   --type-meta-tracking:        -0.015rem;
-  --type-meta-small:           var(--weight-light) var(--font-size-16)/var(--leading-normal) var(--font-sans);
+  --type-meta-small:           var(--weight-330) var(--font-size-16)/var(--leading-normal) var(--font-sans);
   --type-meta-small-tracking:  -0.011rem;
   --type-caption:              var(--weight-light) var(--font-size-13)/var(--leading-normal) var(--font-sans);
   --type-caption-tracking:     -0.0025rem;
-  --type-fineprint:            var(--weight-light) var(--font-size-12)/var(--leading-normal) var(--font-sans);
-  --type-fineprint-tracking:   var(--type-caption-tracking);
   --type-overline:             var(--weight-bold) var(--font-size-13)/var(--leading-normal) var(--font-sans);
   --type-overline-tracking:    0.025rem;
   --type-label:                var(--weight-medium) var(--font-size-16)/var(--leading-normal) var(--font-sans);
@@ -151,7 +155,7 @@
   --type-label-small-tracking: -0.011rem;
   --type-ornament:             var(--weight-light) var(--font-size-22)/var(--leading-normal) var(--font-sans);
   --type-ornament-tracking:    -0.018rem;
-  --type-chat:                 var(--weight-regular) var(--font-size-14)/var(--leading-medium) var(--font-sans);
+  --type-chat:                 var(--weight-380) var(--font-size-14)/var(--leading-medium) var(--font-sans);
   --type-chat-tracking:        -0.011rem;
 
   /* interface text */
@@ -167,23 +171,26 @@
   --weight-strong: var(--weight-semibold);
 }
 
-/* The guide's text style, switchable from its More options menu while
-   the design is being assessed: <html guide-type="light|page">. Without
-   the attribute it is "coworker" (the chat style above). */
-[guide-type="light"] {
-  --type-chat: var(--weight-light) var(--font-size-14)/var(--leading-medium) var(--font-sans);
-}
-[guide-type="page"] {
-  --type-chat: var(--type-body);
-  --type-chat-tracking: var(--type-body-tracking);
-}
-
 /* Phones: body text at 14 px (16 elsewhere), leading kept. One rule: to
    go back, delete it. Headings, lead and captions keep their sizes. */
 @container page (max-width: 500px) {
   main, .site-footer {
-    --type-body: var(--weight-light) var(--font-size-14)/var(--leading-relaxed) var(--font-sans);
+    --type-body: var(--weight-380) var(--font-size-14)/var(--leading-relaxed) var(--font-sans);
   }
 }
 
 } /* @layer tokens */
+
+/* EXPERIMENT (data/experiments.ts, "lead-size"): 19px or 18px for the
+   four text styles at that size -- lead, subtitle, subheading and meta.
+   Now 19. Here all four are 18, the light ones at the weight that
+   keeps their strokes as thick. (At 18 the scale steps down evenly for
+   small screens: 18 to 16, 16 to 14.) When decided: put the winning
+   size and weight in the four styles above and delete this block, and
+   the size and weight that lost. */
+[experiment-lead-size="18"] {
+  --type-subtitle:   var(--weight-bold) var(--font-size-18)/var(--leading-normal) var(--font-sans);
+  --type-lead:       var(--weight-295) var(--font-size-18)/var(--leading-relaxed) var(--font-sans);
+  --type-subheading: var(--weight-medium) var(--font-size-18)/var(--leading-normal) var(--font-sans);
+  --type-meta:       var(--weight-295) var(--font-size-18)/var(--leading-normal) var(--font-sans);
+}

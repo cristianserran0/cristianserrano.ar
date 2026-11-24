@@ -1,11 +1,18 @@
-/* App shell: the page and the guide as two floating panels.
+/* App shell: the page, and the guide beside it when it is summoned.
 
-   On wide screens the page is ALWAYS the same panel, scrolling inside
-   itself. With the guide closed it runs edge to edge: no gap, square
-   corners. <html assistant="open"> brings in the frame gap, rounds the
-   corners and moves the right edge in to make room, while the guide
-   slides in by the same distance, on the same beat. Both
-   are real elements animating real properties (right, transform), so
+   On wide screens the page scrolls inside itself. On its own it reaches
+   the window's edges and has square corners: it is simply the page.
+   <html assistant="open"> makes it a floating panel beside the guide's:
+   its edges draw in, the canvas shows all round it and its corners
+   round, while the guide slides in, on the same beat.
+
+   The content does not move when that happens. The room the canvas
+   takes round the panel is kept inside the page while it is alone, as
+   padding of the same width, so only the page's outline changes, and
+   its right edge to make room. (Padding, not a border: what scrolls
+   must reach the window's edge, not be cut short of it. What sticks
+   to the top sticks inside the padding, so it keeps its place.) Both
+   are real elements animating real properties (edges, transform), so
    everything inside -- header, controls, content -- simply lives in the
    moving panel, live, frame by frame. No snapshots, anywhere on the site.
 
@@ -24,35 +31,34 @@
       background: var(--bg-canvas-top) linear-gradient(var(--bg-canvas-top), var(--bg-canvas-bottom)) fixed;
     }
 
-    /* The panel's shape: its four edges and its corners, moving together. */
+    /* The panel's shape: its four edges and its corners, moving together.
+       (A modal of the page takes the same shape: .page-modal, modal.css.) */
     .page,
     body::before {
       position: fixed;
+      /* alone: edge to edge, square */
       inset: 0;
       border-radius: 0;
-      /* closing: back to edge to edge, easing out of the guide's way */
-      transition: top var(--duration-panel) var(--ease-exit),
-                  right var(--duration-panel) var(--ease-exit),
-                  bottom var(--duration-panel) var(--ease-exit),
-                  left var(--duration-panel) var(--ease-exit),
-                  border-radius var(--duration-panel) var(--ease-exit);
+      /* closing: its edges ease back out to the window's */
+      transition: var(--duration-panel) var(--ease-exit);
+      transition-property: top, right, bottom, left, border-radius, padding;
     }
     [assistant="open"] .page,
     [assistant="open"] body::before {
-      top: var(--frame-gap);
-      bottom: var(--frame-gap);
-      left: var(--frame-gap);
+      /* beside the guide: a floating panel */
+      inset: var(--frame-gap);
       right: calc(var(--assistant-size) + 2 * var(--frame-gap));
       border-radius: var(--radius-panel);
-      transition: top var(--duration-panel) var(--ease-enter),
-                  right var(--duration-panel) var(--ease-enter),
-                  bottom var(--duration-panel) var(--ease-enter),
-                  left var(--duration-panel) var(--ease-enter),
-                  border-radius var(--duration-panel) var(--ease-enter);
+      transition: var(--duration-panel) var(--ease-enter);
+      transition-property: top, right, bottom, left, border-radius, padding;
     }
+    /* the canvas's room, kept inside the page while it is alone */
+    .page { padding: var(--frame-gap); }
+    [assistant="open"] .page { padding: 0; }
 
     .page {
       width: auto;                    /* the edges decide (layout.css sets 100%) */
+      min-height: 0;                  /* and its height too: the one-screen minimum is for phones, where the window scrolls */
       z-index: var(--z-assistant);   /* the guide's plane */
       overflow: hidden auto;
       background: var(--bg-surface);
@@ -61,11 +67,21 @@
     }
     .page:focus { outline: none; }   /* focused only to take keyboard scrolling */
 
+    /* The scrollbar shows only while it is of use: while the page is
+       scrolling and for a moment after (--delay-scrollbar), and while the
+       pointer is over it. At rest its thumb is clear (<html
+       scrollbar="resting">, set by scrollbar.js). The scrollbar itself is
+       always there, so dragging it and scrolling by keyboard are as
+       before; and without the script it simply stays visible. */
+    .page,
+    [assistant="open"] .page { transition-property: top, right, bottom, left, border-radius, padding, scrollbar-color; }
+    [scrollbar="resting"] .page { scrollbar-color: var(--scrollbar-thumb-clear) transparent; }
+
     /* The header sticks to the top of the panel, taking no room in the
        flow (negative margin), as the fixed header does on phones. */
     .site-header {
       position: sticky;
-      top: 0;
+      top: 0;   /* (measured from inside the page's padding, so it keeps its place while the page is alone) */
       width: auto;
       margin-bottom: calc(-1 * var(--header-height));
     }
@@ -104,10 +120,20 @@
   }
 }
 
-/* Moving between pages: plain page loads, no transition. (No snapshot
-   cross-fades or morphs: they read as screenshots sliding about. The
-   guide still looks permanent because assistant.js rebuilds it before the
-   new page's first paint -- same conversation, same scroll.) */
+/* Moving between pages: a plain page load, softened by a short cross-fade
+   of the whole page (the browser's own, between documents; nothing is
+   named, so nothing slides or morphs -- the panels, the menu and the
+   guide are the same on both pages and simply stay, and the content
+   fades from one to the other). Browsers without it just load the page.
+   The guide still looks permanent because assistant.js rebuilds it before
+   the new page's first paint -- same conversation, same scroll. */
+@view-transition { navigation: auto; }
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--ease-standard);
+}
 
 /* ---- resizing the guide ----
    A handle in the gap between the two panels (assistant.js does the
@@ -161,3 +187,14 @@
     }
   }
 }
+
+/* While a page is loading (<html loading>, appearance-init.js) the shell
+   does not animate. Its panels are transitioned so that opening the guide
+   moves them; but a page that receives its styles in steps -- the dev
+   server delivers the stylesheet in pieces -- would otherwise play its
+   own arrival as a move: the panel's edge growing in from the window's.
+   Outside every layer on purpose, so it holds over any component's
+   transition. */
+[loading] :is(.page, .assistant, .site-header, .side-nav > div),
+[loading] body::before,
+[loading] body::after { transition: none; }

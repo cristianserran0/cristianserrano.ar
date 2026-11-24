@@ -10,6 +10,11 @@
      data-has-text        "false" for an icon-only button; it must carry an
                           aria-label, which is also its tooltip (tooltip.css)
      disabled             the native attribute (base.css fades it)
+     aria-disabled="true" unavailable, but still reachable: it can be
+                          focused and shows its tooltip, which says why.
+                          Only its content is faded, and it has no
+                          hover or pressed state. (A natively disabled
+                          button cannot be focused and shows no tooltip.)
 
    The label goes in a <span>: its side padding is the distance from an
    icon to the text. An icon is an <svg> before or after the span.
@@ -18,7 +23,10 @@
    the bottom, a hairline edge and a short shadow (tokens/color.css,
    "VOLUME"). A ghost button is flat.
 
-   States are drawn OVER the face (--state-hovered, --state-pressed). The focus ring is the site-wide
+   States are drawn OVER the face (--state-hovered, --state-pressed). A
+   ghost button has no face, so its states are the blue ones a menu item
+   has (--state-hovered-tint, --state-pressed-tint): lighter steps of the
+   tint it takes when it is on. The focus ring is the site-wide
    one (base.css). A ghost button can also be ON (aria-pressed,
    aria-expanded): a toggle, or one whose panel is open. An icon-only
    one then fills its icon. (Options to pick are chips, chip.css.)
@@ -103,20 +111,31 @@
     color: var(--text-selected);
   }
   /* an icon-only button that is ON shows its icon filled, not only tinted */
-  .button[data-has-text="false"]:is([aria-pressed="true"], [aria-expanded="true"]) svg { fill: currentColor; }
+  /* (an icon from the set brings its own filled drawing, icon.css; this
+     fills the site's own outline drawings, e.g. the guide's star) */
+  .button[data-has-text="false"] svg:not(.icon) {
+    fill: currentColor;
+    fill-opacity: 0;
+    transition: fill-opacity var(--duration-fast) var(--ease-standard);
+  }
+  .button[data-has-text="false"]:is([aria-pressed="true"], [aria-expanded="true"]) svg:not(.icon) { fill-opacity: 1; }
+
+  /* ---- unavailable, with its reason in the tooltip ---- */
+  .button[aria-disabled="true"] { cursor: default; }
+  .button[aria-disabled="true"] > :is(svg, span) { opacity: var(--opacity-disabled); }
 
   /* ---- states: pressed over hovered ----
      Drawn over the button's face, so the face is named again under them. */
   @media (hover: hover) {
-    .button:hover:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)), var(--volume-action); }
-    .button[data-type="outlined"]:hover:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)), var(--volume-surface); }
-    .button[data-type="ghost"]:hover:not(:disabled) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
+    .button:hover:not(:disabled, [aria-disabled="true"]) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)), var(--volume-action); }
+    .button[data-type="outlined"]:hover:not(:disabled, [aria-disabled="true"]) { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)), var(--volume-surface); }
+    .button[data-type="ghost"]:hover:not(:disabled, [aria-disabled="true"]) { background-image: linear-gradient(var(--state-hovered-tint), var(--state-hovered-tint)); }
   }
-  .button:active:not(:disabled) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)), var(--volume-action); }
-  .button[data-type="outlined"]:active:not(:disabled) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)), var(--volume-surface); }
-  .button[data-type="ghost"]:active:not(:disabled) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)); }
+  .button:active:not(:disabled, [aria-disabled="true"]) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)), var(--volume-action); }
+  .button[data-type="outlined"]:active:not(:disabled, [aria-disabled="true"]) { background-image: linear-gradient(var(--state-pressed), var(--state-pressed)), var(--volume-surface); }
+  .button[data-type="ghost"]:active:not(:disabled, [aria-disabled="true"]) { background-image: linear-gradient(var(--state-pressed-tint), var(--state-pressed-tint)); }
   /* pressed in: it gives a little, and a button with volume loses its shadow */
-  .button:active:not(:disabled) {
+  .button:active:not(:disabled, [aria-disabled="true"]) {
     scale: var(--press-scale);
     box-shadow: none;
   }

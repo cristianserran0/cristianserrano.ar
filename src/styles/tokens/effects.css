@@ -47,6 +47,7 @@
      accelerates (eases off, then gets out of the way). */
   --duration-panel: 300ms;
   --delay-hint: 500ms;
+  --delay-scrollbar: 1000ms;   /* how long the page's scrollbar stays after the scrolling stops */
   /* every hover and small interactive change in the panels: one timing */
   --duration-interaction: 120ms;
   --duration-word: 280ms;    /* a revealed word fading in (guide-ai.js: FADE_MS) */
@@ -57,6 +58,13 @@
      the distance, between these two (side-nav.js reads all three and
      scrolls on the same curve). */
   --ease-travel: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Going to another page: a short cross-fade. */
+  --duration-page: 180ms;
+  /* Changing the mode: the page cross-fades. Not zeroed with reduced
+     motion: nothing moves, and a cut from dark to light is the harsher thing. */
+  --duration-mode: 500ms;
+  /* The menu moving between the side and the top, in two steps (side-nav.js). */
+  --duration-shuffle: 450ms;
   --duration-travel-min: 350ms;
   --duration-travel-max: 900ms;
   /* The playful one: arrives a touch past its place and settles back.
@@ -77,6 +85,7 @@
   --z-modal:     10;    /* a panel's modal, above that panel's content (inside the panel) */
   --z-panel-shadow: 190;   /* both panels' shadows, drawn beneath both panels */
   --z-assistant: 200;      /* the panels: the page (guide open) and the guide, one plane */
+  --z-page-modal: 205;     /* a modal of the page panel: over the panel, under the handle beside it */
   --z-resizer:   210;   /* the handle between the panels, over both edges */
   --z-skip:      400;   /* the skip link, over everything while it has focus */
 }
@@ -89,6 +98,8 @@
     --duration-panel:    0ms;
     --duration-interaction: 0ms;
     --duration-word:     0ms;
+    --duration-shuffle: 0ms;
+    --duration-page:    0ms;
     --duration-travel-min: 0ms;
     --duration-travel-max: 0ms;
   }

@@ -188,3 +188,176 @@
   window.addEventListener('load', update);
   update();
 })();
+
+/* The menu moves between the side and the top when the page panel
+   crosses the "side" width (a window resize, the guide opening). Without
+   help the two layouts simply swap. Here each thing travels from where it
+   was to where it now is: Back, each page's item (the side
+   item and the bar's item are two elements, matched by where they lead),
+   and the Guide and Display buttons. What has no counterpart -- a case
+   study's index, the drop-down's button -- fades in.
+
+   Never diagonally. The move has two steps: first the things gather into
+   one pile, along the direction they were spread in (a column closes up
+   vertically, a row closes up sideways); then the pile opens out along
+   the other direction, into the new layout, with the small spring. Both
+   steps together take --duration-shuffle (zero with reduced motion).
+
+   The page's content moves with them, on the same two steps: when the
+   menu's panel comes or goes the content area changes place and height,
+   and the content travels there instead of jumping -- sideways while the
+   menu gathers or spreads sideways, up or down while it does.
+
+   A pile is not a blob: as things gather they fade away under the one on
+   top, and fade back as they spread. On top stay the first page's item
+   and the Guide button (styles: [data-pile-top], side-nav.css). */
+(function () {
+  var frame = document.querySelector('.page-frame');
+  var side = document.querySelector('.side-nav');
+  if (!frame || !side || !window.ResizeObserver || !Element.prototype.animate) return;
+  var root = getComputedStyle(document.documentElement);
+  function ms(token) { var v = root.getPropertyValue(token).trim(), n = parseFloat(v) || 0; return /ms$/.test(v) ? n : n * 1000; }
+
+  // everything that travels, under a key that is the same in both layouts
+  function things() {
+    var list = [];
+    function add(key, el) { if (el) list.push({ key: key, el: el }); }
+    Array.prototype.forEach.call(document.querySelectorAll('.side-nav a.button, .site-nav > a.button'), function (el) { add('mark', el); });
+    Array.prototype.forEach.call(document.querySelectorAll('.side-nav .menu:not([data-page-index]) .menu-item, .site-links .menu-item'), function (el) { add('page:' + el.getAttribute('href'), el); });
+    add('display', document.querySelector('.site-actions [data-scheme-cycle]'));
+    add('guide', document.querySelector('.site-actions [data-assistant-toggle]'));
+    add('experiments', document.querySelector('.site-actions [data-experiments-toggle]'));
+    Array.prototype.forEach.call(document.querySelectorAll('.side-nav [data-page-index], .site-nav .menu-trigger'), function (el, i) { add('only:' + i, el); });
+    // the content itself: it shifts sideways when the menu's panel comes or goes
+    add('content:main', document.querySelector('.page-body > main'));
+    add('content:footer', document.querySelector('.page-body > .site-footer'));
+    return list;
+  }
+  // Where a thing is, measured from the PANEL, not the window: the menu
+  // from the panel's left edge, the two controls from its right. While
+  // the guide opens the panel's right edge is itself moving, and measured
+  // from the window the controls would seem to have come from further
+  // right every frame -- they flew in from the edge and settled.
+  var panel = document.querySelector('.page');
+  function shown(t) {
+    var r = t.el.getBoundingClientRect();
+    if (!(r.width > 0 && r.height > 0)) return null;
+    var p = panel.getBoundingClientRect();
+    var fromRight = t.key === 'display' || t.key === 'guide' || t.key === 'experiments';
+    var top = r.top;
+    // How far down the content sits is read from its first piece -- the
+    // title, or a case study's opening image -- not from its box: the room
+    // above the content is INSIDE the box. And when the page is scrolled,
+    // the browser holds what is on screen in place, which this reading
+    // then reports as "did not move", correctly.
+    if (t.key.indexOf('content:') === 0 && opening) top = opening.getBoundingClientRect().top;
+    return { left: fromRight ? r.left - p.right : r.left - p.left, top: top - p.top };
+  }
+  var opening = document.querySelector('.page-body > main .piece figure, .page-body > main h1');
+  function snapshot() {
+    var at = {};
+    things().forEach(function (t) { var r = shown(t); if (r) at[t.key] = r; });
+    return at;
+  }
+  function mode() { return getComputedStyle(side).display !== 'none' ? 'side' : 'top'; }
+
+  // Only a change the visitor causes is animated. While a page is still
+  // loading its layout can settle in steps (styles arriving, the guide's
+  // width being restored), and that must not play as a move: nothing is
+  // animated until the page has loaded and stood still for a moment.
+  var armed = false;
+  function arm() { setTimeout(function () { last = mode(); before = snapshot(); keep(); armed = true; }, 400); }
+  // how far the page is scrolled, and whether its opening is still on screen
+  var kept = { at: 0, opening: false };
+  function keep() {
+    kept.at = panel.scrollTop;
+    kept.opening = !!opening && opening.getBoundingClientRect().bottom > panel.getBoundingClientRect().top;
+  }
+  if (document.readyState === 'complete') arm(); else window.addEventListener('load', arm);
+
+  // What stays on top of its pile: the first page (the site's own item)
+  // over the other pages, and Guide over Display.
+  var TOPS = '.side-nav .menu:not([data-page-index]) li:first-child .menu-item, .site-links li:first-child .menu-item, .site-actions [data-assistant-toggle]';
+
+  var last = mode(), before = snapshot();
+  new ResizeObserver(function () {
+    var now = mode();
+    // The visitor's place on the page is kept. When the layout changes the
+    // browser holds a paragraph still and moves the scroll position to do
+    // it, which near the top of a page pushed the title out of view. So:
+    // if the page's opening was on screen, the scroll position stays what
+    // it was (at the very top, it stays at the very top). Further down,
+    // the browser's holding still is the right thing and is left alone.
+    if (armed && now !== last && kept.opening && panel.scrollTop !== kept.at) panel.scrollTop = kept.at;
+    var settled = snapshot();   // where things are now, read before anything is set in motion
+    if (!armed) { last = now; before = settled; return; }
+    if (now !== last) {
+      var time = ms('--duration-shuffle'), spring = root.getPropertyValue('--ease-spring').trim() || 'ease';
+      busyUntil = performance.now() + time + 60;
+      setTimeout(function () { if (mode() === last) { before = snapshot(); keep(); } }, time + 80);   // once it has landed, read again
+      var gather = root.getPropertyValue('--ease-travel').trim() || 'ease-in-out';
+      var toTop = now === 'top';   // the column closes up first; going to the side, the row does
+      // the top of each pile stays whole and in front while the rest pass under it
+      if (time) Array.prototype.forEach.call(document.querySelectorAll(TOPS), function (el) {
+        el.setAttribute('data-pile-top', '');
+        setTimeout(function () { el.removeAttribute('data-pile-top'); }, time);
+      });
+      if (time) things().forEach(function (t) {
+        var to = shown(t); if (!to) return;
+        var from = before[t.key];
+        if (from && t.key.indexOf('content:') === 0) {
+          // The content makes the same two-step journey as the menu, in
+          // step with it and without fading. Going to the side: while the
+          // row closes up to the left the content crosses to the right,
+          // then while the column opens downward the content rises. Going
+          // to the top, the reverse: it sinks first, then crosses back.
+          var cx = Math.round(from.left - to.left), cy = Math.round(from.top - to.top);
+          if (cx || cy) t.el.animate([
+            { translate: cx + 'px ' + cy + 'px', easing: gather },
+            { translate: toTop ? cx + 'px 0' : '0 ' + cy + 'px', offset: 0.5, easing: gather },
+            { translate: '0 0' }
+          ], { duration: time });
+        } else if (from && t.key.indexOf('only:') !== 0) {
+          var dx = Math.round(from.left - to.left), dy = Math.round(from.top - to.top);
+          if (dx || dy) {
+            var path = [
+              { translate: dx + 'px ' + dy + 'px', easing: gather },
+              { translate: toTop ? dx + 'px 0' : '0 ' + dy + 'px', offset: 0.5, easing: spring },   // the pile
+              { translate: '0 0' }
+            ];
+            var fade = [{ opacity: 1, easing: gather }, { opacity: 0, offset: 0.5, easing: spring }, { opacity: 1 }];   // gone under the pile's top
+            t.el.animate(path, { duration: time });
+            t.el.animate(fade, { duration: time });
+            // The chosen item's tint may be a separate marker (it is, after
+            // arriving by a click in the menu). It belongs to the item: it
+            // makes the same journey, added to its own place, and fades
+            // with it -- otherwise it sat at the journey's end, waiting.
+            var marker = t.el.hasAttribute('aria-current') && t.el.closest('.menu') && t.el.closest('.menu').querySelector('.menu-indicator[data-on]');
+            if (marker) {
+              marker.animate(path, { duration: time, composite: 'add' });
+              marker.animate(fade, { duration: time });
+            }
+          }
+        } else {
+          t.el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: time, easing: 'ease' });
+        }
+      });
+      last = now;
+    }
+    before = settled;
+  }).observe(frame);
+
+  // The content's place on screen also changes when the visitor scrolls,
+  // with no change of layout. Keep "where things were" current, so a move
+  // starts from where the content really was, not where it was before the
+  // last scroll.
+  var noting = false, busyUntil = 0;
+  function note() {
+    if (noting) return; noting = true;
+    // (not while a move is playing: things are then read mid-flight)
+    requestAnimationFrame(function () { noting = false; if (armed && mode() === last && performance.now() > busyUntil) { before = snapshot(); keep(); } });
+  }
+  window.addEventListener('scroll', note, { passive: true });
+  if (panel) panel.addEventListener('scroll', note, { passive: true });
+})();
+

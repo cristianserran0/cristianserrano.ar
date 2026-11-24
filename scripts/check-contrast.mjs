@@ -42,6 +42,9 @@ const BG = ['--bg-surface', '--bg-raised', '--bg-overlay',
             '--bg-surface+--fill-input', '--bg-overlay+--fill-input',
             '--bg-surface+--state-hovered', '--bg-overlay+--state-hovered',
             '--bg-surface+--state-pressed', '--bg-overlay+--state-pressed',
+            // a menu item or a flat button under the pointer, and pressed
+            '--bg-surface+--state-hovered-tint', '--bg-overlay+--state-hovered-tint',
+            '--bg-surface+--state-pressed-tint', '--bg-overlay+--state-pressed-tint',
             '--bg-surface+--fill-information', '--bg-overlay+--fill-information',
             '--bg-surface+--fill-success', '--bg-overlay+--fill-success',
             '--bg-surface+--fill-warning', '--bg-overlay+--fill-warning',
@@ -71,12 +74,17 @@ const TEXT = [
 const ICONS = ['information', 'success', 'warning', 'danger'].flatMap(s =>
   ['--bg-surface', '--bg-overlay'].map(b => [`--status-${s}`, `${b}+--fill-${s}`]));
 
+// A foreground can be see-through (dark-mode text is white at an alpha),
+// so each one is measured as it shows: painted over its background.
+const over = (f, b) => `${b}+${f}`;
+const OVER = [...FG.flatMap(f => BG.map(b => over(f, b))), ...[...TEXT, ...MARKS, ...ICONS].map(([f, b]) => over(f, b))];
+
 const page = `<!DOCTYPE html><html><head><style>${css}</style></head><body><pre id="o"></pre>
 <script>
 var cv=document.createElement('canvas'); cv.width=cv.height=1;
 var cx=cv.getContext('2d',{willReadFrequently:true});
 var S=${JSON.stringify(SCHEMES)},T=${JSON.stringify(TEMPS)},A=${JSON.stringify(ACCENTS)},
-    R=${JSON.stringify([...new Set([...FG, ...BG, '--mark', '--text-on-accent', '--bg-accent', ...TEXT.flat(), ...ICONS.flat()])])}, out=[];
+    R=${JSON.stringify([...new Set([...FG, ...BG, '--mark', '--text-on-accent', '--bg-accent', ...TEXT.flat(), ...ICONS.flat(), ...OVER])])}, out=[];
 S.forEach(function(s){T.forEach(function(t){A.forEach(function(a){
   var d=document.createElement('div');
   d.setAttribute('scheme',s); d.setAttribute('temperature',t); d.setAttribute('accent',a);
@@ -126,7 +134,7 @@ if (rows.length !== want) {
 }
 const rgb = v => Array.isArray(v) && v.length === 3 && v.every(x => Number.isInteger(x) && x >= 0 && x <= 255) ? v : [];
 const unresolved = [];
-const ALL = [...new Set([...FG, ...BG, ...MARKS.flat(), ...TEXT.flat(), ...ICONS.flat()])];
+const ALL = [...new Set([...FG, ...BG, ...MARKS.flat(), ...TEXT.flat(), ...ICONS.flat(), ...OVER])];
 for (const r of rows)
   for (const k of ALL)
     if (rgb(r.roles[k]).length !== 3)
@@ -152,18 +160,18 @@ for (const r of rows)
     // on the accent (TEXT below). Inline code IS accent text on a fill;
     // that one pair is in TEXT.
     if (f.startsWith('--link') && (b.includes('--fill-') || b.includes('--state-'))) continue;
-    const v = ratio(rgb(r.roles[f]), rgb(r.roles[b])); n++;
+    const v = ratio(rgb(r.roles[over(f, b)]), rgb(r.roles[b])); n++;
     if (v < 4.5) fails.push(`  ${r.scheme}/${r.temp}/${r.accent}  ${f.slice(2)} on ${b.slice(2)}` +
-                            `  rgb(${r.roles[f]}) / rgb(${r.roles[b]})  ${v.toFixed(2)}:1`);
+                            `  rgb(${r.roles[over(f, b)]}) / rgb(${r.roles[b]})  ${v.toFixed(2)}:1`);
   }
 for (const r of rows)
   for (const [f, b] of TEXT) {
-    const v = ratio(rgb(r.roles[f]), rgb(r.roles[b])); n++;
+    const v = ratio(rgb(r.roles[over(f, b)]), rgb(r.roles[b])); n++;
     if (v < 4.5) fails.push(`  ${r.scheme}/${r.temp}/${r.accent}  ${f.slice(2)} on ${b.slice(2)}  ${v.toFixed(2)}:1`);
   }
 for (const r of rows)
   for (const [f, b] of [...MARKS, ...ICONS]) {
-    const v = ratio(rgb(r.roles[f]), rgb(r.roles[b])); n++;
+    const v = ratio(rgb(r.roles[over(f, b)]), rgb(r.roles[b])); n++;
     if (v < 3) fails.push(`  ${r.scheme}/${r.temp}/${r.accent}  ${f.slice(2)} on ${b.slice(2)}  ${v.toFixed(2)}:1 (shapes need 3:1)`);
   }
 console.log(`${SCHEMES.length}×${TEMPS.length}×${ACCENTS.length} = ${rows.length} appearances, ${n} pairs (text 4.5:1, shapes 3:1)\n`);

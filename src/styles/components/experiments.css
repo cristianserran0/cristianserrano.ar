@@ -1,0 +1,48 @@
+/* Experiments: the versions on trial, one click away (data/experiments.ts).
+   A button after the mode button and a pop-up; each experiment is a
+   labelled group of menu items (menu-item.css), the chosen option marked
+   like the page you are on. With nothing on trial there is no pop-up:
+   the button is unavailable (aria-disabled, button.css) and its tooltip
+   says so.
+
+   <button class="button" data-experiments-toggle popovertarget="experiments">…</button>
+   <div class="experiments" id="experiments" popover>
+     <p class="menu-label">Experiment</p>
+     <ul class="menu"><li><a class="menu-item" data-experiment="key" data-value="a">…</a></li></ul>
+   </div>
+
+   Not for visitors: the button exists only where <html experiments> is
+   set, which appearance-init.js does everywhere except on the live
+   address. */
+
+@layer components {
+  [data-experiments-toggle] { display: none; }
+  [experiments] [data-experiments-toggle] { display: inline-flex; }
+
+  .experiments {
+    position: fixed;
+    inset: auto;
+    top: var(--header-height);
+    right: var(--gutter);
+    width: var(--display-width);
+    max-width: calc(100vw - 2 * var(--space-4));
+    margin: 0;
+    padding: var(--space-2);
+    border: var(--border-hairline) solid var(--border-subtle);
+    border-radius: var(--radius-around-2);
+    background: var(--bg-overlay);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-overlay);
+    pointer-events: auto;
+  }
+  .experiments .menu-label:first-child { margin-top: var(--space-1); }
+  /* tied to its button where the browser can: right edges level, just under it */
+  @supports (anchor-name: --a) {
+    [data-experiments-toggle] { anchor-name: --experiments-toggle; }
+    .experiments {
+      position-anchor: --experiments-toggle;
+      top: calc(anchor(bottom) + var(--space-1));
+      right: anchor(right);
+    }
+  }
+}

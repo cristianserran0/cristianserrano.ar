@@ -1,9 +1,10 @@
-/* Distance 2: a piece's first screen (components/PieceHeader.astro), and
-   the "next piece" at the end of its story (components/NextPiece.astro).
+/* A case study's first screen (components/PieceHeader.astro), and the
+   "next piece" at the end of its story (components/NextPiece.astro).
 
    The image fills the first screen up to --piece-height and can run wider
-   than the text column, up to --piece-max; the label sits beneath it in the
-   column. Scroll down and the story begins: distance 3. */
+   than the text column, up to --piece-max; the title and where-and-when
+   sit beneath it in the column. Then the story begins. (The summary is
+   on the piece's card: piece-card.css.) */
 
 @layer components {
   .piece { padding-top: calc(var(--header-height) + var(--space-4)); }
@@ -46,33 +47,6 @@
   }
   .piece hgroup small::before { content: " · "; }
 
-  .piece hgroup + p {
-    font: var(--type-lead);
-    letter-spacing: var(--type-lead-tracking);
-    color: var(--text-primary);
-    margin: var(--space-4) 0 0;
-  }
-
-  .piece .facts {
-    margin: var(--space-8) 0 0;
-    padding-top: var(--space-6);
-    border-top: var(--border-hairline) solid var(--border-subtle);
-    gap: var(--space-6);
-  }
-  .piece dt {
-    font: var(--type-overline);
-    letter-spacing: var(--type-overline-tracking);
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin: 0;
-    padding: 0;
-  }
-  .piece dd {
-    font: var(--type-meta-small);
-    letter-spacing: var(--type-meta-small-tracking);
-    color: var(--text-primary);
-    margin: var(--space-1) 0 0;
-  }
 
   /* ---- the way on ---- */
   .piece-nav {
@@ -124,7 +98,7 @@
     font: var(--type-overline);
     letter-spacing: var(--type-overline-tracking);
     text-transform: uppercase;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
     align-self: end;
   }
   .next-piece strong {

@@ -1,57 +1,64 @@
-/* Display controls, inside the Display popover in the header.
-   Mode: System / Light / Dark. "System" removes the attribute so :root's
-   `color-scheme: light dark` follows the OS natively and live -- no
-   matchMedia listener needed, and it keeps working with JS disabled.
-   Temperature (Warm / Neutral / Cold, the greys) and Accent (the signal
-   colour) set their attribute on <html> and remember it. */
+/* The mode button in the header: one button that goes round
+   System -> Dark -> Light -> System. Its icon is the mode you are in
+   (styles/components/appearance.css picks it from <html scheme>).
+
+   "System" removes the attribute, so :root's `color-scheme: light dark`
+   follows the OS natively and live -- no matchMedia listener needed, and
+   it keeps working with JS disabled. The choice is remembered and applied
+   before first paint by appearance-init.js. */
 (function () {
   var d = document.documentElement;
+  var ORDER = ['system', 'dark', 'light'];
+  var button = document.querySelector('[data-scheme-cycle]');
+  if (!button) return;
 
-  function store(k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
-  function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function current() { var s = d.getAttribute('scheme'); return s === 'light' || s === 'dark' ? s : 'system'; }
+  function name() { button.setAttribute('aria-label', 'Mode: ' + current()); }
 
-  function currentScheme() {
-    var s = d.getAttribute('scheme');
-    return s === 'light' || s === 'dark' ? s : 'system';
+  function apply(next) {
+    if (next === 'system') d.removeAttribute('scheme'); else d.setAttribute('scheme', next);
+    try { next === 'system' ? localStorage.removeItem('scheme') : localStorage.setItem('scheme', next); } catch (e) {}
+    name();
   }
 
-  var schemes = Array.prototype.slice.call(document.querySelectorAll('[data-scheme]'));
-  var temps = Array.prototype.slice.call(document.querySelectorAll('[data-temperature]'));
-  var swatches = Array.prototype.slice.call(document.querySelectorAll('[data-accent]'));
+  // The change is a cross-fade, not a cut: going from dark to light in one
+  // frame is a flash in the face. The browser fades the whole page from
+  // its old look to its new one (a view transition: nothing moves, so it
+  // also runs with reduced motion). Where it cannot, the change is at once.
+  button.addEventListener('click', function () {
+    var next = ORDER[(ORDER.indexOf(current()) + 1) % ORDER.length];
+    if (!document.startViewTransition) { apply(next); return; }
+    d.setAttribute('mode-changing', '');
+    var fade = document.startViewTransition(function () { apply(next); });
+    fade.finished.then(done, done);
+    function done() { d.removeAttribute('mode-changing'); }
+  });
+  name();
+})();
 
-  function render() {
-    var s = currentScheme(), a = d.getAttribute('accent'), t = d.getAttribute('temperature');
-    temps.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-temperature') === t)); });
-    schemes.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-scheme') === s)); });
-    swatches.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-accent') === a)); });
+/* The Experiments menu: choosing an option applies it at once, with no
+   reload, and keeps it for the visit (appearance-init.js restores it on
+   the next page). The first option of each experiment is what the site
+   does now: it needs no attribute. */
+(function () {
+  var d = document.documentElement;
+  var links = document.querySelectorAll('[data-experiment]');
+  if (!links.length) return;
+  function mark() {
+    Array.prototype.forEach.call(links, function (a) {
+      var now = d.getAttribute('experiment-' + a.getAttribute('data-experiment'));
+      var on = now ? now === a.getAttribute('data-value') : a.hasAttribute('data-base');
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
   }
-
-  schemes.forEach(function (b) {
-    b.addEventListener('click', function () {
-      var next = b.getAttribute('data-scheme');
-      next === 'system' ? d.removeAttribute('scheme') : d.setAttribute('scheme', next);
-      store('scheme', next === 'system' ? null : next);
-      render();
+  Array.prototype.forEach.call(links, function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var key = a.getAttribute('data-experiment'), value = a.getAttribute('data-value'), base = a.hasAttribute('data-base');
+      try { base ? sessionStorage.removeItem('experiment:' + key) : sessionStorage.setItem('experiment:' + key, value); } catch (err) {}
+      if (base) d.removeAttribute('experiment-' + key); else d.setAttribute('experiment-' + key, value);
+      mark();
     });
   });
-
-  temps.forEach(function (b) {
-    b.addEventListener('click', function () {
-      d.setAttribute('temperature', b.getAttribute('data-temperature'));
-      store('temperature', b.getAttribute('data-temperature'));
-      render();
-    });
-  });
-
-  swatches.forEach(function (b) {
-    b.addEventListener('click', function () {
-      d.setAttribute('accent', b.getAttribute('data-accent'));
-      store('accent', b.getAttribute('data-accent'));
-      render();
-    });
-  });
-
-  // the stored accent was already applied by appearance-init.js; just reflect it
-  if (!d.getAttribute('accent')) d.setAttribute('accent', read('accent') || 'blue');
-  render();
+  mark();
 })();

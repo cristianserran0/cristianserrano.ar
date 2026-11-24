@@ -27,16 +27,12 @@
     letter-spacing: var(--type-title-small-tracking);
   }
 
-  /* The opening of the page the entries are on: its title and its
-     paragraphs a step smaller than a display title and a lead, closer to
-     the entries' own text. */
+  /* The opening of the page the entries are on: its title a step smaller
+     than a display title, closer to the entries' own text. Its
+     paragraphs are leads, like any page's (prose.css). */
   .intro h1 {
     font: var(--type-intro-title);
     letter-spacing: var(--type-intro-title-tracking);
-  }
-  .intro > p {
-    font: var(--type-intro);
-    letter-spacing: var(--type-intro-tracking);
   }
 
   .entry {

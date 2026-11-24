@@ -1,0 +1,43 @@
+/* Icons: the site's set (src/data/icons.ts, drawn by Icon.astro and by
+   the guide's script).
+
+   <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"> … </svg>
+
+   - They are 24-unit drawings shown at 16px (20px in a large control),
+     so their 1.5-unit stroke is thickened to stay at the site's line
+     weight (--icon-stroke-24).
+   - data-angular: arrows and chevrons. A pointed head and a flat tail,
+     where everything else keeps the set's round ends.
+   - An icon may hold two drawings (.icon-outline, .icon-filled). The
+     filled one shows while its control is chosen or on: the menu's
+     current item, a pressed or open button, the drop-down's button.
+     Going from one to the other is a short fade with a small pop. */
+
+@layer components {
+  .icon [stroke-width] { stroke-width: var(--icon-stroke-24); }
+  .icon[data-angular] * {
+    stroke-linejoin: miter;
+    stroke-linecap: butt;
+  }
+
+  /* Both drawings are always there, one on the other; turning on fades
+     the outline out and the filled one in, which also grows the last
+     little way into place with the small spring. Turning off is the same
+     in reverse. */
+  .icon-outline,
+  .icon-filled {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity var(--duration-fast) var(--ease-standard),
+                scale var(--duration-moderate) var(--ease-spring);
+  }
+  .icon-filled {
+    opacity: 0;
+    scale: var(--icon-pop);
+  }
+  :is(.menu-item[aria-current], .button[aria-pressed="true"], .button[aria-expanded="true"]) .icon-outline { opacity: 0; }
+  :is(.menu-item[aria-current], .button[aria-pressed="true"], .button[aria-expanded="true"]) .icon-filled {
+    opacity: 1;
+    scale: 1;
+  }
+}

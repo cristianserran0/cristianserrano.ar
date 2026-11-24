@@ -7,11 +7,10 @@
    <p class="menu-label">A group's name</p>
 
    A row the full width of its list, 32px tall like every control, with
-   an optional 16px icon before the label. Hover and pressed are the
-   controls' own (--state-hovered, --state-pressed).
+   an optional 16px icon before the label. Hover and pressed are lighter
+   steps of the chosen tint (--state-hovered-tint, --state-pressed-tint).
 
-   An icon may carry two drawings (.icon-outline, .icon-filled); the
-   chosen item shows the filled one.
+   The chosen item shows its icon filled (icon.css).
 
    aria-current marks the chosen one ("page" for the page you are on,
    "location" for the section in view): a tint of the accent, its label
@@ -51,14 +50,28 @@
     width: var(--icon-size);
     height: var(--icon-size);
   }
-  /* an icon has two drawings; the chosen item shows the filled one */
-  .menu-item .icon-filled { display: none; }
-  .menu-item[aria-current] .icon-outline { display: none; }
-  .menu-item[aria-current] .icon-filled {
-    display: inline;
-    fill: currentColor;
-    stroke-width: var(--icon-filled-stroke);
+  /* The site's own item (the first, the home page) has the site's mark,
+     the diamond, as its icon: <span class="menu-diamond">. There is no
+     separate mark above or before the menu. */
+  .menu-diamond {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
   }
+  .menu-diamond::before {
+    content: "";
+    width: var(--menu-diamond);
+    height: var(--menu-diamond);
+    background: var(--mark);
+    rotate: var(--end-mark-rotation);
+  }
+  /* chosen: the diamond takes the label's colour, as any chosen item's
+     icon does -- not a second, nearly equal blue beside it */
+  /* (the drop-down's button always shows the chosen item) */
+  :is(.menu-item[aria-current], .menu-trigger) .menu-diamond::before { background: currentColor; }
+
   .menu-item[aria-current] {
     background-color: var(--fill-selected);
     color: var(--text-selected);
@@ -66,9 +79,9 @@
   }
   /* hover and pressed: a colour, so it can fade (the chosen item keeps its tint) */
   @media (hover: hover) {
-    .menu-item:hover:not([aria-current]) { background-color: var(--state-hovered); }
+    .menu-item:hover:not([aria-current]) { background-color: var(--state-hovered-tint); }
   }
-  .menu-item:active:not([aria-current]) { background-color: var(--state-pressed); }
+  .menu-item:active:not([aria-current]) { background-color: var(--state-pressed-tint); }
 
   /* the sliding marker: the chosen item's tint, as one shape that moves */
   .menu-indicator {

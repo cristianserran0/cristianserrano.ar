@@ -17,7 +17,7 @@
     grid-auto-columns: 1fr;
     gap: var(--space-half);
     padding: var(--space-half);
-    border-radius: var(--radius-track);
+    border-radius: var(--radius-around-half);
     background: var(--fill-input);
   }
   .segmented button {

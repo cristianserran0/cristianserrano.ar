@@ -1,0 +1,82 @@
+/* A piece's card: its summary, opened from its tile on Home, with the
+   way to the full case study. A modal of the page (modal.css).
+
+   <div class="panel-modal page-modal" hidden>
+     <dialog class="piece-card" open aria-modal="true" aria-labelledby="piece-card-title">
+       <figure><img></figure>
+       <hgroup> <h2 id="piece-card-title">Title</h2> <p>Client · years</p> </hgroup>
+       <p>One-sentence label</p>
+       <dl class="facts"> <div><dt>Time</dt><dd>…</dd></div> … </dl>
+       <div> <button class="button" data-type="outlined">Close</button>
+             <a class="button">Read the full case study</a> </div>
+     </dialog>
+   </div>
+
+   The content comes from the tile's <template> (WorkTiles.astro), put in
+   by public/js/piece-card.js. The image leads; under it the title, then
+   labels in secondary and what they name in primary. */
+
+@layer components {
+  .panel-modal .piece-card { max-width: var(--piece-card-max); }
+
+  .piece-card figure { margin: 0 0 var(--space-4); }
+  .piece-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--piece-card-ratio);
+    object-fit: cover;
+    object-position: top;
+    border-radius: var(--radius-md);
+    background-color: var(--fill-strong);
+  }
+
+  .piece-card h2 {
+    font: var(--type-title-small);
+    letter-spacing: var(--type-title-small-tracking);
+    margin: 0;
+  }
+  .piece-card hgroup p {
+    font: var(--type-overline);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: var(--space-1) 0 0;
+  }
+  .piece-card hgroup + p {
+    font: var(--type-body);
+    letter-spacing: var(--type-body-tracking);
+    color: var(--text-secondary);
+    margin: var(--space-3) 0 0;
+  }
+
+  .piece-card .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-8);
+    margin: var(--space-4) 0 0;
+    padding-top: var(--space-4);
+    border-top: var(--border-hairline) solid var(--border-subtle);
+  }
+  .piece-card dt {
+    font: var(--type-overline);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .piece-card dd {
+    font: var(--type-ui);
+    letter-spacing: var(--type-ui-tracking);
+    color: var(--text-primary);
+    margin: var(--space-half) 0 0;
+  }
+
+  /* Close · Read the full case study */
+  .piece-card > div > div:last-child {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-6);
+  }
+}

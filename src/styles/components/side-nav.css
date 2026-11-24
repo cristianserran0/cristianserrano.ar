@@ -13,7 +13,7 @@
 
    WIDE (the "side" width of the page panel, tokens/space.css): three
    parts. A panel on the left holds the menu; a strip on the right, one
-   button wide, holds the two controls stacked (Guide, then Display); the
+   button wide, holds the two controls stacked (Guide, then the mode); the
    content area lies between them. The content column is centred in the
    content area, and a wide figure bleeds to its edges, never into the
    panel or the strip. No lines between the three. The menu and the
@@ -23,7 +23,7 @@
 
    NARROWER -- a laptop, the guide open, a phone: the panels would leave
    wide figures too little room, so the menu moves to a bar along the
-   top. There it collapses: the mark, then a drop-down. On a page of the
+   top. On a page of the
    site the pages stay inline while they fit and become the drop-down on
    phones; on a case study it is always a drop-down of the page's
    sections, labelled with the section in view.
@@ -38,23 +38,6 @@
 }
 
 @layer components {
-  /* ---- the mark: the diamond, home ---- */
-  .site-mark {
-    display: inline-grid;
-    place-items: center;
-    flex: none;
-    width: var(--control-sm);
-    height: var(--control-sm);
-    border-radius: var(--radius-md);
-  }
-  .site-mark::before {
-    content: "";
-    width: var(--brand-mark);
-    height: var(--brand-mark);
-    background: var(--mark);
-    rotate: var(--end-mark-rotation);
-  }
-
   /* ---- WIDE: the menu's panel, its twin, the content area between ---- */
   .side-nav { display: none; }
 
@@ -64,24 +47,27 @@
     .side-nav {
       display: block;
       position: sticky;
-      top: var(--space-6);
+      top: var(--space-3);
       z-index: var(--z-side-nav);
       height: 0;
     }
     .side-nav > div {
       position: absolute;
       top: 0;
-      /* its labels start one gutter from the panel's edge */
-      left: calc(var(--gutter) - var(--control-pad-sm));
+      /* 12px from the panel's edge, as it is from the top: the same all round */
+      left: var(--space-3);
       width: var(--side-nav-width);
     }
-    .side-nav .site-mark,
     .side-nav .button { margin-bottom: var(--space-3); }
-    /* the mark (diamond or Back) on the axis of what is under it: its
-       box is centred 16px in; an icon, or the start of a label, 18px in */
-    .side-nav .site-mark,
+    /* Back on the axis of what is under it: its box is centred 16px in;
+       an icon, or the start of a label, 18px in */
     .side-nav .button { margin-inline-start: var(--space-half); }
     .page-body { margin-inline: var(--side-nav-space) var(--side-controls-space); }
+    /* No bar above the content here, so the room kept for one is halved:
+       a page starts two gutters from the top of the panel (main's own
+       padding, and as much again), where the top-bar layout leaves four. */
+    .prose > header,
+    .piece { padding-top: var(--space-8); }
   }
 
   /* ---- the top bar ----
@@ -91,19 +77,54 @@
      (.site-header keeps its nav-hidden class from header-behaviour.js;
      the class no longer moves it.) */
   .site-header {
+    /* exactly one header tall, whatever it holds: the stacked controls of
+       the wide layout hang below it without pushing the page down */
+    height: var(--header-height);
     background: none;
     pointer-events: none;   /* the page beneath stays clickable; the row and the pop-ups opt back in */
   }
   .site-header.nav-hidden { top: 0; }
+  /* The bar is an element of its own, in the panel's colour, and the page
+     scrolls behind it. Where a line would mark that, here the bar's
+     colour fades out below it, so what scrolls under it dissolves into
+     the bar. Over the empty top of a page the fade is the page's own
+     colour and shows nothing. */
   .site-nav {
+    position: relative;
     gap: var(--space-2);
-    background: var(--bg-header);
+    background: var(--bg-surface);
+    /* its colour also fills the room kept above it while the page is
+       alone (shell.css), so nothing shows scrolling past over the bar */
+    box-shadow: 0 calc(-1 * var(--frame-gap)) 0 var(--bg-surface);
     pointer-events: auto;
   }
-  :is(.display, .page-menu) { pointer-events: auto; }
-  .site-links { margin-inline-start: var(--space-2); }
+  .site-nav::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: var(--header-fade);
+    background: var(--bg-surface);
+    -webkit-mask-image: var(--fade-down);
+    mask-image: var(--fade-down);
+    pointer-events: none;
+  }
+  .page-menu { pointer-events: auto; }
+  /* the pages in the bar: the same menu items as in the side panel, in a row */
+  .site-links {
+    display: flex;
+    gap: var(--space-1);
+  }
+  /* The bar is built like every panel's header (the guide's, a dialog's):
+     a 32px row of controls with 12px around it, 56px tall. So its first
+     and last controls sit 12px from the panel's edges, the Guide button
+     is level with the guide's own header beside it, and nothing moves
+     when the menu goes between the side and the top. */
+  .site-nav { padding-inline: var(--space-3); }
 
-  /* the drop-down's button: the chosen item, with a chevron */
+  /* the drop-down's button: the chosen item whole -- its icon and its
+     label, as in the menu -- with a chevron */
   .menu-trigger {
     display: inline-flex;
     align-items: center;
@@ -132,7 +153,8 @@
     transition: scale var(--duration-fast) var(--ease-standard);
   }
   /* the chevron turns over while the drop-down is open */
-  .site-header:has(.page-menu:popover-open) .menu-trigger svg { scale: 1 -1; }
+  /* (only the chevron: the button's own icon, when it has one, stays upright) */
+  .site-header:has(.page-menu:popover-open) .menu-trigger svg:not(.menu-trigger-icon) { scale: 1 -1; }
   @media (hover: hover) {
     .menu-trigger:hover { background-image: linear-gradient(var(--state-hovered), var(--state-hovered)); }
   }
@@ -156,7 +178,7 @@
     margin: 0;
     padding: var(--space-2);
     border: var(--border-hairline) solid var(--border-subtle);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-around-2);
     background: var(--bg-overlay);
     color: var(--text-primary);
     box-shadow: var(--shadow-overlay);
@@ -177,21 +199,25 @@
   }
 
   /* WIDE: nothing in the bar but the two controls, stacked in the strip
-     on the right: Guide on top, Display under it */
+     on the right: Guide on top, the mode under it */
   @container header (min-width: 1100px) {
+    .site-nav::after { display: none; }
     .site-nav {
       align-items: flex-start;
       height: auto;
-      padding: var(--space-4) var(--space-4) 0 0;
+      /* with the backing's 4px: the Guide button 12px from the right and
+         from the top, where it sits in the top bar */
+      padding: var(--space-2) var(--space-2) 0 0;
       background: none;
+      box-shadow: none;
       pointer-events: none;
     }
     .site-nav > :not(.site-actions) { display: none; }
     .site-actions {
-      flex-direction: column-reverse;   /* the markup has Display first */
+      flex-direction: column-reverse;   /* the markup has the mode button first */
       padding: var(--space-1);
-      border-radius: var(--radius-track);
-      background: var(--bg-header);
+      border-radius: var(--radius-around-1);
+      background: var(--bg-surface);
       pointer-events: auto;
     }
     /* their tooltips open to the left, beside the button, not over its neighbour */
@@ -201,14 +227,7 @@
       left: auto;
       translate: 0 -50%;
     }
-    /* Display's pop-up opens beside the strip */
-    .site-header .display {
-      top: var(--space-4);
-      right: var(--side-controls-space);
-    }
-    [assistant="open"] .site-header .display {
-      right: calc(var(--assistant-size) + 2 * var(--frame-gap) + var(--side-controls-space));
-    }
+
   }
 
   /* A case study's own "All work / Next piece" links repeat what the
@@ -218,4 +237,11 @@
   /* A section reached from the index lands clear of the top bar (the
      scrolling itself is side-nav.js: smooth, unless motion is reduced). */
   main h2 { scroll-margin-top: var(--header-height); }
+
+  /* While the menu rearranges (side-nav.js), the top of each pile is in
+     front of what gathers under it. */
+  [data-pile-top] {
+    position: relative;
+    z-index: var(--z-lift);
+  }
 }

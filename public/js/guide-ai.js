@@ -1,6 +1,5 @@
 /* The guide's AI answers: streaming, steady reveal, always-valid markdown.
-   Used by assistant.js through window.GuideAI. Three ideas, from the
-   Coworker prototype brief:
+   Used by assistant.js through window.GuideAI. Three ideas:
 
    1. Arrival is decoupled from reveal. Chunks land in bursts; words appear
       one every WORD_MS, whatever the network does. Completion drains at the
@@ -142,7 +141,7 @@
   }
 
   // ---- markdown -> DOM (paragraphs, lists, headings, bold, italic, code, links) ----
-  var INLINE = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`/g;
+  var INLINE = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`/g;
   // A link the model wrote: kept only if it goes somewhere real -- a page
   // of this site (not the bare "/", which models use as a placeholder),
   // http(s), or mailto. Anything else shows as plain text.
@@ -157,9 +156,11 @@
         var href = safeHref(m[2]);
         if (href) { node = document.createElement('a'); node.href = href; node.textContent = m[1]; }
         else node = document.createTextNode(m[1]);
-      } else if (m[3] !== undefined) { node = document.createElement('strong'); node.textContent = m[3]; }
-      else if (m[4] !== undefined) { node = document.createElement('em'); node.textContent = m[4]; }
-      else { node = document.createElement('code'); node.textContent = m[5]; }
+      } else if (m[3] !== undefined) {   // ***both***
+        node = document.createElement('strong'); var em = document.createElement('em'); em.textContent = m[3]; node.appendChild(em);
+      } else if (m[4] !== undefined) { node = document.createElement('strong'); node.textContent = m[4]; }
+      else if (m[5] !== undefined) { node = document.createElement('em'); node.textContent = m[5]; }
+      else { node = document.createElement('code'); node.textContent = m[6]; }
       parent.appendChild(node);
       at = INLINE.lastIndex;
     }
@@ -221,5 +222,5 @@
     }
   }
 
-  window.GuideAI = { stream: stream, renderMarkdown: renderMarkdown, fadeNewest: fadeNewest, cleanTrailingMarkdown: cleanTrailingMarkdown };
+  window.GuideAI = { stream: stream, renderMarkdown: renderMarkdown, renderInline: inline, fadeNewest: fadeNewest, cleanTrailingMarkdown: cleanTrailingMarkdown };
 })();

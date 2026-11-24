@@ -24,7 +24,7 @@
   var send = form.querySelector('[type="submit"]');
   var feedback = panel.querySelector('[data-feedback]');
 
-  // ---- the scroll model (the Coworker brief, section 6) ----
+  // ---- the scroll model ----
   // The newest question is pinned to the TOP and the reply grows down into
   // empty space below it, so the view never moves while an answer streams
   // and the answer appears where the eyes already are. (Sticking to the
@@ -184,21 +184,31 @@
       ],
     };
   }
-  var ICONS = {
-    sparkle: 'M8 2.25Q9.5 6.5 13.75 8 9.5 9.5 8 13.75 6.5 9.5 2.25 8 6.5 6.5 8 2.25Z',
-    person:  'M8 7.25a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM3 14c.4-2.8 2.4-4.25 5-4.25s4.6 1.45 5 4.25',
-    arrow:   'M3 8h10M9 4l4 4-4 4',
-    compass: 'M8 1.75a6.25 6.25 0 1 0 0 12.5 6.25 6.25 0 0 0 0-12.5zM10.5 5.5l-1.4 3.6-3.6 1.4 1.4-3.6z',
-    layers:  'M8 2l6 3-6 3-6-3 6-3zM2 8l6 3 6-3M2 11l6 3 6-3',
-    people:  'M5.5 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM1.75 13c.3-2.2 1.8-3.5 3.75-3.5s3.45 1.3 3.75 3.5M11 7a1.75 1.75 0 1 0 0-3.5M12 9.5c1.3.4 2 1.6 2.25 3.5',
-  };
+  // Icons. The site's set (Solar) is handed over as data in #guide-data
+  // (Layout.astro); the guide's own four-point star is drawn here.
+  var SET = (data && data.icons) || {};
+  var NAMES = { person: 'about', arrow: 'arrow-right', compass: 'compass', layers: 'layers', people: 'people' };
+  var STAR = 'M8 2.25Q9.5 6.5 13.75 8 9.5 9.5 8 13.75 6.5 9.5 2.25 8 6.5 6.5 8 2.25Z';
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  // one of the set's icons; `twin` adds its filled drawing, which the styles
+  // show while the icon's button is pressed (styles/components/icon.css)
+  function setIcon(key, twin) {
+    var svg = document.createElementNS(SVGNS, 'svg'), d = SET[key] || {};
+    svg.setAttribute('class', 'icon'); svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
+    if (/^(arrow|chevron)-/.test(key)) svg.setAttribute('data-angular', '');
+    svg.innerHTML = twin && d.filled
+      ? '<g class="icon-outline">' + d.outline + '</g><g class="icon-filled">' + d.filled + '</g>'
+      : (d.outline || '');
+    return svg;
+  }
   function icon(name) {
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    if (name !== 'sparkle') return setIcon(NAMES[name] || name);
+    var svg = document.createElementNS(SVGNS, 'svg');
     svg.setAttribute('viewBox', '0 0 16 16'); svg.setAttribute('aria-hidden', 'true');
     svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '1.3'); svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
-    var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    p.setAttribute('d', ICONS[name]); svg.appendChild(p);
+    svg.setAttribute('stroke-width', '1.4'); svg.setAttribute('stroke-linejoin', 'round');
+    var p = document.createElementNS(SVGNS, 'path');
+    p.setAttribute('d', STAR); svg.appendChild(p);
     return svg;
   }
 
@@ -208,7 +218,7 @@
     if (room.kind === 'piece') {
       if (t === Q_SPECIAL) return { text: [room.label], suggestions: [Q_ROLE].concat(room.next ? ['Next piece: ' + room.next.title] : []) };
       if (t === Q_ROLE || /\b(role|team|time|how long|platform)/i.test(t))
-        return { text: ['Role: ' + room.facts.role + '. Time: ' + room.facts.time + '. Platforms: ' + room.facts.platforms + '.'] };
+        return { text: ['Role: ' + room.facts.role + '.' + (room.facts.time ? ' Time: ' + room.facts.time + '.' : '') + ' Platforms: ' + room.facts.platforms + '.'] };
       if (room.next && t === 'Next piece: ' + room.next.title)
         return { text: [room.next.title + ' is next.'], links: [[room.next.title, room.next.href]] };
     }
@@ -269,7 +279,14 @@
       window.GuideAI.renderMarkdown(body, m.md);
       li.appendChild(body);
     }
-    (m.text || []).forEach(function (t) { li.appendChild(el('p', null, t)); });
+    (m.text || []).forEach(function (t) {
+      // What the visitor wrote keeps its shape: its line breaks (the
+      // stylesheet keeps them), and **bold**, *italic* and `code` are
+      // shown as such. Still built from text nodes, never as HTML.
+      if (m.from === 'user' && window.GuideAI && window.GuideAI.renderInline) {
+        var p = el('p'); window.GuideAI.renderInline(p, t); li.appendChild(p);
+      } else li.appendChild(el('p', null, t));
+    });
     if (m.links) {
       var ul = el('ul', 'assistant-links');
       m.links.forEach(function (l) { var a = el('a', null, l[0]); a.href = l[1]; var i = el('li'); i.appendChild(a); ul.appendChild(i); });
@@ -301,16 +318,7 @@
 
   // ---- rating an answer ----
   var SVG = 'http://www.w3.org/2000/svg';
-  function thumb() {
-    var svg = document.createElementNS(SVG, 'svg');
-    svg.setAttribute('viewBox', '0 0 16 16'); svg.setAttribute('aria-hidden', 'true');
-    svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '1.4'); svg.setAttribute('stroke-linejoin', 'round');
-    var p = document.createElementNS(SVG, 'path');
-    p.setAttribute('d', 'M5 7.5v6H2.5v-6H5zm0 0 2.5-5c1.1 0 2 .9 2 2v2h3.1c.8 0 1.4.7 1.3 1.5l-.6 4.4c-.1.6-.7 1.1-1.3 1.1H5');
-    svg.appendChild(p);
-    return svg;
-  }
+  function thumb(way) { return setIcon(way === 'down' ? 'dislike' : 'like', true); }
   function rating(m) {
     var g = el('div', 'assistant-rating');
     g.setAttribute('role', 'group'); g.setAttribute('aria-label', 'Rate this answer');
@@ -320,7 +328,7 @@
       b.setAttribute('data-has-text', 'false'); b.setAttribute('data-tooltip', 'start');
       b.setAttribute('data-rate', r[0]); b.setAttribute('aria-label', r[1]);
       b.setAttribute('aria-pressed', String(m.rating === r[0]));
-      b.appendChild(thumb());
+      b.appendChild(thumb(r[0]));
       b.addEventListener('click', function () { rate(m, r[0], g, b); });
       g.appendChild(b);
     });
@@ -558,6 +566,26 @@
   // ---- composer ----
   input.addEventListener('input', function () { if (!turn) send.disabled = !input.value.trim(); });
   input.addEventListener('keydown', function (e) {
+    // Cmd/Ctrl + B and I: bold and italic. A text box shows no styling,
+    // so the selection is wrapped in the marks (**bold**, *italic*) and
+    // the sent message shows it styled. Pressed again, the marks come off.
+    var key = e.key.toLowerCase();
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && (key === 'b' || key === 'i')) {
+      e.preventDefault();
+      var mark = key === 'b' ? '**' : '*', n = mark.length;
+      var a = input.selectionStart, b = input.selectionEnd, v = input.value, picked = v.slice(a, b);
+      var wrapped = v.slice(a - n, a) === mark && v.slice(b, b + n) === mark &&
+                    (n === 2 || (v.charAt(a - 2) !== '*' || v.slice(a - 3, a) === '***'));   // "*" inside "**" is bold, not italic
+      var text, from, to;
+      if (wrapped) { input.setSelectionRange(a - n, b + n); text = picked; from = a - n; to = b - n; }
+      else { text = mark + picked + mark; from = a + n; to = b + n; }
+      // (insertText keeps the box's own undo; setRangeText is the fallback)
+      if (!document.execCommand || !document.execCommand('insertText', false, text)) {
+        input.setRangeText(text); input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      input.setSelectionRange(from, to);
+      return;
+    }
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(input.value); }
   });
   form.addEventListener('submit', function (e) {
@@ -630,10 +658,8 @@
   });
   closeBtn.addEventListener('click', function () { setOpen(false); });
 
-  // ---- More options: the guide's text style and column, live ----
+  // ---- More options ----
   var menu = document.getElementById('guide-menu');
-  var typeButtons = Array.prototype.slice.call(menu.querySelectorAll('[data-guide-type]'));
-  var measureButton = menu.querySelector('[data-guide-measure]');
   // Keep this chat for the next visit: the visitor's choice, never asked
   // for -- the guide doesn't prompt; it's here when wanted.
   var keepButton = menu.querySelector('[data-guide-keep]');
@@ -642,26 +668,7 @@
     store(local, 'assistant-transcript', kept ? JSON.stringify(transcript) : null);
     renderMenu();
   });
-  function renderMenu() {
-    var t = d.getAttribute('guide-type') || 'coworker';
-    typeButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-guide-type') === t)); });
-    measureButton.setAttribute('aria-pressed', String(d.getAttribute('guide-measure') === 'narrow'));
-    keepButton.setAttribute('aria-pressed', String(kept));
-  }
-  typeButtons.forEach(function (b) {
-    b.addEventListener('click', function () {
-      var t = b.getAttribute('data-guide-type');
-      t === 'coworker' ? d.removeAttribute('guide-type') : d.setAttribute('guide-type', t);
-      store(local, 'guide-type', t === 'coworker' ? null : t);
-      renderMenu(); updateJumpSoon();
-    });
-  });
-  measureButton.addEventListener('click', function () {
-    var on = d.getAttribute('guide-measure') !== 'narrow';
-    on ? d.setAttribute('guide-measure', 'narrow') : d.removeAttribute('guide-measure');
-    store(local, 'guide-measure', on ? 'narrow' : null);
-    renderMenu(); updateJumpSoon();
-  });
+  function renderMenu() { keepButton.setAttribute('aria-pressed', String(kept)); }
   // A popover lives in the top layer, so it's placed by hand under its button.
   menu.addEventListener('beforetoggle', function (e) {
     if (e.newState !== 'open') return;
