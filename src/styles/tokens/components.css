@@ -22,6 +22,17 @@
   --visually-hidden:   1px;      /* text kept for screen readers, not shown */
 
   --entry-mark:        1rem;     /* 16px: the site's diamond on a logo tile (about 23px across its points) */
+  --entry-gap:         var(--space-4);   /* between the logo column and the entry's content */
+  --entry-role-gap:    var(--space-8);   /* between two roles under one logo */
+  --entry-node-y:      calc(var(--font-size-16) * var(--leading-normal) / 2);   /* the middle of a listed role's title line: half the height of one line of a listed role's header (its title, and the client under it) */
+  --entry-rail-x:      calc(var(--entry-gap) + var(--entry-logo) / 2);   /* from the content column back to the middle of the logo column, where that line runs */
+  --entry-stop:        2.5rem;   /* 40px: a client's logo, round, on the line down from its employer's logo (48px) */
+  --timeline-width:    var(--border-hairline);   /* as fine as a tile's own outline */
+  --timeline-color:    var(--border-subtle);    /* the line from an employer's logo down through its clients' */
+  --timeline-fade:     var(--space-2);   /* 8px: how far from a client's logo the line starts to fade out towards it */
+  /* masks for the line: fading at both ends (between two clients' logos), or at its lower end only (from the employer's tile) */
+  --timeline-mask-both: linear-gradient(to bottom, transparent, var(--black) var(--timeline-fade), var(--black) calc(100% - var(--timeline-fade)), transparent);
+  --timeline-mask-end:  linear-gradient(to bottom, var(--black) calc(100% - var(--timeline-fade)), transparent);
   --entry-logo:        3rem;     /* 48px, the height of the role and employer lines together: an employer's or a project's logo on the home page's timeline */
 
   --menu-diamond:       0.625rem; /* 10px: the diamond as a menu item's icon (14px across its points, in a 16px box) */

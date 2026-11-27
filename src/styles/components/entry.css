@@ -1,15 +1,19 @@
-/* An entry on the home page's timeline: a position with its pieces, or a
-   side project.
+/* An entry on a timeline: on Home a position with its pieces, on the CV
+   a position with what was done there.
 
    <section class="entries">  <h2>Experience</h2>  the entries  </section>
 
    <article class="entry">
      <span class="entry-logo" aria-hidden="true">J</span>   or an <img> inside it
      <div>
-       <h3>Role <small>Dates</small></h3>          a side project: <h3><a href>Title</a></h3>
-       <h4>Employer <small>Place</small></h4>      (positions only)
-       <p>One line of context.</p>
-       <section class="projects"> the pieces </section>   (positions only)
+       <div class="entry-role">                    a role: the content column itself, or, where
+         <h3>Role</h3>                             one employer holds several, one of the
+         <h4>Employer <small>Place</small></h4>    blocks inside it
+         <p class="entry-when">Dates</p>
+         <p>One line of context.</p>
+       <section class="projects"> the pieces </section>   Home
+       <ul> what was done </ul>                            the CV. One employer with several
+                                                           roles: see the end of this file
      </div>
    </article>
 
@@ -17,7 +21,8 @@
    the entry is indented beside it, so the margin shows what belongs
    where. Role and employer form one block the height of the logo; a
    position's dates sit at the right end of its role's line. On
-   phones the logo moves above and the content takes the full width. */
+   phones the logo stays beside the header and the rest takes the full
+   width (the last rule here). */
 
 @layer components {
   /* The heading over a list of entries ("Experience", "Side projects"):
@@ -33,7 +38,7 @@
   .entry {
     display: grid;
     grid-template-columns: var(--entry-logo) minmax(0, 1fr);
-    column-gap: var(--space-4);
+    column-gap: var(--entry-gap);
     margin-top: var(--space-12);
   }
   .entry-logo {
@@ -48,6 +53,8 @@
     font: var(--type-label);
     letter-spacing: var(--type-label-tracking);
     font-weight: var(--weight-semibold);
+    /* every tile lies on the page: the resting shadow */
+    box-shadow: var(--shadow-sm);
   }
   /* A logo is the employer's own square picture (see data/positions.ts)
      and fills the tile. The tile is white under it, and under the site's
@@ -68,36 +75,56 @@
   /* data-mark="own": no employer, so the site's diamond on the same white
      tile. In the accent that white always carries (--bg-accent), not the
      mark colour, which in dark mode is tuned for a dark page. */
-  .entry-logo[data-mark="own"]::before {
+  .entry-logo:is([data-mark="own"], [data-mark="own-inverse"])::before {
     content: "";
     width: var(--entry-mark);
     height: var(--entry-mark);
     background: var(--bg-accent);
     rotate: var(--end-mark-rotation);
   }
+  /* data-mark="own-inverse": this site as a side project. The same
+     diamond the other way round, white on the accent, so it is not the
+     Self-employed tile again. */
+  .entry-logo[data-mark="own-inverse"] { background: var(--bg-accent); }
+  .entry-logo[data-mark="own-inverse"]::before { background: var(--text-on-accent); }
 
   /* Role and employer read as ONE block beside the logo: two lines with
      nothing between them, one step apart in size (19 and 16px), together
      as tall as the logo. Employer and place are the same size; only the
      weight tells them apart. */
-  /* The years keep their own column at the right end of the role's line:
-     a long role wraps beside them, never pushes them underneath. */
-  .entry h3 {
+  /* The dates come last in the header -- role, employer and place, then
+     when -- and that is their order on a phone. With room, they sit at
+     the right end of the role's line instead, in a column of their own:
+     a long role wraps beside them, never pushes them underneath. The
+     role's block is a grid for that; everything else spans it, and the
+     dates fill the free place beside their role (dense packing), also
+     for a further role under the same logo. */
+  .entry-role {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: baseline;
+    grid-auto-flow: row dense;
     column-gap: var(--space-4);
+    align-content: start;
+  }
+  .entry-role > * { grid-column: 1 / -1; }
+  .entry-role > h3 {
+    grid-column: 1;
+    align-self: baseline;
+  }
+  .entry-role > .entry-when {
+    grid-column: 2;
+    align-self: baseline;
+    margin: 0;
+    white-space: nowrap;
+    font: var(--type-meta-small);
+    letter-spacing: var(--type-meta-small-tracking);
+  }
+  .entry h3 {
     margin-block: 0;
     padding-top: 0;
     font: var(--type-subheading);
     letter-spacing: var(--type-subheading-tracking);
     font-weight: var(--weight-semibold);
-  }
-  .entry h3 small {
-    padding-left: 0;
-    white-space: nowrap;
-    font: var(--type-meta-small);
-    letter-spacing: var(--type-meta-small-tracking);
   }
   /* the place sits closer to the employer than an aside usually does */
   .entry h4 small { padding-left: var(--space-1); }
@@ -111,16 +138,173 @@
   }
   .entry p { margin-block: var(--space-3) 0; }
 
+  /* On the CV an entry also lists what was done there, and one employer
+     can hold several roles: each further role starts a step down, under
+     the same logo. */
+  .entry ul { margin-block: var(--space-2) 0; }
+
   /* the pieces: right under the line, inside the indented column */
   .entry .projects {
     gap: var(--space-6) var(--space-4);
     margin-block: var(--space-6) 0;
   }
 
+  /* ---- One employer, several roles ----
+
+       <div class="entry-role">  <h3>Employer</h3>  <p class="entry-place">Places</p>
+                                 <p class="entry-when">First to last date</p>  </div>
+       <ol class="entry-roles">
+         <li> <span class="entry-logo entry-stop">the client's logo, or its initial</span>
+              <h4>Role</h4> <p class="entry-client">Client, product <small>Place</small></p>
+              <p class="entry-when">Dates</p>  <p>…</p> <ul>…</ul> </li>
+       </ol>
+
+     The employer is said once, in the header beside its logo. Its roles
+     are a list under it, each a stop on a line that runs down the logo
+     column from the logo. The stop is the CLIENT's logo: round and
+     smaller, where the employer's is a rounded square, so the shape says
+     which is which. It is centred on the role's two header lines. A
+     role's title is a step smaller than the employer's name above it. */
+  .entry .entry-place {
+    margin: 0;
+    font: var(--type-meta-small);
+    letter-spacing: var(--type-meta-small-tracking);
+  }
+  .entry .entry-roles {
+    position: relative;
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+  }
+  .entry-roles > li {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-auto-flow: row dense;
+    column-gap: var(--space-4);
+    margin: 0;
+  }
+  .entry-roles > li + li { margin-top: var(--entry-role-gap); }
+  /* a list inside a list would get the browser's hollow bullets */
+  .entry-roles ul { list-style: disc; }
+  .entry-roles > li > * { grid-column: 1 / -1; }
+  .entry-roles h4 {
+    grid-column: 1;
+    align-self: baseline;
+    font: var(--type-item);
+    letter-spacing: var(--type-item-tracking);
+    font-weight: var(--weight-semibold);
+  }
+  .entry-roles .entry-when {
+    grid-column: 2;
+    align-self: baseline;
+    margin: 0;
+    white-space: nowrap;
+    font: var(--type-meta-small);
+    letter-spacing: var(--type-meta-small-tracking);
+  }
+  .entry-client {
+    font: var(--type-meta-small);
+    letter-spacing: var(--type-meta-small-tracking);
+    font-weight: var(--weight-medium);
+  }
+  .entry .entry-client { margin: 0; }
+  .entry-client small {
+    padding-left: var(--space-1);
+    font: var(--type-meta-small);
+    letter-spacing: var(--type-meta-small-tracking);
+  }
+  /* the stop, and the line from it down to the next role's stop; the
+     first stretch, from the employer's logo to the first stop, belongs
+     to the list. The line starts at the edge of the employer's tile,
+     solid, and reaches the edge of every client's logo, fading out over
+     its last stretch as it gets there (and in again as it leaves). */
+  .entry-logo.entry-stop {
+    /* no outline: its shadow alone draws the disc. An employer's tile has
+       both, so the two ranks differ in how they are made, not only in
+       size and shape. */
+    outline: none;
+    position: absolute;
+    top: calc(2 * var(--entry-node-y) - var(--entry-stop) / 2);
+    left: calc(-1 * var(--entry-rail-x) - var(--entry-stop) / 2);
+    width: var(--entry-stop);
+    height: var(--entry-stop);
+    border-radius: var(--radius-full);
+  }
+  .entry-roles > li:not(:last-child)::after,
+  .entry-roles::before {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--entry-rail-x) - var(--timeline-width) / 2);
+    width: var(--timeline-width);
+    border-radius: var(--radius-pill);
+    background: var(--timeline-color);
+  }
+  .entry-roles > li:not(:last-child)::after {
+    top: calc(2 * var(--entry-node-y) + var(--entry-stop) / 2);
+    bottom: calc(-1 * (var(--entry-role-gap) + 2 * var(--entry-node-y) - var(--entry-stop) / 2));
+    -webkit-mask-image: var(--timeline-mask-both);
+    mask-image: var(--timeline-mask-both);
+  }
+  /* it leaves the employer's tile at its very edge */
+  .entry-roles::before {
+    top: calc(-1 * var(--space-6));
+    height: calc(var(--space-6) + 2 * var(--entry-node-y) - var(--entry-stop) / 2);
+    -webkit-mask-image: var(--timeline-mask-end);
+    mask-image: var(--timeline-mask-end);
+  }
+
+  /* Phones: two columns, the logo and the entry's header, which reads
+     down in its own order: role, employer, place, dates. No dates column:
+     there is no room for one on the role's line. Everything after the
+     header -- the line, the list, the pieces -- takes the full width
+     under the logo. (The content column dissolves into the entry's grid
+     to allow that.) A list of roles keeps its line under the middle of
+     the logo, and is indented just enough to clear its stops. */
   @container page (max-width: 500px) {
-    .entry {
-      grid-template-columns: minmax(0, 1fr);
-      row-gap: var(--space-3);
+    .entry > div,
+    .entry-role { display: contents; }
+    .entry > .entry-logo {
+      grid-column: 1;
+      grid-row: 1 / span 3;
+    }
+    .entry > div > *,
+    .entry-role > h3,
+    .entry-role > .entry-when {
+      grid-column: 1 / -1;
+      white-space: normal;
+    }
+    .entry-role:first-of-type > :is(h3, h4, .entry-place, .entry-when) { grid-column: 2; }
+    .entry h4 small {
+      display: block;
+      padding-left: 0;
+    }
+    .entry .entry-roles { padding-left: calc(var(--entry-logo) / 2 + var(--entry-stop) / 2 + var(--space-3)); }
+    .entry-roles > li { display: block; }
+    .entry-roles .entry-when { white-space: normal; }
+    .entry-client small {
+      display: block;
+      padding-left: 0;
+    }
+    .entry-stop { left: calc(-1 * var(--space-3) - var(--entry-stop)); }
+    .entry-roles > li:not(:last-child)::after { left: calc(-1 * var(--space-3) - var(--entry-stop) / 2 - var(--timeline-width) / 2); }
+    /* Here the header is taller than the logo, so the line's first
+       stretch is in two parts: down the logo's own cell from under the
+       logo, then on from the top of the list to the first stop. */
+    .entry:has(.entry-roles)::before {
+      content: "";
+      grid-column: 1;
+      grid-row: 1 / span 3;
+      justify-self: center;
+      width: var(--timeline-width);
+      margin-top: var(--entry-logo);
+      background: var(--timeline-color);
+    }
+    .entry-roles::before {
+      top: calc(-1 * var(--space-6));
+      left: calc(var(--entry-logo) / 2 - var(--timeline-width) / 2);
+      height: calc(var(--space-6) + 2 * var(--entry-node-y) - var(--entry-stop) / 2);
+      border-radius: 0;
     }
   }
 }

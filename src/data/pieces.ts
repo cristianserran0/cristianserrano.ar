@@ -9,8 +9,8 @@
    The guide and the search-engine data talk ABOUT Cristian, so they take
    the label through aboutCristian() below: "I built…" -> "Cristian built…".
 
-   Order matters: the guide's tours, and the "next piece" it offers on a
-   case study, walk the featured pieces in this order. */
+   Order matters: the guide's tours walk the featured pieces in this
+   order. */
 import type { ImageMetadata } from 'astro';
 import kaiaCover from '../assets/work/work3-cover.png';
 import googleCover from '../assets/work/work1-cover.png';
@@ -195,12 +195,6 @@ export function piece(slug: string): Piece {
   const p = pieces.find((x) => x.slug === slug);
   if (!p) throw new Error(`No piece "${slug}" in src/data/pieces.ts`);
   return p;
-}
-
-/* The next featured piece, wrapping around; for an unfeatured piece, none. */
-export function nextPiece(slug: string): Piece | undefined {
-  const i = featured.findIndex((p) => p.slug === slug);
-  return i === -1 ? undefined : featured[(i + 1) % featured.length];
 }
 
 export const href = (p: Piece) => `/work/${p.slug}/`;

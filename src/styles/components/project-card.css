@@ -1,0 +1,77 @@
+/* A side project as a card: one row -- its icon, its name over what it
+   is -- that opens the project's summary as a dialog
+   (piece-card.js and piece-card.css, as a case study's tile does).
+
+   <div class="project-cards">
+     <article class="project-card">
+       <a href>                          the case study, or the live project
+         <span class="entry-logo">…</span>
+         <span> <h3>Name</h3> <span>What it is</span> </span>
+       </a>
+       <template data-piece-card> the summary </template>
+     </article>
+   </div>
+
+   The card is a plain link and stays one: without the script, or opened
+   in a new tab, it goes where the summary's button would. */
+
+@layer components {
+  .project-cards {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+  }
+  .project-card > a {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-4);
+    padding: var(--space-3);
+    padding-right: var(--space-4);
+    border: var(--border-hairline) solid var(--border-subtle);
+    border-radius: var(--radius-around-3);
+    background-color: var(--bg-raised);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: scale var(--duration-interaction) var(--ease-standard);
+  }
+  /* Hovered and pressed: a tint over the card, on a layer of its own so
+     it can fade in and out (a background image cannot); pressed, the
+     card also gives a little, as a button does. */
+  .project-card > a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--state-hovered-tint);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-standard),
+                background-color var(--duration-interaction) var(--ease-standard);
+  }
+  @media (hover: hover) {
+    .project-card > a:hover::after { opacity: 1; }
+  }
+  .project-card > a:active { scale: var(--press-scale); }
+  .project-card > a:active::after {
+    opacity: 1;
+    background-color: var(--state-pressed-tint);
+  }
+  .project-card > a:focus-visible {
+    outline: var(--border-accent) solid var(--mark);
+    outline-offset: var(--focus-offset);
+  }
+  .project-card h3 {
+    margin: 0;
+    padding: 0;
+    font: var(--type-subheading);
+    letter-spacing: var(--type-subheading-tracking);
+    font-weight: var(--weight-semibold);
+  }
+  .project-card h3 + span {
+    display: block;
+    font: var(--type-meta-small);
+    letter-spacing: var(--type-meta-small-tracking);
+  }
+}

@@ -1,5 +1,19 @@
 ---
+/* The CV. Experience is the same entry as on Home (styles/components/
+   entry.css): the employer's logo in its own column, then role and
+   dates, employer and place, and what I did there. Globant is stated once, with its
+   five roles as a list under it, each a stop on the line down from its logo. The logos: src/data/positions.ts has the rule. */
 import Layout from '../layouts/Layout.astro';
+import Logo from '../components/Logo.astro';
+import justrelateLogo from '../assets/logos/justrelate.jpg';
+import kaiaLogo from '../assets/logos/kaia-health.jpg';
+import globantLogo from '../assets/logos/globant.jpg';
+import unlpLogo from '../assets/logos/unlp.jpg';
+/* the clients of the Globant years, on the line under its logo */
+import googleLogo from '../assets/logos/google.jpg';
+import disneyLogo from '../assets/logos/disney.png';
+import openbankLogo from '../assets/logos/openbank.jpg';
+import oligrafLogo from '../assets/logos/imprenta-oligraf.jpg';
 ---
 
 <Layout
@@ -21,115 +35,153 @@ import Layout from '../layouts/Layout.astro';
   <section id="experience">
     <h2>Experience</h2>
 
-    <article>
-      <h3>Head of Design <small>Dec 2024 – Present</small></h3>
-      <h4>JustRelate Group <small>Munich, Germany / Remote</small></h4>
-      <p>JustRelate builds B2B SaaS software for Marketing, Sales, and Service teams, trusted by 4,000+ companies across the DACH region:</p>
-      <ul>
-        <li>Defined the platform vision that unified a fragmented product suite around JustRelate Home as the central hub, shaping roadmap conversations and go-to-market messaging.</li>
-        <li>Conceptualised JR Coworker as the AI layer on top of the platform: each product surface exposes skills describing what can be done there, and Coworker holds a tool for each — letting it reason over goals and call the right skills across Home and the Builders in sequence, turning intent into autonomous execution across the full marketing OS.</li>
-        <li>Built DesignOps from scratch: design principles, component library foundations, handoff processes, design reviews, and tooling alignment.</li>
-        <li>Unified a team of designers who had been working in silos, establishing a shared practice with common rituals, standards, and ownership.</li>
-      </ul>
+    <article class="entry">
+      <span class="entry-logo" aria-hidden="true"><Logo src={justrelateLogo} priority="high" /></span>
+      <div class="entry-role">
+        <h3>Head of Design</h3>
+        <h4>JustRelate Group <small>Munich, Germany / Remote</small></h4>
+        <p class="entry-when">Dec 2024 – Present</p>
+        <p>JustRelate builds B2B SaaS software for Marketing, Sales, and Service teams, trusted by 4,000+ companies across the DACH region:</p>
+        <ul>
+          <li>Defined the platform vision that unified a fragmented product suite around JustRelate Home as the central hub, shaping roadmap conversations and go-to-market messaging.</li>
+          <li>Conceptualised JR Coworker as the AI layer on top of the platform: each product surface exposes skills describing what can be done there, and Coworker holds a tool for each — letting it reason over goals and call the right skills across Home and the Builders in sequence, turning intent into autonomous execution across the full marketing OS.</li>
+          <li>Built DesignOps from scratch: design principles, component library foundations, handoff processes, design reviews, and tooling alignment.</li>
+          <li>Unified a team of designers who had been working in silos, establishing a shared practice with common rituals, standards, and ownership.</li>
+        </ul>
+      </div>
     </article>
 
-    <article>
-      <h3>Senior Product Designer, Design Systems Manager <small>Dec 2021 – Nov 2024</small></h3>
-      <h4>Kaia Health <small>Munich, Germany / Remote</small></h4>
-      <p>Kaia Health offers digital programs to help people with chronic musculoskeletal pain –including back, hip, and knee pain– and COPD:</p>
-      <ul>
-        <li>I was brought to Kaia to help fix inconsistencies in flows and screens as they scale.</li>
-        <li>Kickstarted Kaia's Kinetic Design System, after interviewing key stakeholders and auditing the state of Kaia's brand, apps and websites.</li>
-        <li>Managed a team of 4 developers (2 Android, 2 iOS) and a senior designer to build and maintain the DS.</li>
-        <li>Systematized and built 100% of foundational elements, and the 20% of components that solved 80% of our needs, as well as standardizing high-level patterns.</li>
-        <li>KDS empowered our production teams to reach their product goals even after 2 RIFs.</li>
-        <li>Eventually moved to a Lead/DesignOps role, being in charge of tooling and processes, as well as hiring and mentoring new designers.</li>
-      </ul>
+    <article class="entry">
+      <span class="entry-logo" aria-hidden="true"><Logo src={kaiaLogo} /></span>
+      <div class="entry-role">
+        <h3>Senior Product Designer, Design Systems Manager</h3>
+        <h4>Kaia Health <small>Munich, Germany / Remote</small></h4>
+        <p class="entry-when">Dec 2021 – Nov 2024</p>
+        <p>Kaia Health offers digital programs to help people with chronic musculoskeletal pain –including back, hip, and knee pain– and COPD:</p>
+        <ul>
+          <li>I was brought to Kaia to help fix inconsistencies in flows and screens as they scale.</li>
+          <li>Kickstarted Kaia's Kinetic Design System, after interviewing key stakeholders and auditing the state of Kaia's brand, apps and websites.</li>
+          <li>Managed a team of 4 developers (2 Android, 2 iOS) and a senior designer to build and maintain the DS.</li>
+          <li>Systematized and built 100% of foundational elements, and the 20% of components that solved 80% of our needs, as well as standardizing high-level patterns.</li>
+          <li>KDS empowered our production teams to reach their product goals even after 2 RIFs.</li>
+          <li>Eventually moved to a Lead/DesignOps role, being in charge of tooling and processes, as well as hiring and mentoring new designers.</li>
+        </ul>
+      </div>
     </article>
 
-    <article>
-      <h3>Senior Product Designer<small>Nov 2020 – Nov 2021</small></h3>
-      <h4>Globant + Google, Orion Wi-Fi<small>Remote</small></h4>
-      <p>Worked on Area 120's (Google's incubator) Orion Wi-Fi, a connectivity offload service:</p>
-      <ul>
-        <li>Worked on 2 dashboards(cellular and wi-fi admins) and a companion app (to self test the wi-fi network quality).</li>
-        <li>Conducted user interviews and leveraged insights into the first market version.</li>
-        <li>Focused on data visualization and customization options for cellular networks admins, as well as venue/wi-fi admins.</li>
-        <li>Ideated and built features to help onboard corporate customers, helping make the service viable.</li>
-        <li>Launched the first real time marketplace for wireless connectivity.</li>
-      </ul>
+    <article class="entry">
+      <span class="entry-logo" aria-hidden="true"><Logo src={globantLogo} /></span>
+      <div>
+        <div class="entry-role">
+          <h3>Globant</h3>
+          <p class="entry-place">La Plata and Buenos Aires, Argentina / Remote</p>
+          <p class="entry-when">Dec 2017 – Nov 2021</p>
+        </div>
+        <ol class="entry-roles">
+          <li>
+            <span class="entry-logo entry-stop" aria-hidden="true"><Logo src={googleLogo} size={40} /></span>
+            <h4>Senior Product Designer</h4>
+            <p class="entry-client">Google, Orion Wi-Fi <small>Remote</small></p>
+            <p class="entry-when">Nov 2020 – Nov 2021</p>
+            <p>Worked on Area 120's (Google's incubator) Orion Wi-Fi, a connectivity offload service:</p>
+            <ul>
+              <li>Worked on 2 dashboards (cellular and wi-fi admins) and a companion app (to self test the wi-fi network quality).</li>
+              <li>Conducted user interviews and leveraged insights into the first market version.</li>
+              <li>Focused on data visualization and customization options for cellular networks admins, as well as venue/wi-fi admins.</li>
+              <li>Ideated and built features to help onboard corporate customers, helping make the service viable.</li>
+              <li>Launched the first real time marketplace for wireless connectivity.</li>
+            </ul>
+          </li>
+          <li>
+            <span class="entry-logo entry-stop" aria-hidden="true"><Logo src={googleLogo} size={40} /></span>
+            <h4>Senior Product Designer</h4>
+            <p class="entry-client">Google, Google My Business <small>Buenos Aires, Argentina / Remote</small></p>
+            <p class="entry-when">Mar – Nov 2020</p>
+            <p>My strength as an end-to-end hybrid designer got me picked for Globant's work with Google:</p>
+            <ul>
+              <li>Worked with Google My Business, on a new service called Small Business Advisors.</li>
+              <li>Worked with high-level definitions of the service and impacted not only on the experience and the visuals of the service, but on the value proposition for the business side.</li>
+              <li>Leveraged Google Standards, their custom implementation of Google Material.</li>
+              <li>Launched an MVP in Q2, and a second iteration in Q3 with great feedback.</li>
+            </ul>
+          </li>
+          <li>
+            <span class="entry-logo entry-stop" aria-hidden="true"><Logo src={disneyLogo} size={40} /></span>
+            <h4>Senior User Experience and Visual Designer</h4>
+            <p class="entry-client">Disney, FOX Play <small>Buenos Aires, Argentina / Remote</small></p>
+            <p class="entry-when">Sep 2019 – Feb 2020</p>
+            <p>Worked on migrating FOX Play's Latam streaming platform to Disney's DTCI platform after Disney's acquisition of FOX.</p>
+            <ul>
+              <li>Focused mostly on the UI bits, coming with design systems experience, for the web, apps, and smart TV experiences.</li>
+              <li>Balanced DTCI's limitations with FOX brand needs to provide a simple solution while maintaining brand continuity.</li>
+            </ul>
+          </li>
+          <li>
+            <span class="entry-logo entry-stop" aria-hidden="true"><Logo src={openbankLogo} size={40} /></span>
+            <h4>Senior Product Designer, Design System Lead</h4>
+            <p class="entry-client">Openbank, Openbank Guidelines <small>La Plata, Argentina</small></p>
+            <p class="entry-when">Feb 2018 – Aug 2019</p>
+            <p>Still on Openbank, I led a team of developers, designers, and analysts to build a React and React native based Design system, Openbank Guidelines:</p>
+            <ul>
+              <li>Provided a healthy library of components and documentation to help iterate quickly on new features, and give old features a much needed refresh.</li>
+              <li>Empowered Openbank's Design team to quadruple their size.</li>
+              <li>Acquired valuable experience on the banking, e-commerce, fintech, and insurtech industries and I positioned myself as a Design system and DesignOps touchstone within the company.</li>
+            </ul>
+          </li>
+          <li>
+            <span class="entry-logo entry-stop" aria-hidden="true"><Logo src={openbankLogo} size={40} /></span>
+            <h4>User Experience &amp; Visual Designer</h4>
+            <p class="entry-client">Openbank, Insurances <small>La Plata, Argentina</small></p>
+            <p class="entry-when">Dec 2017 – May 2018</p>
+            <p>I joined Globant to become part of a large-scale digital products design and development multidisciplinary team:</p>
+            <ul>
+              <li>Started on Openbank as part of the Insurances team.</li>
+              <li>Ideated and implemented new insurance offerings, with a friendlier wizard approach that eventually scaled to older offerings.</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
     </article>
 
-    <article>
-      <h3>Senior Product designer <small>Mar – Nov 2020</small></h3>
-      <h4>Globant + Google, Google My Business <small>Buenos Aires, Argentina / Remote</small></h4>
-      <p>My strength as an end-to-end hybrid designer got me picked for Globant's work with Google:</p>
-      <ul>
-        <li>Worked with Google My Business, on a new service called Small Business Advisors.</li>
-        <li>Worked with high-level definitions of the service and impacted not only on the experience and the visuals of the service, but on the value proposition for the business side.</li>
-        <li>Leveraged Google Standards, their custom implementation of Google Material.</li>
-        <li>Launched an MVP in Q2, and a second iteration in Q3 with great feedback.</li>
-      </ul>
+    <article class="entry">
+      <span class="entry-logo" aria-hidden="true" data-mark="own"></span>
+      <div class="entry-role">
+        <h3>UX/UI, Web, Graphic &amp; Visual Designer</h3>
+        <h4>Self-employed <small>La Plata, Argentina / Remote</small></h4>
+        <p class="entry-when">Jun 2009 – May 2017</p>
+        <p>Throughout 8 years as a freelance designer, I had to wear several different hats:</p>
+        <ul>
+          <li>Worked mostly on Branding and Identity, but would work on anything that a brand needed to support their message: Photography and Videography, Editorial design, Motion graphics, etc.</li>
+          <li>Started doing Web design in 2014, and soon after I had my first Product design project working with FocusFreak on their virtual assistant platform, Virtstart.</li>
+        </ul>
+      </div>
     </article>
 
-    <article>
-      <h3>Senior User Experience and Visual Designer <small>Sep 2019 – Feb 2020</small></h3>
-      <h4>Globant + Disney, FOX Play <small>Buenos Aires, Argentina / Remote</small></h4>
-      <p>Worked on migrating FOX Play's Latam streaming platform to Disney's DTCI platform after Disney's acquisition of FOX.</p>
-      <ul>
-        <li>Focused mostly on the UI bits, coming with design systems experience, for the web, apps, and smart TV experiences.</li>
-        <li>Balanced DTCI's limitations with FOX brand needs to provide a simple solution while maintaining brand continuity.</li>
-      </ul>
+    <article class="entry">
+      <span class="entry-logo" aria-hidden="true"><Logo src={unlpLogo} /></span>
+      <div class="entry-role">
+        <h3>Teaching Assistant</h3>
+        <h4>Universidad Nacional de La Plata <small>La Plata, Argentina</small></h4>
+        <p class="entry-when">Apr 2007 – Aug 2008</p>
+        <p>Invited to teach in Workshop 1B, the core subject of the Visual Communication Design degree:</p>
+        <ul>
+          <li>Helped fellow students and learned the mechanics of teaching.</li>
+          <li>Worked with people from very different backgrounds, a great exercise in empathy.</li>
+        </ul>
+      </div>
     </article>
 
-    <article>
-      <h3>Senior Product Designer, Design System Lead <small>Feb 2018 – Aug 2019</small></h3>
-      <h4>Globant + Openbank, Openbank Guidelines <small>La Plata, Argentina</small></h4>
-      <p>Still on Openbank, I led a team of developers, designers, and analysts to build a React and React native based Design system, Openbank Guidelines:</p>
-      <ul>
-        <li>Provided a healthy library of components and documentation to help iterate quickly on new features, and give old features a much needed refresh.</li>
-        <li>Empowered Openbank's Design team to quadruple their size.</li>
-        <li>Acquired valuable experience on the banking, e-commerce, fintech, and insurtech industries and I positioned myself as a Design system and DesignOps touchstone within the company.</li>
-      </ul>
-    </article>
-
-    <article>
-      <h3>User Experience &amp; Visual Designer <small>Dec 2017 – May 2018</small></h3>
-      <h4>Globant + Openbank, Insurances <small>La Plata, Argentina</small></h4>
-      <p>I joined Globant to become part of a large-scale digital products design and development multidisciplinary team:</p>
-      <ul>
-        <li>Started on Openbank as part of the Insurances team.</li>
-        <li>Ideated and implemented new insurance offerings, with a friendlier wizard approach that eventually scaled to older offerings.</li>
-      </ul>
-    </article>
-
-    <article>
-      <h3>UX/UI, Web, Graphic &amp; Visual Designer <small>Jun 2009 – May 2017</small></h3>
-      <h4>Self-employed <small>La Plata, Argentina / Remote</small></h4>
-      <p>Throughout 8 years as a freelance designer, I had to wear several different hats:</p>
-      <ul>
-        <li>Worked mostly on Branding and Identity, but would work on anything that a brand needed to support their message: Photography and Videography, Editorial design, Motion graphics, etc.</li>
-        <li>Started doing Web design in 2014, and soon after I had my first Product design project working with FocusFreak on their virtual assistant platform, Virtstart.</li>
-      </ul>
-    </article>
-
-    <article>
-      <h3>Teaching Assistant<small>Apr 2007 – Aug 2008</small></h3>
-      <h4>Universidad Nacional de La Plata <small>La Plata, Argentina</small></h4>
-      <p>Invited to teach in Workshop 1B, the core subject of the Visual Communication Design degree:</p>
-      <ul>
-        <li>Helped fellow students and learned the mechanics of teaching.</li>
-        <li>Worked with people from very different backgrounds, a great exercise in empathy.</li>
-      </ul>
-    </article>
-
-    <article>
-      <h3>Graphic Design Intern<small>Sep – Dec 2005</small></h3>
-      <h4>Imprenta Oligraf<small>Comodoro Rivadavia, Argentina</small></h4>
-      <ul>
-        <li>Exploratory internship to understand what Design was all about.</li>
-        <li>Decided to pursue Design as a discipline at University.</li>
-      </ul>
+    <article class="entry">
+      <span class="entry-logo" aria-hidden="true"><Logo src={oligrafLogo} /></span>
+      <div class="entry-role">
+        <h3>Graphic Design Intern</h3>
+        <h4>Imprenta Oligraf <small>Comodoro Rivadavia, Argentina</small></h4>
+        <p class="entry-when">Sep – Dec 2005</p>
+        <ul>
+          <li>Exploratory internship to understand what Design was all about.</li>
+          <li>Decided to pursue Design as a discipline at University.</li>
+        </ul>
+      </div>
     </article>
   </section>
 

@@ -3,7 +3,7 @@ import '../styles/index.css';
 import PieceHeader from '../components/PieceHeader.astro';
 import Icon from '../components/Icon.astro';
 import { icons } from '../data/icons';
-import { piece as getPiece, nextPiece, featured, href, aboutCristian } from '../data/pieces';
+import { piece as getPiece, featured, href, aboutCristian } from '../data/pieces';
 import { getImage } from 'astro:assets';
 import ogDefault from '../assets/og/default.png';
 import { experiments } from '../data/experiments';
@@ -29,7 +29,6 @@ const current = piece ? getPiece(piece) : undefined;
    the page's own name: a piece's title, or the page title's first part. */
 const index = !!current || sections;
 const indexTitle = current ? current.title : title.split(' - ')[0];
-const next = piece ? nextPiece(piece) : undefined;
 
 /* The pages of the site besides Home. The work has no page of its own:
    it is the home page. */
@@ -53,8 +52,7 @@ const here = menu.find((item) => item.current) || menu[0];
    featured pieces for its tours. Data, not code: a JSON block the CSP allows. */
 const room = current
   ? { kind: 'piece', slug: current.slug, title: current.title, client: current.client, years: current.years,
-      label: aboutCristian(current.label), facts: current.facts,
-      next: next && { title: next.title, href: href(next) } }
+      label: aboutCristian(current.label), facts: current.facts }
   : pathname.startsWith('/cv') ? { kind: 'cv' }
   : pathname.startsWith('/contact') ? { kind: 'contact' }
   : pathname === '/' ? { kind: 'home' }

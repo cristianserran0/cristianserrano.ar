@@ -1,5 +1,6 @@
-/* A piece's card: click a tile on Home and its summary opens as a dialog
-   over the page, with the link to the full case study.
+/* A piece's card: click a tile on Home (or a side project's card) and
+   its summary opens as a dialog over the page, with the link to the full
+   case study, or to the live project.
 
    The tile is a plain link and stays one: a click with a modifier key, a
    middle click, "open in new tab", or no script at all go straight to
@@ -32,21 +33,20 @@
 
   function close() {
     if (wrap.hidden) return;
-    wrap.hidden = true;
+    wrap.hidden = true;        // it fades out (modal.css); its content stays until the next opening
     page.inert = false;
-    slot.textContent = '';
     if (opener) opener.focus();
     opener = null;
   }
 
   // tell assistive technology that these links open a dialog
-  Array.prototype.forEach.call(document.querySelectorAll('.work-tile > a'), function (a) {
+  Array.prototype.forEach.call(document.querySelectorAll('.work-tile > a, .project-card > a'), function (a) {
     if (cardOf(a)) a.setAttribute('aria-haspopup', 'dialog');
   });
 
   document.addEventListener('click', function (e) {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    var link = e.target.closest && e.target.closest('.work-tile > a');
+    var link = e.target.closest && e.target.closest('.work-tile > a, .project-card > a');
     if (!link || !cardOf(link)) return;
     e.preventDefault();
     open(link);

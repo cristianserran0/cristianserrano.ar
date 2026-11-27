@@ -23,11 +23,6 @@ export interface Experiment {
 }
 
 export const experiments: Experiment[] = [
-  // The page title's size (tokens/type.css, "EXPERIMENT").
-  { key: 'display-size', label: 'Page title size', options: [
-    { value: '60', label: '60px' },
-    { value: '54', label: '54px' },
-  ] },
   // The small label over or beside something: a fact's name, the client and years on a card (tokens/type.css, "EXPERIMENT").
   { key: 'labels', label: 'Small labels', options: [
     { value: 'caps', label: 'Bold capitals, 13px' },

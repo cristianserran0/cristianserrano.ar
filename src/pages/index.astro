@@ -1,14 +1,17 @@
 ---
 /* Home: the experience itself. One entry per employer -- role, employer,
    a line of context -- with that employer's pieces under it, then the
-   side projects. The detail of each position is on /cv/.
+   side projects, each a card that opens its summary
+   (styles/components/project-card.css). The detail of each position is on /cv/.
 
    Positions and their pieces: src/data/positions.ts. The opening
    sentences are the earlier home page's; the position lines are drafts. */
 import Layout from '../layouts/Layout.astro';
 import WorkTiles from '../components/WorkTiles.astro';
-import { positions, sideProjects, piecesOf } from '../data/positions';
+import Logo from '../components/Logo.astro';
+import PieceImage from '../components/PieceImage.astro';
 import { href } from '../data/pieces';
+import { positions, sideProjects, piecesOf } from '../data/positions';
 ---
 
 <Layout
@@ -27,12 +30,13 @@ import { href } from '../data/pieces';
       <article class="entry">
         <span class="entry-logo" aria-hidden="true" data-mark={p.ownMark ? 'own' : undefined}>
           {p.logo
-            ? <img src={typeof p.logo === 'string' ? p.logo : p.logo.src} alt="" />
+            ? <Logo src={p.logo} priority={i === 0 ? 'high' : 'low'} />
             : p.ownMark ? null : p.employer[0]}
         </span>
-        <div>
-          <h3>{p.role} <small>{p.years}</small></h3>
+        <div class="entry-role">
+          <h3>{p.role}</h3>
           <h4>{p.employer} <small>{p.place}</small></h4>
+          <p class="entry-when">{p.years}</p>
           {p.line && <p>{p.line}</p>}
           {p.pieces.length > 0 && <WorkTiles heading="h4" pieces={piecesOf(p.pieces)} eager={i === 0} titleOnly />}
         </div>
@@ -42,14 +46,41 @@ import { href } from '../data/pieces';
 
   <section id="side-projects" class="entries">
     <h2>Side projects</h2>
-    {piecesOf(sideProjects).map((p) => (
-      <article class="entry">
-        <span class="entry-logo" aria-hidden="true">{p.title[0]}</span>
-        <div>
-          <h3><a href={href(p)}>{p.title}</a></h3>
-          <p>{p.label}</p>
-        </div>
-      </article>
-    ))}
+      <div class="project-cards">
+        {sideProjects.map((p) => {
+          const study = p.pieces.length > 0 ? piecesOf(p.pieces)[0] : undefined;
+          const to = study ? href(study) : p.href;
+          return (
+            <article class="project-card">
+              <a href={to}>
+                <span class="entry-logo" aria-hidden="true" data-mark={p.inverseMark ? 'own-inverse' : undefined}>
+                  {p.logo
+                    ? <Logo src={p.logo} />
+                    : p.inverseMark ? null : p.title[0]}
+                </span>
+                <span><h3>{p.title}</h3><span>{p.what}</span></span>
+              </a>
+              <template data-piece-card>
+                {study && <figure><PieceImage src={study.hero} alt="" /></figure>}
+                <hgroup>
+                  <h2 id="piece-card-title">{p.title}</h2>
+                  <p>{p.what}</p>
+                </hgroup>
+                <p>{p.line}</p>
+                {study && (
+                  <dl class="facts">
+                    <div><dt>Platforms</dt><dd>{study.facts.platforms}</dd></div>
+                    <div><dt>Category</dt><dd>{study.facts.category}</dd></div>
+                  </dl>
+                )}
+                <div>
+                  <button type="button" class="button" data-type="outlined" data-piece-close><span>Close</span></button>
+                  <a class="button" href={to}><span>{study ? 'Read the full case study' : 'Open the app'}</span></a>
+                </div>
+              </template>
+            </article>
+          );
+        })}
+      </div>
   </section>
 </Layout>

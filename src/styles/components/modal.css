@@ -25,9 +25,18 @@
     padding: var(--space-4);
     background: var(--backdrop);
     backdrop-filter: blur(var(--backdrop-blur));
-    transition: opacity var(--duration-panel) var(--ease-enter);
+    /* It fades in and out. `display` is in the transition so the fade
+       out can finish before the modal is gone; where a browser cannot
+       do that, it closes at once. */
+    transition: opacity var(--duration-panel) var(--ease-enter),
+                display var(--duration-panel) allow-discrete;
   }
-  .panel-modal[hidden] { display: none; }
+  .panel-modal[hidden] {
+    display: none;
+    opacity: 0;
+    transition-timing-function: var(--ease-exit);
+    pointer-events: none;   /* while it fades out, clicks go to the page again */
+  }
 
   /* The page's modal. The page is the scroller, so its modal cannot sit
      inside it: it is a sibling, fixed, with the page's own edges and

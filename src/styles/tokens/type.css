@@ -89,7 +89,6 @@
   --font-size-22: 1.375rem;
   --font-size-24: 1.5rem;
   --font-size-32: 2rem;
-  --font-size-54: 3.375rem;
   --font-size-60: 3.75rem;
   --font-size-66: 4.125rem;
 
@@ -173,15 +172,6 @@
 }
 
 } /* @layer tokens */
-
-/* EXPERIMENT (data/experiments.ts, "display-size"): the page title at
-   60px (now) or 54px, its tracking in proportion. When decided: put the
-   winning size and tracking in --type-display above and delete this
-   block, and the size that lost. */
-[experiment-display-size="54"] {
-  --type-display:          var(--weight-semibold) var(--font-size-54)/var(--leading-tight) var(--font-sans);
-  --type-display-tracking: -0.13rem;
-}
 
 /* EXPERIMENT (data/experiments.ts, "labels"): the small label over or
    beside something -- a fact's name, the client and years on a piece's

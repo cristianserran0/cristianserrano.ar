@@ -19,6 +19,8 @@ import { pieces, type Piece } from './pieces';
 import justrelateLogo from '../assets/logos/justrelate.jpg';
 import kaiaLogo from '../assets/logos/kaia-health.jpg';
 import globantLogo from '../assets/logos/globant.jpg';
+/* a side project's own icon */
+import einbuergerungstestIcon from '../assets/logos/einbuergerungstest.png';
 
 export interface Position {
   employer: string;
@@ -81,8 +83,46 @@ export const positions: Position[] = [
   },
 ];
 
-/* Pieces that belong to no position. */
-export const sideProjects: string[] = ['this-site'];
+/* Side projects: what belongs to no position. On Home each is a card
+   -- its tile, its name, what it is -- that opens a summary:
+
+     tile     the project's own icon; for this site, the site's diamond,
+              white on the accent (the diamond on white is Self-employed)
+     title    the project's name
+     what     what it is in a few words
+     line     one sentence, in the summary
+     pieces   its case study: the summary shows its image and facts and
+              links to it; without one, the summary links to `href`,
+              the live project
+
+   `what` and `line` are DRAFTS -- rewrite them in your own words. */
+export interface SideProject {
+  title: string;
+  what: string;
+  line: string;
+  logo?: ImageMetadata | string;
+  inverseMark?: boolean;
+  href?: string;
+  pieces: string[];
+}
+
+export const sideProjects: SideProject[] = [
+  {
+    title: 'This site',
+    what: 'cristianserrano.ar',
+    line: 'I designed this site as a small product: one token system behind every colour, type and space, and a guide that answers from the site itself on a free AI model.',
+    inverseMark: true,
+    pieces: ['this-site'],
+  },
+  {
+    title: 'Einbürgerungstest simulator',
+    what: 'Practice app for the German citizenship test',
+    line: 'All 300 general and 160 state-specific questions from the official BAMF catalogue, usable offline.',
+    logo: einbuergerungstestIcon,
+    href: 'https://germancitizenship.cristianserrano.ar/',
+    pieces: [],
+  },
+];
 
 export const piecesOf = (slugs: string[]): Piece[] =>
   slugs.map((s) => {

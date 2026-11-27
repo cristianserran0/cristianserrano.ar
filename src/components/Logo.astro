@@ -1,0 +1,22 @@
+---
+/* A logo in a tile: an employer's on Home and the CV (48px), a client's
+   on the line under its employer (40px), a side project's icon.
+
+   One source file per logo (src/assets/logos, about 200px). The build
+   makes the sizes a screen can ask for -- the shown size at 1x, 2x and
+   3x, as WebP -- and the browser takes the one that fits its density.
+   `size` is the shown size in CSS pixels; the tile's own styles place it
+   (styles/components/entry.css).
+
+   All logos load with the page; none waits for scrolling. `priority`
+   says which go first: "high" for the first tile on the page, "low" for
+   the rest, so the top of the page is complete before the bottom. */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props { src: ImageMetadata | string; size?: 48 | 40; priority?: 'high' | 'low'; }
+const { src, size = 48, priority = 'low' } = Astro.props;
+---
+{typeof src === 'string'
+  ? <img src={src} alt="" width={size} height={size} decoding="async" fetchpriority={priority} />
+  : <Image src={src} alt="" width={size} height={size} densities={[1, 2, 3]} format="webp" loading="eager" decoding="async" fetchpriority={priority} />}

@@ -150,9 +150,7 @@
   var Q_ROLE = 'What was his role?';
   function roomSuggestions() {
     if (room.kind === 'piece') {
-      var s = [Q_SPECIAL, Q_ROLE];
-      if (room.next) s.push('Next piece: ' + room.next.title);
-      return s;
+      return [Q_SPECIAL, Q_ROLE];
     }
     return TOUR_NAMES;
   }
@@ -169,10 +167,6 @@
         { q: Q_SPECIAL, title: Q_SPECIAL, text: 'The piece in a few lines', icon: 'sparkle' },
         { q: Q_ROLE, title: Q_ROLE, text: 'Role, time and platforms', icon: 'person' },
       ];
-      if (room.next) {
-        var next = pieces.filter(function (p) { return p.title === room.next.title; })[0];
-        opts.push({ q: 'Next piece: ' + room.next.title, title: 'Next piece: ' + room.next.title, text: next ? next.client + ' · ' + next.years : 'The next case study', icon: 'arrow' });
-      }
       return { title: hello + ' Curious about ' + room.title + '?', options: opts };
     }
     return {
@@ -216,11 +210,9 @@
     var t = q.trim();
     if (TOURS[t]) return startTour(t);
     if (room.kind === 'piece') {
-      if (t === Q_SPECIAL) return { text: [room.label], suggestions: [Q_ROLE].concat(room.next ? ['Next piece: ' + room.next.title] : []) };
+      if (t === Q_SPECIAL) return { text: [room.label], suggestions: [Q_ROLE] };
       if (t === Q_ROLE || /\b(role|team|time|how long|platform)/i.test(t))
         return { text: ['Role: ' + room.facts.role + '.' + (room.facts.time ? ' Time: ' + room.facts.time + '.' : '') + ' Platforms: ' + room.facts.platforms + '.'] };
-      if (room.next && t === 'Next piece: ' + room.next.title)
-        return { text: [room.next.title + ' is next.'], links: [[room.next.title, room.next.href]] };
     }
     for (var i = 0; i < ANSWERS.length; i++) if (ANSWERS[i].match.test(t)) {
       var a = ANSWERS[i]; return { read: a.read, text: a.text, links: a.links };
@@ -413,7 +405,7 @@
   function scripted(q) {
     if (TOURS[q]) return true;
     if (room.kind !== 'piece') return false;
-    return q === Q_SPECIAL || q === Q_ROLE || (room.next && q === 'Next piece: ' + room.next.title);
+    return q === Q_SPECIAL || q === Q_ROLE;
   }
 
   var turn = null;   // the answer streaming right now: { stop, li, scrolled }
