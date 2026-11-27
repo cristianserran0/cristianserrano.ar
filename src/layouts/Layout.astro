@@ -1,7 +1,6 @@
 ---
 import '../styles/index.css';
 import PieceHeader from '../components/PieceHeader.astro';
-import NextPiece from '../components/NextPiece.astro';
 import Icon from '../components/Icon.astro';
 import { icons } from '../data/icons';
 import { piece as getPiece, nextPiece, featured, href, aboutCristian } from '../data/pieces';
@@ -15,13 +14,21 @@ interface Props {
   readingTime?: boolean;
   noindex?: boolean;
   /* On a case study: its slug in src/data/pieces.ts. The layout then draws
-     the piece's first screen and the "next piece" at the end of the story. */
+     the case study's opening (PieceHeader.astro). */
   piece?: string;
+  /* The menu of a case study -- Back, the page's name, its sections --
+     on a page that is not a piece (the case study template). A piece
+     has it anyway. */
+  sections?: boolean;
 }
 
 const pathname = Astro.url.pathname;
-const { title, description, readingTime = false, noindex = false, piece } = Astro.props;
+const { title, description, readingTime = false, noindex = false, piece, sections = false } = Astro.props;
 const current = piece ? getPiece(piece) : undefined;
+/* The menu lists this page's sections (side-nav.js fills it in), under
+   the page's own name: a piece's title, or the page title's first part. */
+const index = !!current || sections;
+const indexTitle = current ? current.title : title.split(' - ')[0];
 const next = piece ? nextPiece(piece) : undefined;
 
 /* The pages of the site besides Home. The work has no page of its own:
@@ -203,6 +210,7 @@ const jsonLd = {
     <script defer is:inline src="/js/side-nav.js"></script>
     <script defer is:inline src="/js/scrollbar.js"></script>
     <script defer is:inline src="/js/piece-card.js"></script>
+    <script defer is:inline src="/js/home-position.js"></script>
   </head>
 
   <body>
@@ -219,12 +227,12 @@ const jsonLd = {
               then the menu. Home: the pages inline (the first one carries the diamond) where
               they fit, a drop-down on phones. A case study: Back, and
               a drop-down of its sections, labelled with the one in view. */}
-          {current
+          {index
             ? <a class="button" data-type="ghost" data-has-text="false" data-tooltip="start" href="/" aria-label="Back">
                 <Icon name="arrow-left" />
               </a>
             : null}
-          {!current && (
+          {!index && (
             <ul class="menu site-links">
               {menu.map((item) => (
                 <li>
@@ -236,10 +244,10 @@ const jsonLd = {
               ))}
             </ul>
           )}
-          <button type="button" class="menu-trigger" popovertarget="page-menu" data-kind={current ? 'index' : 'pages'}>
-            {!current && here.href === '/' && <span class="menu-diamond" aria-hidden="true"></span>}
-            {!current && here.href !== '/' && <Icon name={here.icon} filled class="menu-trigger-icon" />}
-            <span data-menu-current>{current ? current.title : here.label}</span>
+          <button type="button" class="menu-trigger" popovertarget="page-menu" data-kind={index ? 'index' : 'pages'}>
+            {!index && here.href === '/' && <span class="menu-diamond" aria-hidden="true"></span>}
+            {!index && here.href !== '/' && <Icon name={here.icon} filled class="menu-trigger-icon" />}
+            <span data-menu-current>{index ? indexTitle : here.label}</span>
             <Icon name="chevron-down" />
           </button>
 
@@ -277,7 +285,7 @@ const jsonLd = {
         </div>}
 
         <div class="page-menu" id="page-menu" popover>
-          {current
+          {index
             ? <ul class="menu" data-page-index></ul>
             : <ul class="menu">
                 {menu.map((item) => (
@@ -294,9 +302,9 @@ const jsonLd = {
 </header>
 
       <div class="page-frame">
-        <nav class="side-nav" aria-label={current ? 'On this page' : 'Menu'}>
+        <nav class="side-nav" aria-label={index ? 'On this page' : 'Menu'}>
           <div>
-            {current ? (
+            {index ? (
               <>
                 <a class="button" data-type="ghost" data-has-text="false" data-tooltip="start" href="/" aria-label="Back">
                   <Icon name="arrow-left" />
@@ -323,7 +331,6 @@ const jsonLd = {
         <main class="prose" id="content" tabindex="-1">
           {piece && <PieceHeader slug={piece} readingTime={readingTime} />}
           <slot />
-          {piece && <NextPiece slug={piece} />}
         </main>
 
         <footer class="site-footer">

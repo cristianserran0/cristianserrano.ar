@@ -23,9 +23,15 @@ export interface Experiment {
 }
 
 export const experiments: Experiment[] = [
-  // 19 or 18 for the four text styles at that size: lead, subtitle, subheading, meta (tokens/type.css, "EXPERIMENT").
-  { key: 'lead-size', label: 'Lead, subtitle, h4 and dates', options: [
-    { value: '19', label: '19px' },
-    { value: '18', label: '18px' },
+  // The page title's size (tokens/type.css, "EXPERIMENT").
+  { key: 'display-size', label: 'Page title size', options: [
+    { value: '60', label: '60px' },
+    { value: '54', label: '54px' },
+  ] },
+  // The small label over or beside something: a fact's name, the client and years on a card (tokens/type.css, "EXPERIMENT").
+  { key: 'labels', label: 'Small labels', options: [
+    { value: 'caps', label: 'Bold capitals, 13px' },
+    { value: '13-medium', label: 'Medium, 13px, no capitals' },
+    { value: '14-regular', label: 'Regular, 14px, no capitals' },
   ] },
 ];

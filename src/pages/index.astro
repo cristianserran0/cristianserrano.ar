@@ -25,10 +25,10 @@ import { href } from '../data/pieces';
     <h2>Experience</h2>
     {positions.map((p, i) => (
       <article class="entry">
-        <span class="entry-logo" aria-hidden="true">
+        <span class="entry-logo" aria-hidden="true" data-mark={p.ownMark ? 'own' : undefined}>
           {p.logo
             ? <img src={typeof p.logo === 'string' ? p.logo : p.logo.src} alt="" />
-            : p.employer[0]}
+            : p.ownMark ? null : p.employer[0]}
         </span>
         <div>
           <h3>{p.role} <small>{p.years}</small></h3>

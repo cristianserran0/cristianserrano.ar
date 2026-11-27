@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import PieceFacts from '../../components/PieceFacts.astro';
 import { Image } from 'astro:assets';
 const gImgs = import.meta.glob('/src/assets/work/google-small-business-advisors/*.{png,jpg,jpeg}', { eager: true });
 const gImg = (n) => (gImgs[`/src/assets/work/google-small-business-advisors/${n}`] as any)?.default;
@@ -18,6 +19,8 @@ const gImg = (n) => (gImgs[`/src/assets/work/google-small-business-advisors/${n}
       <p>I had the chance to study Google Standards and developed a great dynamic within the team and with the client, making the process of discovery, ideation, and validation super straightforward.</p>
     </article>
   </section>
+
+  <PieceFacts slug="google-small-business-advisors" />
 
   <hr>
 

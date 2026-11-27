@@ -1,0 +1,229 @@
+---
+/* The case study template: the original page from the live site
+   (work/template/index.html on master), brought over as it was -- its
+   order, its placeholders and its filler text -- in this site's markup.
+   A place to iterate on the case study design; not a real page: hidden
+   from search engines and left out of the sitemap (astro.config.mjs).
+
+   Its order: title, client · year and reading time, the image, the
+   summary, the facts, then the story in sections.
+
+   Its menu is a case study's: Back, the page's name, its sections
+   (`sections`, Layout.astro).
+
+   Not brought over: the old page's own menu and footer (the layout has
+   the site's), and its row of links to other work at the end. */
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import placeholder from '../assets/work/template/openbank-cover.png';
+---
+
+<Layout
+  title="{Project title} - Cristian Serrano"
+  description="The case study template."
+  readingTime={true}
+  noindex={true}
+  sections={true}
+>
+  <header>
+    <hgroup>
+      <h1>{'{Project title}'}</h1>
+      <p>{'{COMPANY/CLIENT} · {year}'}<br><small><span id="reading-time"></span> mins. read</small></p>
+    </hgroup>
+    <figure class="wide">
+      <Image src={placeholder} alt="" loading="eager" decoding="async" />
+    </figure>
+  </header>
+
+  <section id="summary">
+    <article class="overview">
+      <p>{'{Summary}'}</p>
+    </article>
+  </section>
+
+  <dl class="facts">
+    <div><dt>Category</dt><dd>{'{categories}'}</dd></div>
+    <div><dt>Platforms</dt><dd>{'{platforms}'}</dd></div>
+    <div><dt>Role</dt><dd>{'{roles}'}</dd></div>
+    <div><dt>Time</dt><dd>{'{time}'}</dd></div>
+  </dl>
+
+  <hr>
+
+  <section id="context">
+    <h2>Context</h2>
+
+    <article>
+      <h3>What is it</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+    </article>
+
+    <article>
+      <h3>Problem definition</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+    </article>
+
+    <article>
+      <h3>Objectives</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+    </article>
+
+    <article>
+      <h3>Team</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world.</p>
+    </article>
+  </section>
+
+  <section id="research">
+    <h2>Research</h2>
+
+    <article>
+      <figure class="wide">
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <h3>What is it</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+    </article>
+
+    <article>
+      <h3>Objectives</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+    </article>
+
+    <article>
+      <h3>Team</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world.</p>
+    </article>
+  </section>
+
+  <section id="ideation">
+    <h2>Ideation</h2>
+
+    <article>
+      <h3>What is it</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure class="wide">
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+    </article>
+
+    <article>
+      <h3>Objectives</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+    </article>
+
+    <article>
+      <h3>Team</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world.</p>
+    </article>
+  </section>
+
+  <section id="visual-design">
+    <h2>Visual Design</h2>
+
+    <article>
+      <h3>What is it</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure class="wide">
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+    </article>
+
+    <article>
+      <h3>Objectives</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+    </article>
+
+    <article>
+      <h3>Team</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world.</p>
+    </article>
+  </section>
+
+  <section id="whats-next">
+    <h2>What's next</h2>
+
+    <article>
+      <h3>Learnings</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure class="wide">
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+    </article>
+
+    <article>
+      <h3>Next steps</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+    </article>
+
+    <article>
+      <h3>Team</h3>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world. I'm curious by nature and I often find myself thinking about how everything around me works, and how can I make it better. Weirdly enough, this kind of correlates to the fact that I seem to have an <a href="https://www.16personalities.com/intp-personality">Assertive Logician</a> type of personality.</p>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <figure>
+        <Image src={placeholder} alt="" loading="lazy" decoding="async" />
+        <figcaption>Image caption.</figcaption>
+      </figure>
+      <p>Design isn't just my job, my role, or something that I’m good at. Being a designer is something that I just am, it’s about the way I see the world.</p>
+    </article>
+  </section>
+
+  <section>
+    <ul>
+      <li>Your research process from a clear problem definition</li>
+      <li>Teamwork / collaboration</li>
+      <li>Interaction design</li>
+      <li>Visual design</li>
+      <li>Self-reflection</li>
+    </ul>
+  </section>
+
+  <p class="end-mark" aria-hidden="true">◼︎</p>
+</Layout>

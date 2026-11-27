@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import PieceFacts from '../../components/PieceFacts.astro';
 import { Image } from 'astro:assets';
 const oImgs = import.meta.glob('/src/assets/work/openbank-design-system/*.{png,jpg,jpeg}', { eager: true });
 const oImg = (n) => (oImgs[`/src/assets/work/openbank-design-system/${n}`] as any)?.default;
@@ -19,6 +20,8 @@ const oImg = (n) => (oImgs[`/src/assets/work/openbank-design-system/${n}`] as an
       <p>By being part of this initiative I gained invaluable knowledge about banking, e-commerce, fintech, and insurtech industries, and became a Design System and DesignOps touchstone inside the company.</p>
     </article>
   </section>
+
+  <PieceFacts slug="openbank-design-system" />
 
   <hr>
 

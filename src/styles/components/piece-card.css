@@ -39,7 +39,7 @@
   .piece-card hgroup p {
     font: var(--type-overline);
     letter-spacing: var(--type-overline-tracking);
-    text-transform: uppercase;
+    text-transform: var(--type-overline-case);
     color: var(--text-secondary);
     margin: var(--space-1) 0 0;
   }
@@ -61,7 +61,7 @@
   .piece-card dt {
     font: var(--type-overline);
     letter-spacing: var(--type-overline-tracking);
-    text-transform: uppercase;
+    text-transform: var(--type-overline-case);
     color: var(--text-secondary);
     margin: 0;
   }

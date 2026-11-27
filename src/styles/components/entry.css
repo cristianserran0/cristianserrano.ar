@@ -27,13 +27,8 @@
     letter-spacing: var(--type-title-small-tracking);
   }
 
-  /* The opening of the page the entries are on: its title a step smaller
-     than a display title, closer to the entries' own text. Its
-     paragraphs are leads, like any page's (prose.css). */
-  .intro h1 {
-    font: var(--type-intro-title);
-    letter-spacing: var(--type-intro-title-tracking);
-  }
+  /* (The opening of the page the entries are on is any page's: a
+     display title and lead paragraphs, prose.css.) */
 
   .entry {
     display: grid;
@@ -54,10 +49,31 @@
     letter-spacing: var(--type-label-tracking);
     font-weight: var(--weight-semibold);
   }
+  /* A logo is the employer's own square picture (see data/positions.ts)
+     and fills the tile. The tile is white under it, and under the site's
+     own diamond. */
+  .entry-logo:has(img),
+  .entry-logo[data-mark="own"] {
+    background: var(--bg-logo);
+    /* a hairline inside its edge, drawn over the picture: on a white page
+       a white picture would otherwise have no shape */
+    outline: var(--border-hairline) solid var(--border-subtle);
+    outline-offset: calc(-1 * var(--border-hairline));
+  }
   .entry-logo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  /* data-mark="own": no employer, so the site's diamond on the same white
+     tile. In the accent that white always carries (--bg-accent), not the
+     mark colour, which in dark mode is tuned for a dark page. */
+  .entry-logo[data-mark="own"]::before {
+    content: "";
+    width: var(--entry-mark);
+    height: var(--entry-mark);
+    background: var(--bg-accent);
+    rotate: var(--end-mark-rotation);
   }
 
   /* Role and employer read as ONE block beside the logo: two lines with

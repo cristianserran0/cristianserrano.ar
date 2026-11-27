@@ -1,10 +1,9 @@
 ---
-/* The first screen of a case study: its image, its title, and where and
-   when. Nothing else -- the image is the opening. The summary (the
-   one-sentence label and the facts) is on the piece's card, which Home
-   opens (WorkTiles.astro). The way back and around is the menu's; the
-   way on is at the end of the story (NextPiece). Everything comes from
-   src/data/pieces.ts. */
+/* The opening of a case study, as in the template (src/pages/template.astro):
+   the title, the client and years with the reading time under them, then
+   the image, wide. Plain page markup, styled by prose.css like any page's
+   header. The summary is the page's own (.overview); the facts follow it
+   (PieceFacts.astro). Everything here comes from src/data/pieces.ts. */
 import PieceImage from './PieceImage.astro';
 import { piece } from '../data/pieces';
 
@@ -12,13 +11,12 @@ interface Props { slug: string; readingTime?: boolean; }
 const { slug, readingTime = false } = Astro.props;
 const p = piece(slug);
 ---
-<header class="piece">
-  <figure>
-    <PieceImage src={p.hero} alt="" eager />
-  </figure>
-
+<header>
   <hgroup>
     <h1>{p.title}</h1>
-    <p>{p.client} · {p.years}{readingTime && <small><span id="reading-time"></span> min read</small>}</p>
+    <p>{p.client} · {p.years}{readingTime && <><br><small><span id="reading-time"></span> mins. read</small></>}</p>
   </hgroup>
+  <figure class="wide">
+    <PieceImage src={p.hero} alt="" eager />
+  </figure>
 </header>

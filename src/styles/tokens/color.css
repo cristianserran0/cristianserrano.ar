@@ -353,6 +353,9 @@
 
   /* On imagery: text sits on a darkening scrim, in either scheme. */
   --text-on-media:  var(--white);
+  /* Behind someone else's logo: white in both modes. A logo is drawn for
+     a white page (Globant's G is black), so it brings its page with it. */
+  --bg-logo:        var(--white);
   --scrim:          rgb(0 0 0 / 0.5);
 
   /* CONTROLS -- buttons, fields, the segmented control, tooltips.

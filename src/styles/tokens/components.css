@@ -16,16 +16,16 @@
   --divider-width:     12%;      /* the accent rule between sections */
   --nav-hidden-offset: -85px;    /* header slid out of view on scroll */
 
-  --bleed-width:       180%;     /* wide figures on wide screens */
-  --bleed-offset:      -40%;
   --tile-hover-scale:  1.02;
   --end-mark-rotation: 45deg;
   --brand-mark:        0.75rem;  /* the diamond standing in for the name on phones */
   --visually-hidden:   1px;      /* text kept for screen readers, not shown */
 
+  --entry-mark:        1rem;     /* 16px: the site's diamond on a logo tile (about 23px across its points) */
   --entry-logo:        3rem;     /* 48px, the height of the role and employer lines together: an employer's or a project's logo on the home page's timeline */
 
   --menu-diamond:       0.625rem; /* 10px: the diamond as a menu item's icon (14px across its points, in a 16px box) */
+  --end-mark-size:      var(--menu-diamond); /* the diamond that closes an article: the same mark, the same size */
   --icon-pop:           0.8;      /* a filled icon starts at this size and grows to full as it appears */
   --icon-filled-stroke: 1;
   --icon-stroke-24:     2;        /* a 24-unit icon's stroke: at 16px, 2 units is 1.33px, near the 1.4px of the site's own two drawings */      /* a filled icon's outline: just enough to round its corners */

@@ -1,12 +1,23 @@
-/* The mark that closes an article. */
+/* The mark that closes an article: the site's diamond, drawn the way the
+   menu's is (menu-item.css) -- a square of the mark colour, turned 45
+   degrees -- at the same size.
+
+   <p class="end-mark" aria-hidden="true">◼︎</p>
+
+   The character in the markup is not what shows: it is what a reader
+   without the stylesheet gets. Here it is clear, and the box around it
+   is the mark. (A character's size and sharpness depend on the font
+   that draws it; a drawn square is the same everywhere.) */
 
 @layer components {
   .end-mark {
-    font: var(--type-ornament);
-    letter-spacing: var(--type-ornament-tracking);
-    color: var(--mark);
-    text-align: center;
-    transform: rotate(var(--end-mark-rotation));
-    margin-block: var(--space-16);
+    width: var(--end-mark-size);
+    height: var(--end-mark-size);
+    margin: var(--space-16) auto;
+    overflow: hidden;
+    background: var(--mark);
+    color: transparent;
+    rotate: var(--end-mark-rotation);
+    user-select: none;
   }
 }

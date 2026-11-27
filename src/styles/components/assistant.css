@@ -116,7 +116,7 @@
   .assistant-stop {
     font: var(--type-overline);
     letter-spacing: var(--type-overline-tracking);
-    text-transform: uppercase;
+    text-transform: var(--type-overline-case);
     color: var(--link);
     margin-bottom: var(--space-1);
   }

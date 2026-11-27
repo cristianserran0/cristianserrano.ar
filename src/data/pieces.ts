@@ -1,6 +1,6 @@
 /* The pieces: one entry per case study, written once and read everywhere
    -- Home (under their position, src/data/positions.ts), each piece's
-   first screen, the "Next piece" links, and the guide (also as plain data
+   opening and its card on Home, and the guide (also as plain data
    for its AI: /guide/pieces.json).
 
    `label` is one sentence, FIRST person like the rest of the site
@@ -9,8 +9,8 @@
    The guide and the search-engine data talk ABOUT Cristian, so they take
    the label through aboutCristian() below: "I built…" -> "Cristian built…".
 
-   Order matters: "Next piece" and the guide's tours walk the featured
-   pieces in this order. */
+   Order matters: the guide's tours, and the "next piece" it offers on a
+   case study, walk the featured pieces in this order. */
 import type { ImageMetadata } from 'astro';
 import kaiaCover from '../assets/work/work3-cover.png';
 import googleCover from '../assets/work/work1-cover.png';
@@ -133,10 +133,11 @@ export const pieces: Piece[] = [
     featured: false,
   },
   /* The cases inside JustRelate Home, each on a page of its own
-     (src/pages/work/justrelate/). Not featured: they are listed on Home
-     under JustRelate, but are not in "Next piece" or the guide's tours
-     yet. Labels and categories are drafts; the cover is the parent's,
-     which is still missing. */
+     (src/pages/work/justrelate/). DRAFTS, not listed anywhere for now:
+     Home shows the one JustRelate case study above (positions.ts), and
+     these pages are hidden from search engines and from the sitemap.
+     Labels and categories are drafts; the cover is the parent's, which
+     is still missing. */
   {
     slug: 'justrelate/platform-vision',
     title: 'Platform vision',

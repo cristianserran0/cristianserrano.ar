@@ -1,0 +1,15 @@
+---
+/* The facts of a case study, as in the template: category, platforms,
+   role, and how long it ran (left out where that is not known). Placed
+   by the page, after its summary. From src/data/pieces.ts. */
+import { piece } from '../data/pieces';
+
+interface Props { slug: string; }
+const p = piece(Astro.props.slug);
+---
+<dl class="facts">
+  <div><dt>Category</dt><dd>{p.facts.category}</dd></div>
+  <div><dt>Platforms</dt><dd>{p.facts.platforms}</dd></div>
+  <div><dt>Role</dt><dd>{p.facts.role}</dd></div>
+  {p.facts.time && <div><dt>Time</dt><dd>{p.facts.time}</dd></div>}
+</dl>

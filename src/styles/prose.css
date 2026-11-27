@@ -136,23 +136,17 @@
     box-shadow: var(--shadow-sm);
   }
 
+  /* A wide figure runs past the text column, centred on it: as wide as
+     the room between the menu and the controls allows, less a gutter on
+     each side, up to --piece-max. A case study's opening image is one.
+     The same shape at every width: it never touches an edge, so its
+     corners are always round. */
   .prose figure.wide img {
-    max-width: var(--bleed-width);
-    margin-left: var(--bleed-offset);
+    width: min(100cqi - 2 * var(--gutter), var(--piece-max));
+    max-width: none;
+    margin-inline-start: calc((100% - min(100cqi - 2 * var(--gutter), var(--piece-max))) / 2);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
-  }
-  /* Below "wide": bleed edge to edge of the panel instead. */
-  @container page (max-width: 1200px) {
-    .prose figure.wide img {
-      max-width: 100cqi;
-      margin-left: calc((var(--content-inner) - 100cqi) / 2);
-      border-radius: 0;
-    }
-  }
-  /* Below "content": the column is the panel minus its gutters. */
-  @container page (max-width: 736px) {
-    .prose figure.wide img { margin-left: calc(-1 * var(--gutter)); }
   }
 
   .prose figcaption {
@@ -164,6 +158,23 @@
 
   /* ---- key facts ---- */
   /* as many equal columns as there are facts (two, three or four) */
+  /* A fact is a label and what it names: the label small and secondary,
+     the value primary -- not the heading and paragraph a plain dt and dd
+     are. */
+  .prose .facts dt {
+    font: var(--type-overline);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: var(--type-overline-case);
+    color: var(--text-secondary);
+    margin: 0;
+    padding: 0;
+  }
+  .prose .facts dd {
+    font: var(--type-meta-small);
+    letter-spacing: var(--type-meta-small-tracking);
+    color: var(--text-primary);
+    margin: var(--space-1) 0 0;
+  }
   .prose .facts {
     display: grid;
     grid-auto-flow: column;

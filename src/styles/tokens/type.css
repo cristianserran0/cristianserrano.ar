@@ -15,25 +15,23 @@
 
    Text style    Used for                              Size/leading/weight
    ───────────   ───────────────────────────────────   ───────────────────
-   display       page title (h1)                       60 / 1.2 / 600
-   subtitle      line under the page title             19 / 1.4 / 700
+   display       page title (h1), on every page        60 / 1.2 / 600
+   subtitle      line under the page title             18 / 1.4 / 700
    lead          opening paragraphs (Home's too),
-                 quotes                                19 / 1.6 / 280
-   intro-title   the page title of Home (h1)           48 / 1.2 / 600
+                 quotes                                18 / 1.6 / 295
    title         section heading (h2)                  32 / 1.4 / 600
    title-small   heading of a list of entries (Home)   24 / 1.4 / 600
    heading       sub-section heading (h3), tile title  22 / 1.4 / 500
-   subheading    h4                                    19 / 1.4 / 500
+   subheading    h4                                    18 / 1.4 / 500
    item          a piece's title under a position      16 / 1.4 / 500
    body          paragraphs, list items                16 / 1.6 / 330
-   meta          aside inside a heading (dates)        19 / 1.4 / 280
+   meta          aside inside a heading (dates)        18 / 1.4 / 295
    meta-small    aside inside a subheading (places)    16 / 1.4 / 330
    caption       figure captions, notes, footer,
                  the guide's small print               13 / 1.4 / 300
    overline      small uppercase label on imagery      13 / 1.4 / 700
    label         navigation, controls                  16 / 1.4 / 500
    label-small   controls on narrow screens            14 / 1.4 / 500
-   ornament      the end-of-article mark               22 / 1.4 / 300
    chat          assistant messages                    14 / 1.5 / 380
 
    Interface text: picked by usage, line height set in px, no tracking.
@@ -88,11 +86,10 @@
   --font-size-14: 0.875rem;
   --font-size-16: 1rem;
   --font-size-18: 1.125rem;
-  --font-size-19: 1.1875rem;
   --font-size-22: 1.375rem;
   --font-size-24: 1.5rem;
   --font-size-32: 2rem;
-  --font-size-48: 3rem;
+  --font-size-54: 3.375rem;
   --font-size-60: 3.75rem;
   --font-size-66: 4.125rem;
 
@@ -110,7 +107,6 @@
      same thickness at every size (about 1.17px; measured on Inter's
      lowercase l): the bigger the text, the lighter the weight. Named by
      value, like the sizes. */
-  --weight-280:      280;   /* 19px text */
   --weight-295:      295;   /* 18px text */
   --weight-330:      330;   /* 16px text */
   --weight-380:      380;   /* 14px text */
@@ -123,25 +119,23 @@
   /* ---- text styles ---- */
   --type-display:              var(--weight-semibold) var(--font-size-60)/var(--leading-tight) var(--font-sans);
   --type-display-tracking:     -0.145rem;   /* the same proportion it had at 66px (-0.16rem) */
-  --type-subtitle:             var(--weight-bold) var(--font-size-19)/var(--leading-normal) var(--font-sans);
+  --type-subtitle:             var(--weight-bold) var(--font-size-18)/var(--leading-normal) var(--font-sans);
   --type-subtitle-tracking:    -0.022rem;
-  --type-lead:                 var(--weight-280) var(--font-size-19)/var(--leading-relaxed) var(--font-sans);
+  --type-lead:                 var(--weight-295) var(--font-size-18)/var(--leading-relaxed) var(--font-sans);
   --type-lead-tracking:        -0.015rem;
-  --type-intro-title:          var(--weight-semibold) var(--font-size-48)/var(--leading-tight) var(--font-sans);
-  --type-intro-title-tracking: -0.116rem;   /* the display's tracking, in proportion */
   --type-title:                var(--weight-semibold) var(--font-size-32)/var(--leading-normal) var(--font-sans);
   --type-title-tracking:       -0.022rem;
   --type-title-small:          var(--weight-semibold) var(--font-size-24)/var(--leading-normal) var(--font-sans);
   --type-title-small-tracking: -0.022rem;
   --type-heading:              var(--weight-medium) var(--font-size-22)/var(--leading-normal) var(--font-sans);
   --type-heading-tracking:     -0.022rem;
-  --type-subheading:           var(--weight-medium) var(--font-size-19)/var(--leading-normal) var(--font-sans);
+  --type-subheading:           var(--weight-medium) var(--font-size-18)/var(--leading-normal) var(--font-sans);
   --type-subheading-tracking:  -0.022rem;
   --type-item:                 var(--weight-medium) var(--font-size-16)/var(--leading-normal) var(--font-sans);
   --type-item-tracking:        -0.011rem;
   --type-body:                 var(--weight-330) var(--font-size-16)/var(--leading-relaxed) var(--font-sans);
   --type-body-tracking:        -0.011rem;
-  --type-meta:                 var(--weight-280) var(--font-size-19)/var(--leading-normal) var(--font-sans);
+  --type-meta:                 var(--weight-295) var(--font-size-18)/var(--leading-normal) var(--font-sans);
   --type-meta-tracking:        -0.015rem;
   --type-meta-small:           var(--weight-330) var(--font-size-16)/var(--leading-normal) var(--font-sans);
   --type-meta-small-tracking:  -0.011rem;
@@ -149,12 +143,11 @@
   --type-caption-tracking:     -0.0025rem;
   --type-overline:             var(--weight-bold) var(--font-size-13)/var(--leading-normal) var(--font-sans);
   --type-overline-tracking:    0.025rem;
+  --type-overline-case:        uppercase;   /* a label is set in capitals; a rule takes it as its text-transform */
   --type-label:                var(--weight-medium) var(--font-size-16)/var(--leading-normal) var(--font-sans);
   --type-label-tracking:       -0.011rem;
   --type-label-small:          var(--weight-medium) var(--font-size-14)/var(--leading-normal) var(--font-sans);
   --type-label-small-tracking: -0.011rem;
-  --type-ornament:             var(--weight-light) var(--font-size-22)/var(--leading-normal) var(--font-sans);
-  --type-ornament-tracking:    -0.018rem;
   --type-chat:                 var(--weight-380) var(--font-size-14)/var(--leading-medium) var(--font-sans);
   --type-chat-tracking:        -0.011rem;
 
@@ -181,16 +174,28 @@
 
 } /* @layer tokens */
 
-/* EXPERIMENT (data/experiments.ts, "lead-size"): 19px or 18px for the
-   four text styles at that size -- lead, subtitle, subheading and meta.
-   Now 19. Here all four are 18, the light ones at the weight that
-   keeps their strokes as thick. (At 18 the scale steps down evenly for
-   small screens: 18 to 16, 16 to 14.) When decided: put the winning
-   size and weight in the four styles above and delete this block, and
-   the size and weight that lost. */
-[experiment-lead-size="18"] {
-  --type-subtitle:   var(--weight-bold) var(--font-size-18)/var(--leading-normal) var(--font-sans);
-  --type-lead:       var(--weight-295) var(--font-size-18)/var(--leading-relaxed) var(--font-sans);
-  --type-subheading: var(--weight-medium) var(--font-size-18)/var(--leading-normal) var(--font-sans);
-  --type-meta:       var(--weight-295) var(--font-size-18)/var(--leading-normal) var(--font-sans);
+/* EXPERIMENT (data/experiments.ts, "display-size"): the page title at
+   60px (now) or 54px, its tracking in proportion. When decided: put the
+   winning size and tracking in --type-display above and delete this
+   block, and the size that lost. */
+[experiment-display-size="54"] {
+  --type-display:          var(--weight-semibold) var(--font-size-54)/var(--leading-tight) var(--font-sans);
+  --type-display-tracking: -0.13rem;
+}
+
+/* EXPERIMENT (data/experiments.ts, "labels"): the small label over or
+   beside something -- a fact's name, the client and years on a piece's
+   card. Now bold capitals at 13px. Here without capitals: medium at
+   13px, or regular at 14px (the weight 14px text has). When decided: put
+   the winner in the three --type-overline tokens above and delete this
+   block. */
+[experiment-labels="13-medium"] {
+  --type-overline:          var(--weight-medium) var(--font-size-13)/var(--leading-normal) var(--font-sans);
+  --type-overline-tracking: var(--type-caption-tracking);
+  --type-overline-case:     none;
+}
+[experiment-labels="14-regular"] {
+  --type-overline:          var(--weight-380) var(--font-size-14)/var(--leading-normal) var(--font-sans);
+  --type-overline-tracking: var(--type-chat-tracking);
+  --type-overline-case:     none;
 }

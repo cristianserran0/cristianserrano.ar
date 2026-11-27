@@ -66,8 +66,7 @@
     /* No bar above the content here, so the room kept for one is halved:
        a page starts two gutters from the top of the panel (main's own
        padding, and as much again), where the top-bar layout leaves four. */
-    .prose > header,
-    .piece { padding-top: var(--space-8); }
+    .prose > header { padding-top: var(--space-8); }
   }
 
   /* ---- the top bar ----
@@ -229,10 +228,6 @@
     }
 
   }
-
-  /* A case study's own "All work / Next piece" links repeat what the
-     menu's Back already does. */
-  .piece-nav { display: none; }
 
   /* A section reached from the index lands clear of the top bar (the
      scrolling itself is side-nav.js: smooth, unless motion is reduced). */

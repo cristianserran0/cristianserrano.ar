@@ -11,6 +11,7 @@
     "snapshot:save": "node scripts/snapshot.mjs save .snapshot.json",
     "snapshot:compare": "node scripts/snapshot.mjs compare .snapshot.json",
     "check": "npm run check:tokens && npm run check:contrast",
+    "logo": "node scripts/logo.mjs",
     "deploy": "wrangler deploy",
     "dev:worker": "npm run build && wrangler dev --env dev"
   },

@@ -246,14 +246,14 @@
     var fromRight = t.key === 'display' || t.key === 'guide' || t.key === 'experiments';
     var top = r.top;
     // How far down the content sits is read from its first piece -- the
-    // title, or a case study's opening image -- not from its box: the room
+    // title -- not from its box: the room
     // above the content is INSIDE the box. And when the page is scrolled,
     // the browser holds what is on screen in place, which this reading
     // then reports as "did not move", correctly.
     if (t.key.indexOf('content:') === 0 && opening) top = opening.getBoundingClientRect().top;
     return { left: fromRight ? r.left - p.right : r.left - p.left, top: top - p.top };
   }
-  var opening = document.querySelector('.page-body > main .piece figure, .page-body > main h1');
+  var opening = document.querySelector('.page-body > main h1');
   function snapshot() {
     var at = {};
     things().forEach(function (t) { var r = shown(t); if (r) at[t.key] = r; });

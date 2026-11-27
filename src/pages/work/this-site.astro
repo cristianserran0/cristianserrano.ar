@@ -3,6 +3,7 @@
    and number here is from the code or measured on the running site;
    the framing ("How it was built") is his call. */
 import Layout from '../../layouts/Layout.astro';
+import PieceFacts from '../../components/PieceFacts.astro';
 ---
 
 <Layout
@@ -18,6 +19,8 @@ import Layout from '../../layouts/Layout.astro';
       <p>It's also the piece you're looking at: everything below is running on this page.</p>
     </article>
   </section>
+
+  <PieceFacts slug="this-site" />
 
   <hr>
 

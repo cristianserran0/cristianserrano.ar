@@ -27,7 +27,7 @@ export default defineConfig({
   // the sitemap are all built from it. (Not www.: that redirects here.)
   site: 'https://cristianserrano.ar',
   trailingSlash: 'always',
-  integrations: [sitemap({ filter: (page) => !page.includes('/styleguide') && !page.includes('/work/justrelate/') })],
+  integrations: [sitemap({ filter: (page) => !page.includes('/styleguide') && !page.includes('/template') && !page.includes('/work/justrelate/') })],
   vite: { plugins: [freshStyles] },
   build: {
     // Always emit CSS as files. Inlined <style> would be blocked by the
